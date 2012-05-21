@@ -19,6 +19,9 @@
         public void processRemovedData(Metadata metadata)
         {
         }
+        public void processErrorData(Metadata metadata)
+        {
+        }
     }, new ParseContext());  
     
 **Set a configuration object / parse context to configure crawling behaviour**  
