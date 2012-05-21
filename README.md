@@ -33,4 +33,7 @@ Crawl something incrementally in 1 minute:
         public void processRemovedData(Metadata metadata)
         {
         }
+        public void processErrorData(Metadata metadata)
+        {
+        }
     }, crawlerContext.createParseContext());
