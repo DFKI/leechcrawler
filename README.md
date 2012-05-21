@@ -12,7 +12,7 @@ The key intentions of Leech:
 * Incremental crawling, offered for existing and new crawlers.
 
 ***
-[Code snippets](codeSnippets.md)
+[Code snippets](https://github.com/reuschling/leech/blob/master/codeSnippets.md)
 ***
 Crawl something incrementally in 1 minute:
 
