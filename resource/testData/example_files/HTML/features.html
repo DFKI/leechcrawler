@@ -1,0 +1,829 @@
+<HTML>
+<HEAD>
+<title>New Features</title>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF">
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+<TR>
+<!--TD WIDTH=60-->
+<TD>
+   <IMG SRC="../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT=88>
+</TD>
+
+<TD>
+<center>
+           <h1>Java<sup><font size="-2">TM</font></sup> 2 SDK, Standard Edition, version 1.4.2<br>Summary of New Features and Enhancements</h1>
+</center>
+</TD>
+
+<TD ALIGN=RIGHT VALIGN=TOP>
+<font size="-1"><a href="../index.html">Contents</a></font>
+<p>
+<!-- Ja
+<A HREF="../../ja/docs/ja/relnotes/features.html"><IMG SRC="../images/Japanese12B.gif" border="0" ALT="Japanese"></TD>
+-->
+</TR>
+</TABLE>
+
+<!-- Body text begins here -->
+
+
+<hr size=3 noshade>
+<p>
+<blockquote>  
+Version 1.4.0 of the Java 2 SDK, Standard Edition was a major feature
+release.  The features listed below are those introduced in 1.4.0 (since 1.3).  
+Version 1.4.2 is a maintenance release and introduces the minor enhancements and 
+changes (since 1.4.1) listed at
+<a href="http://java.sun.com/j2se/1.4.2/changes.html">Enhancements 
+and Changes in J2SE 1.4.2</a> on the web site.
+<p>
+
+The <em>full</em> list of features, including features brought forward
+from previous versions, is available at
+<a href="../index.html#guide">Guide to Features</a>. 
+</blockquote>
+<p>
+<blockquote>
+
+<dl>
+<dt><dd><b>Java 2 Platform</b>
+<ul>
+   <li><a href="#xmlprocessing">XML Processing</a>
+   <li><a href="#nio">New I/O APIs</a>
+   <li><a href="#security">Security</a>
+   <li><a href="#2d">Java 2D<sup><font size="-2">TM</font></sup> technology</a>
+   <li><a href="#imageio">Image I/O Framework</a>
+   <li><a href="#jps">Java Print Service</a>
+   <li><a href="#awt">AWT</a>
+   <li><a href="#Swing">Swing</a>
+   <li><a href="#dnd">Drag and Drop</a>
+   <li><a href="#logging">Logging API</a> 
+   <li><a href="#jws">Java<sup><font size="-2">TM</font></sup> Web Start Product</a>
+   <li><a href="#persistence">Long-term Persistence of 
+       JavaBeans<sup><font size="-2">TM</font></sup> Components</a> 
+   <li><a href="#jdbc">JDBC<sup><font size="-2">TM</font></sup> 3.0 API</a>
+   <li><a href="#assertions">Assertion Facility</a>
+   <li><a href="#preferences">Preferences API</a>
+   <li><a href="#chained-exceptions">Chained Exception Facility</a>
+   <li><a href="#standards">Endorsed Standards Override Mechanism</a>
+   <li><a href="#vm">Java Virtual Machines</a>
+   <li><a href="#performance">Performance</a>
+   <li><a href="#networking">Networking Support, Including IPv6</a>
+   <li><a href="#rmi">RMI</a>
+   <li><a href="#serialization">Serialization</a>
+   <li><a href="#jndi">Java Naming and Directory Interface<sup><font size="-2">TM</font></sup> (JNDI)</a>
+   <li><a href="#corba">CORBA, Java IDL, and RMI-IIOP</a>
+   <li><a href="#jpda">Java<sup><font size="-2">TM</font></sup> Platform Debugger Architecture</a>
+   <li><a href="#i18n">Internationalization</a>
+   <li><a href="#plugin">Java<sup><font size="-2">TM</font></sup> Plug-in Product</a>
+   <li><a href="#collections">Collections Framework</a>
+   <li><a href="#access">Accessibility</a>
+   <li><a href="#regex">Regular Expressions</a>
+   <li><a href="#math">Math</a>
+   <li><a href="#reflection">Reflection</a>
+   <li><a href="#jni">Java Native Interface</a>
+</ul>
+<dt><dd><b>Tools</b>
+<ul>
+   <li><a href="#tools">Tools and Utilities</a>
+</ul>
+</dl>
+
+
+</blockquote>
+
+<hr>
+
+<!--=========================== JAVA PLATFORM =========================-->
+
+<a name=java2platform></a>
+<h2>Java 2 Platform</h2>
+
+<a name=xmlprocessing></a>
+<ul>
+<li><b><a href=../guide/xml/jaxp/index.html>XML Processing</a></b>
+<blockquote><b>The Java<font size="1"><sup>TM</sup></font> API for XML
+processing</b> has been added to the Java 2 Platform.  It provides basic
+support for processing XML documents through a standardized set of 
+Java Platform APIs.
+</blockquote>
+
+<p>
+<a name=nio></a>
+<li><b><a href="../guide/nio/index.html">New I/O APIs</a></b><br>
+<blockquote>
+The <b>new I/O (NIO) APIs</b> provide new features and improved
+performance in the areas of buffer management, character-set support,
+regular-expression matching, file I/O, and scalable network I/O.
+</blockquote>
+
+<p>
+<a name=security></a>
+<li><b><a href="../guide/security/index.html">Security</a></b>
+<ul>
+
+<li>The <b><a href="../guide/security/jce/JCERefGuide.html">
+Java<SUP><FONT SIZE=-2>TM</FONT></SUP> Cryptography Extension
+(JCE)</a></b>, 
+<b><a href="../guide/security/jsse/JSSERefGuide.html">
+Java<SUP><FONT SIZE=-2>TM</FONT></SUP> Secure Socket Extension
+(JSSE)</a></b>, and <b><a href="../guide/security/jaas/JAASRefGuide.html">
+Java<SUP><FONT SIZE=-2>TM</FONT></SUP> Authentication
+and Authorization Service (JAAS)</a></b> security features have now been 
+integrated into the Java<SUP><FONT SIZE=-2>TM</FONT></SUP> 2 SDK, 
+Standard Edition (Java 2 SDK), v 1.4 rather than being optional packages.
+
+<li><b>There are two new security features</b>: 
+
+<ul>
+<li>The <b><a href="../guide/security/jgss/tutorials/index.html">
+Java<SUP><FONT SIZE=-2>TM</FONT></SUP> GSS-API</a></b>
+can be used for securely exchanging messages between communicating 
+applications using the Kerberos V5 mechanism.
+ 
+<li>The <b><a href="../guide/security/certpath/CertPathProgGuide.html">
+Java<font size=-2><sup>TM</sup></font> Certification Path API</a></b>
+includes new classes and methods in the <code>java.security.cert</code> 
+package that allow you to build and validate certification paths
+(also known as &quot;certificate chains&quot;).
+</ul>
+
+<li>Due to import control restrictions, <b>the JCE jurisdiction policy files 
+shipped with the Java 2 SDK, v 1.4 allow "strong" but limited cryptography 
+to be used.</b> 
+An "unlimited" version of these files indicating no restrictions on
+cryptographic strengths is available.
+
+<li>The JSSE implementation provided in this release includes 
+strong cipher suites.  However, due to U.S. export control 
+restrictions, <B>this release does not allow alternate "pluggable" 
+SSL/TLS implementations to be used.</b> 
+For more information, please see the  
+<a href="../guide/security/jsse/JSSERefGuide.html#Customization">JSSE Reference Guide</a>. 
+
+<li>With the integration of JAAS into the Java 2 SDK, the 
+<code>java.security.Policy</code> API handles Principal-based queries,
+and the default policy implementation supports Principal-based 
+<code>grant</code> entries. Thus, <b>access control can now be based
+not just on what code is running, but also on <i>who</i> 
+is running it</b>.
+
+<li><b>Support for dynamic policies</b> has been added. In Java 2 SDK 
+releases prior to version 1.4, classes were statically bound with
+permissions by querying security policy during class loading. The
+lifetime of this binding was scoped by the lifetime of the class
+loader.  In version 1.4 this binding is now deferred until needed by
+a security check. The lifetime of the binding is now scoped by the
+lifetime of the security policy.
+<li>The graphical <b>Policy Tool</b> utility has been enhanced to 
+enable specifying a Principal field indicating what user is to 
+be granted specified access control permissions.
+</ul>
+<p>
+<a name="2d"></a>
+<li><b><a href="../guide/2d/index.html">Java 2D<sup><font size="-2">TM</font></sup> Technology</a></b>
+<blockquote>
+<b>Java 2D</b> includes many new features including: performance
+improvements, support for hardware acceleration for offscreen images, 
+a pluggable image I/O framework, a new print service API, and several new
+font features.
+</blockquote>
+<p>
+<a name="imageio"></a>
+<li><b><a href="../guide/imageio/index.html">Image I/O Framework</a></b>
+<blockquote>
+The <b>Java Image I/O Framework</b> provides a pluggable architecture 
+for working with images stored in files and accessed across the network. 
+It offers substantially more flexibility and power than the current APIs 
+for loading and saving images.
+</blockquote>
+<p>
+<a name="jps">
+<li><b><a href="../guide/jps/index.html">Java Print Service API</a></b>
+<blockquote>
+The Java<sup><font size="-1">TM</font></sup> Print Service is a new Java
+Print API that enables client and server applications to:
+<ul>
+<li>Discover and select print services based on their capabilities 
+<li>Specify the format of print data 
+<li>Submit print jobs to services that support the document type to be
+printed. 
+</ul>
+</blockquote>
+<a name="awt"></a>
+<li><b><a href="../guide/awt/index.html">AWT</a></b>
+<blockquote>
+    Changes to the AWT package center on improving the robustness,
+    behavior, and performance of programs that present a graphical
+    user interface.
+    A new <b>focus architecture</b> replaces the previous implementation and 
+    addresses many focus-related bugs caused by platform inconsistencies,
+    and incompatibilities between AWT and Swing components.
+    The new <b>full-screen exclusive mode API</b> supports high performance
+    graphics by suspending the windowing system so that drawing can be
+    done directly to the screen; a benefit to applications like games,
+    or other rendering-intensive applications.
+     <b>Headless support</b>
+    is now enabled by new graphics environment methods that
+    indicate whether a display, keyboard, and mouse can be supported in a
+    graphics environment. The ability to disable native frame decorations 
+    is now available for applications which need to take full control of specifying how a frame will look; when
+            enabled this prevents the rendering of a native titlebar, system menu, border, or other
+            native operating system dependent screen components. 
+    The oft-requested <b>mouse wheel</b>, with a scroll wheel in place of 
+    the middle mouse button, is enabled with new built-in Java support
+    for scrolling via the mouse wheel.  Also, a new mouse wheel listener
+    class allows customization of mouse wheel behavior.  The AWT package
+    has been modified to be fully <b>64-bit compliant</b> and now runs on 
+    Solaris machines with 64-bit and 32-bit addresses.
+</blockquote>
+<p>
+<a name="Swing"></a>
+<li><b><a href="../guide/swing/index.html">Swing</a></b>
+<blockquote>
+    Many new features have been added to Swing.  The new <b>spinner</b> component
+    is a single line input field that allows the user to select a number or
+    a value by cycling through a sequence of values using a tiny pair of up/down arrow buttons.
+    The new <b>formatted text field</b> component allows formatting of dates,
+    numbers, and strings, such as a text field that accepts only decimal money values.
+    The <b>Windows look and feel</b> implementation is updated to track features
+    available in the 2000/98 versions.
+    A new <b>drag and drop architecture</b> provides seamless drag and drop
+    support between components as well as an easy way to implement drag and
+    drop in your customized Swing components - writing a couple of methods
+    which describe the particulars of your data model is all that is required.
+    Swing's progress bar component has been enhanced to support an
+    indeterminate state; rather than showing the degree of completeness,
+    the <b>indeterminate progress bar</b> uses constant animation to show that
+    a time-consuming operation is occurring. Due to great customer demand,
+    the tabbed pane component has been enhanced to support <b>scrollable tabs</b>.
+    With this feature enabled, if all the tabs will not fit within a single tab run,
+    the tabbed pane component will display a single, scrollable run of tabs, instead
+    of wrapping the tabs onto multiple runs.  The <b>popup and popup factory</b> classes,
+    which were previously package private, have been exposed and made public so
+    that programmers may customize or create their own popups.  The new <b>focus
+    architecture</b> is fully integrated into Swing.
+</blockquote>
+<p>
+<a name=dnd></a>
+<li><b><a href="../guide/dragndrop">Drag and Drop</a></b>
+<blockquote>
+Swing has added support for data transfer between
+applications. A drag and drop operation is a data transfer request 
+that has been specified by a gesture with a
+graphical pointing device. In the case of copy/paste, data transfer 
+is often initiated with the keyboard. The ability
+to transfer data takes two forms: Drag and drop (DnD) support and 
+clipboard transfer via cut/copy/paste.  See 
+<a href="../guide/swing/1.4/dnd.html"><b>Swing Data Transfer</b></a>.
+</blockquote>
+<p>
+<a name=logging></a>
+<li><b><a href="../guide/util/logging/index.html">Logging API</a></b>
+<blockquote>
+The Java Logging APIs facilitate software servicing and maintenance 
+at customer sites by producing log reports suitable for analysis by 
+end users, system administrators, field service engineers, and 
+software development teams. The Logging APIs capture information 
+such as security failures, configuration errors, performance bottlenecks, 
+and/or bugs in the application or platform.
+</blockquote>
+<p>
+<a name=jws></a>
+<li><b><a href="../guide/jws/index.html">Java<sup><font size="-2">TM</font></sup> Web Start Product</a></b>
+<blockquote>
+The Java Web Start product is a new application-deployment technology 
+that is bundled with J2SE 1.4.0. 
+With Java Web Start, you launch applications simply by clicking on a
+Web page link. If the application is not present on your computer,
+Java Web Start automatically downloads all necessary files. It then
+caches the files on your computer so the application is always ready to
+be relaunched anytime you want -- either from an icon on your
+desktop or from the browser link. And no matter which method you
+use to launch the application, the most current version of the
+application is always presented to you. 
+</blockquote>
+<p>
+<a name=persistence></a>
+<li><b><a href="../guide/beans/index.html">Long-term Persistence 
+of JavaBeans Components</a></b>
+<blockquote>
+The new persistence model is designed to handle the process of 
+converting a graph of beans to and from a persistent form. 
+The new API is suitable for creating archives of graphs of
+JavaBeans components as textual representations of their properties. 
+See 
+<a href="http://java.sun.com/j2se/1.4.2/docs/guide/beans/changes14.html">API 
+Enhancements to the JavaBeans Component API</a>.
+
+</blockquote>
+<p>
+<a name=jdbc></a>
+<li><b><a href="../guide/jdbc/index.html">JDBC 3.0 API</a></b>
+<blockquote>
+The JDBC 3.0 API, comprised of packages <tt>java.sql</tt> and 
+<tt>javax.sql</tt>, provides universal data access from the Java programming 
+language. Using the JDBC 3.0 API, you can access virtualy any data 
+source, from relational databases to spreadsheets and flat files. JDBC technology also provides a common base on which tools and alternative interfaces
+can be built. 
+<p>
+New features include the ability to set savepoints in a transaction, to keep
+result sets open after a transaction is committed, to reuse prepared statements,
+to get metadata about the parameters to a prepared statement, to retrieve
+keys that are automatically generated, and to have multiple result sets open
+at one time.  There are two new JDBC data types, BOOLEAN and DATALINK, with
+the DATALINK type making it possible to manage data outside of a data source.
+This release also establishes the relationship between the JDBC Service Provider
+Interface and the Connector architechture.
+</blockquote>
+<p>
+<a name=assertions></a>
+<li><b><a href="../guide/lang/assert.html">Assertion Facility</a></b>
+<blockquote>
+An assertion facility has been added to the Java 2 Platform. 
+Assertions are boolean expressions that the programmer believes to be true
+concerning the state of a computer program. For example, after sorting a
+list, the programmer might assert that the list is in ascending order.
+Evaluating assertions at runtime to confirm their validity is one of the most
+powerful tools for improving code quality, as it quickly uncovers the
+programmer's misconceptions concerning a program's behavior.
+</blockquote>
+<p>
+<a name=preferences></a>
+<li><b><a href="../guide/lang/preferences.html">Preferences API</a></b>
+<blockquote>
+This new feature is a simple API for managing user preference and 
+configuration data. Applications require preference and configuration 
+data to adapt to different users, environments and needs. Applications 
+need a way to store, retrieve, and modify this data.  This need is met 
+by the Preferences API.  The Preferences API is intended to replace 
+most common uses of class <tt>java.util.Properties</tt>, rectifying many 
+of its deficiencies, while retaining its light weight. 
+</blockquote>
+<p>
+<a name=standards></a>
+<li><b><a href="../guide/standards/index.html">Endorsed Standards 
+Override Mechanism</b></a>
+<blockquote>
+      An <em>endorsed standard</em> is a Java<sup><font size="-2">TM</font></sup
+> 
+      API defined through a standards process other than the 
+      <a href="http://www.jcp.org/">Java 
+      Community Process</a><sup><font size="-2">SM</font></sup> 
+     (JCP<sup><font size="-2">SM</font></sup>). 
+      Because endorsed standards are defined outside the JCP, it 
+      is anticipated that such standards may be revised between 
+      releases of the Java 2 Platform.  In order to take advantage of 
+      new revisions to endorsed standards, developers and software vendors 
+      may use the <a href="../guide/standards/index.html">Endorsed 
+      Standards Override Mechanism</a> to provide 
+      newer versions of an endorsed standard than those included 
+      in the Java 2 Platform as released by Sun Microsystems. 
+</blockquote>
+<p>
+<a name=chained-exceptions></a>
+<li><b><a href="../guide/lang/chained-exceptions.html">Chained Exception 
+Facility</a></b>
+<blockquote>
+This new facility provides 
+a common API to record the fact that one exception caused
+another, to access causative exceptions, and to acess the 
+entire "causal chain" as part of the standard stack backtrace, ensuring that
+preexisting programs will provide this information with no additional effort
+on the part of their authors.
+</blockquote>
+<p>
+<a name="vm"></a>
+<li><b><a href="../guide/vm/index.html">Java Virtual Machines</a></b>
+<blockquote>
+The Java virtual machines in this release include several enhancements.
+<ul>
+<li>Signal-chaining facility.
+<li>64-bit support on Solaris<sup><font size="-2">TM</font></sup>-SPARC<sup><font size="-2">TM</font></sup> platform edition.
+<li>Error-reporting mechanism.
+<li>New command-line option for performing additional Java Native 
+Interface (JNI) checks.
+<li>New facility for logging garbage-collection events.
+</ul> 
+The Classic virtual machine is no longer shipped as part of the 
+Java 2 SDK.
+</blockquote>
+<p>
+<a name="performance"></a>
+<li><b><a href="../guide/performance/index.html">Performance</a></b>
+<blockquote>
+This release includes performance enhancements in many areas of 
+the platform.  See <a href="../guide/performance/speed.html">Performance 
+Enhancements</a> for a description of some of them.
+</blockquote>
+<p>
+<a name="networking"></a>
+<li><b><a href="../guide/net/index.html">Networking Support, Including IPv6</a></b>
+<blockquote>
+
+<a href="../guide/net/enhancements14.html">New features</a> include 
+support for IPv6 in TCP- and UDP-based applications, 
+and support for unconnected/unbound sockets, allowing more flexible socket 
+creation, binding, and connection. A mechanism called Java Secure Socket 
+Extension provides encryption for data sent via sockets, and a new class, 
+<a href="../api/java/net/URI.html"><code>URI</code></a>, allows URI 
+construction and parsing without the presence of a protocol 
+handler. The FTP Protocol Handler has been overhauled for conformity to 
+current standards. The default character set is now UTF8, and APIs have 
+been added to enable other character schemes. 
+
+<p>A new class, <a href="../api/java/net/NetworkInterface.html"><code>NetworkInterface</code></a>, allows enumeration of interfaces and addresses, 
+and JNDI DNS SP Support in <a href="../api/java/net/InetAddress.html"><code>InetAddress</code></a> enables applications to configure a pure 
+Java name service provider. TCP out-of-band data provides support for legacy 
+applications; a UDP Connection function registers destination address with 
+the OS, enabling asynchronous errors to be returned on the UDP socket; and 
+full SOCkS V5 and V4 TCP support includes auto-negotiation with the proxy 
+for which version to use. In addition, there are improvements to streaming, 
+request and response headers processing, and error handling.
+
+
+</blockquote>
+<p>
+<a name="rmi"></a>
+<li><b><a href="../guide/rmi/index.html">RMI</a></b>
+<blockquote>
+	<b>Server-side Stack Traces Now Retained in Remote Exceptions</b><br> 
+         The RMI runtime implementation will now preserve the server-side
+	 stack trace information of an exception that is thrown from a 
+	 remote call, in addition to filling in the client-side stack 
+	 trace as it did previous releases. Therefore, when such an 
+	 exception becomes accessible to client code, its stack trace 
+	 will now contain all of its original server-side trace data 
+	 followed by the client-side trace.
+	<p> 
+	<b>Service Provider Interface for <code>RMIClassLoader</code></b><br>
+	Certain static methods of
+	<code>java.rmi.server.RMIClassLoader</code> now delegate their
+	behavior to an instance of a new service provider interface,
+	<code>java.rmi.server.RMIClassLoaderSpi</code>. This service
+	provider object can be configured to augment RMI's dynamic
+	class loading behavior for a given application. By default, the
+	service provider implements the standard behavior of all of the
+	static methods in <code>RMIClassLoader</code>. See the class
+	documentation of <code><a href="../api/java/rmi/server/RMIClassLoader.html">RMIClassLoader</a></code> and
+	<code><a href="../api/java/rmi/server/RMIClassLoaderSpi.html">RMIClassLoaderSpi</a></code> for more details.
+	<p>
+	<b>Dynamic Server Host Name</b><br>
+	The <code>java.rmi.server.hostname</code> property can now be 
+	dynamically updated to indicate that future exports should use a 
+	new host name. Therefore, the new host name value will be contained
+        in the stub for an object that is exported after the property is 
+	updated.
+</blockquote>
+<p>
+<a name="serialization"></a>
+<li><b><a href="../guide/serialization/index.html">Serialization</a></b>
+<blockquote>
+This release has several <a href="../guide/serialization/relnotes14.html">changes and enhancements</a> to the serialization API, including 
+<ul>
+<li>Support for deserialization of objects that are
+known to be unshared in the data-serialization stream.
+<li>Support for a class-defined readObjectNoData method.
+<li>Important bug fixes.
+</ul>
+</blockquote>
+<p>
+
+<a name="jndi"></a>
+<li><b><a href="../guide/jndi/index.html">Java Naming and Directory Interface<sup><font size="-2">TM</font></sup> (JNDI)</a></b>
+
+<ul>
+<li>An Internet Domain Naming System (DNS) service provider is part of the
+Java 2 Platform, Standard Edition, v1.4.  This component enables
+applications to read data stored in the DNS.
+
+<li>
+
+The JNDI Lightweight Directory Access Protocol (LDAP) service provider
+has security enhancements that enable applications to
+establish secure sessions over existing LDAP connections and
+to use different authentication protocols. 
+
+<li>
+The JNDI CORBA Object Services (COS) naming service provider supports
+the <a href="ftp://ftp.omg.org/pub/docs/ptc/99-12-03.pdf">Interoperable
+Naming Service (INS) specification (99-12-03)</a>.  
+
+</ul>
+<blockquote>
+See <a href=../guide/jndi/index.html#14changes>JNDI Enhancements</a> for details.
+</blockquote>
+<p>
+<a name="corba"></a>
+<li><b>CORBA, <a href="../guide/idl/index.html">Java IDL</a>, and 
+<a href="../guide/rmi-iiop/index.html">RMI-IIOP</a></b>
+<blockquote>
+The ORB shipping as part of Java 2 Platform now includes a Portable Object
+Adapter (POA) functionality. An ORB makes it possible for client(s) to make 
+method invocations  on the objects being supported by server(s) executing 
+on the same or different machine(s).  ThePOA functionality
+allows programmers to construct object implementations that are portable 
+between different ORB products, provide support for objects with 
+persistent identities, and much more.   Other new features 
+include Portable Interceptors, Interoperable Naming Service, 
+GIOP 1.2 support, Dynamic Management of Any values, and
+new tools that support a persistent naming service and other 
+features.  To learn more about the new features in Java IDL 
+and RMI-IIOP between J2SE v.1.3 and J2SE v.1.4, link to 
+<a href="../guide/idl/jidlChanges.html"><em>Changes in
+CORBA Features Between J2SE 1.3 and 1.4</em></a>.
+</blockquote>
+<p>
+<a name="jpda"></a>
+<li><b><a href="../guide/jpda/index.html">Java<sup><font size="-2">TM</font></sup> Platform Debugger Architecture</a></b>
+  <blockquote>
+  
+    <b>Full Speed Debugging Support</b><br>
+    The 
+    <a href="http://java.sun.com/products/hotspot/">
+        Java HotSpot[TM] virtual machine 
+    </a>
+    now uses "full-speed debugging". In the previous version of HotSpot, when
+    debugging was enabled, the program executed using only the interpreter. Now,
+    the full performance advantage of HotSpot
+    Technology is available to programs running with debugging enabled.
+    The improved performance allows long running programs to
+    be more easily debugged. It also allows testing to proceed
+    at full speed and the launch of a debugger to occur on an exception.
+  
+    <p>
+    <b>HotSwap</b><br>
+      This feature has been added to allow a class to be updated while under the control of a debugger.
+    <p>
+    <b>Instance Filters</b><br>
+      <code>EventRequests</code> now have the capability of specifying an instance filter, which 
+      restricts the events generated by the request to those in which the currently executing 
+      instance is the object specified.
+    <p>
+    <b>Support For Debugging Other Languages</b><br>
+       The Java Platform Debugger Architecture has been extended so that non-Java programming 
+       language source, which is translated to Java programming language source, can be debugged in the
+       future.
+
+    <p>
+    <b>VMDeathRequests</b><br>
+      A request can now be made to control target VM termination notification, allowing clean shutdown 
+      synchronization
+ 
+    </blockquote>
+<p>
+<a name="i18n"></a>
+<li><b><a href="../guide/intl/index.html">Internationalization</a></b>
+<blockquote>
+<b>Unicode 3.0 Support</b><br>
+Character handling in J2SE 1.4 is based on version 3.0 of the Unicode
+standard. This affects the Character and String classes in the java.lang
+package as well as the collation and bidirectional text analysis
+functionality in the java.text package.
+<p>
+<b>Support for Thai and Hindi</b><br>
+Thai and Hindi are now supported in all areas of functionality. See the
+<a href="../guide/intl/locale.doc.html">Supported Locales</a> document
+for complete information on supported locales and writing systems.
+<p>
+<b>Currency class</b><br>
+The class <a href="../api/java/util/Currency.html"><tt>java.util.Currency</tt></a> was introduced so that currencies can be
+referenced independent of locales. There are new methods on
+<a href="../api/java/text/NumberFormat.html"><tt>java.text.NumberFormat</tt></a> and related classes to specify the currency for
+formatting monetary values.
+</blockquote>
+<p>
+<a name="plugin"></a>
+<li><a href="../guide/plugin/index.html"><b>Java<sup><font size="-2">TM</font></sup> Plug-in Product</b></a>
+<blockquote>
+Java Plug-in 1.4 offers the following new features: support of HTTPS 
+through Java Secure Socket Extension (JSSE) rather than the browser; 
+enhanced applet caching so that other files, such as GIF, JPEG, AU, 
+etc., can be cached as part of the download in addition to JAR and 
+class files; applet persistence so that applets may persist across 
+browser page changes; various applet-compatibility 
+enhancements to allow most JDK 1.1 applets to run seemlessly in Java 2; 
+and on Microsoft Windows platforms, support in Java Plug-in for launching 
+applets using the <tt>&lt;APPLET&gt;</tt> tag.
+<p>
+Version 1.4 also provides access to the DOM via standard, w3c-defined 
+interfaces; assertion and logging support; applet usability enhancements, 
+including a customizable progress bar for applet loading; and enhanced 
+options in the Java Console to allow dynamic reconfiguration of proxy 
+settings, the policy file, etc., while the applet is running.
+</blockquote>
+
+<p>
+<a name="collections"></a>
+<li><a href="../guide/collections/index.html"><b>Collections Framework</b></a>
+<blockquote>
+The collections framework has several enhancements in Java 2 SDK 1.4, 
+including a marker interface to advertise random access, an identity-based 
+(rather than equality-based) Map, insertion-order-preserving Map and 
+Set implementations, and several new algorithms for manipulating and 
+returning values from lists. See <a href="../guide/collections/changes4.html">Collections Framework Enhancements</a> for details.
+</blockquote>
+
+<p>
+<a name="access"></a>
+<li><a href="../guide/access/index.html"><b>Accessibility</b></a>
+<blockquote>
+New features include support for:
+<ul>
+<li>Mnemonic tab navigation on a JTabbedPane
+<li>Text editing by assistive technologies
+<li>Accessibility of HTML components
+<li>Accessibility of Swing Actions
+<li>List navigation using the first letter of list items
+<li>Component roles DATE_EDITOR, FONT_CHOOSER, GROUP_BOX, SPIN_BOX, STATUS_BAR
+<li>Properties to indicate the presence of a screen magnifier or screen 
+reader, or to specify assistive technologies to load into the Java virtual 
+machine
+</ul>
+</blockquote>
+
+<p>
+<a name="regex"></a>
+<li><a href="../api/java/util/regex/package-summary.html"><b>Regular Expressions</b></a>
+<blockquote>
+New package <a href="../api/java/util/regex/package-summary.html"><tt>java.util.regex</tt></a> 
+contains classes for matching character sequences against patterns 
+specified by regular expressions. 
+</blockquote>
+
+<p>
+<a name="math"></a>
+<li><a href="../guide/math/index.html"><b>Math</b></a>
+<blockquote>
+A new, efficient method for generating prime numbers with 
+no need for the caller to specify a certainty has been added 
+to class <tt>java.math.BigInteger</tt>.  
+</blockquote>
+
+<p>
+<a name="reflection"></a>
+<li><a href="../guide/reflection/index.html"><b>Reflection</b></a>
+<blockquote>
+Certain reflective operations, specifically 
+<a href="../api/java/lang/reflect/Field.html">java.lang.reflect.Field</a>,
+<a href="../api/java/lang/reflect/Method.html#invoke(java.lang.Object, java.lang.Object[])">java.lang.reflect.Method.invoke()</a>,
+<a href="../api/java/lang/reflect/Constructor.html#newInstance(java.lang.Object[])">java.lang.reflect.Constructor.newInstance()</a>, and <a href="../api/java/lang/Class.html#newInstance()">Class.newInstance()</a>,
+have been rewritten for higher performance.  Reflective
+invocations and instantiations are several times faster than in
+previous releases.
+</blockquote>
+
+<p>
+<a name=jni></a>
+<li><a href="../guide/jni/index.html"><b>Java Native Interface</b></a>
+<blockquote>
+A few changes have been made to JNI in v 1.4.
+First, the version number has been incremented
+and the specification of <tt>JNI_OnLoad</tt> updated accordingly.
+Second, JNI has been enhanced to reflect a new feature of the 
+<tt>java.nio</tt> package: <i>direct buffers</i>. The contents of a
+direct buffer can, potentially, reside in native memory outside 
+of the ordinary garbage-collected heap. Finally, the new Invocation Interface 
+routine <tt>AttachCurrentTreadAsDaemon</tt> allows native code to attach 
+a daemon thread to the virtual machine; this is useful when the VM should 
+not wait for this thread to exit upon shutdown. 
+See <a href="../guide/jni/jni-14.html"><b>JNI Enhancements</b></a> for 
+more on these enhancements.
+</blockquote>
+
+</ul>
+
+<h2>Tools and Utilities</h2>
+<a name=tools></a>
+<blockquote>
+See <a href=../tooldocs/tools-changes.html><b>Tool Changes</b></a> for 
+details on the changes summarized here. 
+</blockquote>
+<ul>
+<li> The <a href="../tooldocs/solaris/java.html"><b>java</b></a> 
+application launcher supports 
+command-line options for support of the new Assertions Facility. 
+On the Solaris<sup><font size="-2">TM</font></sup> Operating Environment 
+(SPARC<sup><font size="-2">TM</font></sup> Platform Edition) new 
+command-line options are available for specifying 64-bit or 
+32-bit operation.  On all platforms, new option <tt>-Xloggc:<i>file</i></tt> 
+logs each garbage-collection event in the specified file. 
+Also on all platforms, the new option <tt>-Xcheck:jni</tt> performs additional
+checks for Java Native Interface (JNI) functions at the cost of some
+performance degradation
+
+<p><li>The <a href="../tooldocs/solaris/javadoc.html"><b>javadoc</b></a>
+tool has several new tags, a dozen new options, smarter inheriting 
+of doc comments, more control over HTML output, improvements to 
+the Doclet API, better error messages, dozens of bug fixes, and 
+is easier to run.
+For more details, see <a href=../tooldocs/javadoc/whatsnew-1.4.html>What's 
+New in Javadoc 1.4</a>.
+Downloaded separately from the SDK, the 
+<a href="http://java.sun.com/javadoc/mifdoclet/">MIF doclet</a>
+has had a major upgrade -- it generates API documentation 
+in FrameMaker and PDF format.
+
+<p><li> The <a href="../tooldocs/solaris/native2ascii.html"><b>native2ascii</b></a>
+tool contains bug fixes to now correctly 
+process source files encoded with Unicode encoding.  
+
+<p><li>The <a href="../guide/rmi-iiop/toJavaPortableUG.html"><b>idlj</b></a> tool now generates server-side bindings following the <em>Portable Servant Inheritance Model</em>.  
+This change involves producing new POA bindings by default.  A new command-line
+option is added to enable you to continue to generate backwards-compatible server-side
+bindings.  To learn more about the <a href="../guide/idl/POA.html">Portable Servant Inheritance Model</a>, follow the link.
+
+<p><li>The <a href="../guide/idl/orbd.html"><b>orbd</b></a> tool, or <em>Object Request Broker Daemon</em>, is a new alternative tool for the Transient
+ Naming Service, <tt>tnameserv</tt>.  ORBD includes both a Transient Naming Service 
+ and a Persistent Naming Service.  The <B>orbd</B> tool is used to enable
+ clients to transparently locate and invoke persistent objects on servers in the 
+ CORBA environment. The <b>orbd</b> tool incorporates the functionality of a Server Manager, 
+ an Interoperable Naming Service, and a Bootstrap Name Server.  When used in conjunction
+  with the <tt>servertool</tt>, the Server Manager locates, registers, and activates
+   a server when a client wants to access the server. 
+
+ 
+ <p><li>The <a href="../guide/idl/servertool.html"><b>servertool</b></a> is new to this release.  The <b>servertool</b> provides 
+ an ease-of-use interface for application programmers to register, unregister, 
+ startup, and shutdown a server.  
+
+<p><li>The <a href="../tooldocs/solaris/rmic.html"><b>rmic</b></a> compiler has a new option to enable Portable Object Adapter, or <em>POA</em> support for Remote Method Invocation.  The POA enables portability among vendor ORBs, among other uses.  To lea
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+rn more about the <a href="../guide/idl/POA.html">POA</a>, follow the link.  To enable POA support with the <tt>rmic</tt> compiler, use the arguments <tt>rmic -iiop -poa</tt>.
+
+<p><li>The graphical <b>Policy Tool</b> utility has been enhanced
+to enable specifying a Principal field indicating what user is to be
+granted specified access control permissions.
+
+</ul>
+
+<br>
+
+<!-- Body text ends here -->
+<!-- ============================================================== -->
+<HR SIZE=3 NOSHADE>
+
+<TABLE summary="layout" BORDER="0" WIDTH=100%>
+<TR VALIGN=TOP>
+
+<TD>
+<P><FONT SIZE="-2"><A HREF="SMICopyright.html">Copyright &copy; 2002</A> 
+Sun Microsystems, Inc.  All Rights Reserved.</FONT></P>
+   <br>
+   <br>
+
+   <FONT SIZE="-1">
+   </FONT>
+</TD>
+
+<TD ALIGN=RIGHT>
+   <IMG SRC="../images/sunlogo64x30.gif" ALT=" Sun Microsystems, Inc " BORDER=0 WIDTH=64 HEIGHT=30>
+   <BR>
+</TD>
+
+</TR>
+</TABLE>
+
+<pre>
+<!-- THESE pre TAGS ALLOW LINKS TO JUMP TO BOTTOM OF PAGE -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+
+</BODY>
+</HTML>

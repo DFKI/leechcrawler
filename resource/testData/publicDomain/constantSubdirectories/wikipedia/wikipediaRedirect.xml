@@ -1,0 +1,1052 @@
+<mediawiki xmlns="http://www.mediawiki.org/xml/export-0.3/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mediawiki.org/xml/export-0.3/ http://www.mediawiki.org/xml/export-0.3.xsd" version="0.3" xml:lang="de">
+  <siteinfo>
+    <sitename>Wikipedia</sitename>
+    <base>http://de.wikipedia.org/wiki/Hauptseite</base>
+    <generator>MediaWiki 1.7alpha</generator>
+    <case>first-letter</case>
+      <namespaces>
+      <namespace key="-2">Media</namespace>
+      <namespace key="-1">Spezial</namespace>
+      <namespace key="0" />
+      <namespace key="1">Diskussion</namespace>
+      <namespace key="2">Benutzer</namespace>
+      <namespace key="3">Benutzer Diskussion</namespace>
+      <namespace key="4">Wikipedia</namespace>
+      <namespace key="5">Wikipedia Diskussion</namespace>
+      <namespace key="6">Bild</namespace>
+      <namespace key="7">Bild Diskussion</namespace>
+      <namespace key="8">MediaWiki</namespace>
+      <namespace key="9">MediaWiki Diskussion</namespace>
+      <namespace key="10">Vorlage</namespace>
+      <namespace key="11">Vorlage Diskussion</namespace>
+      <namespace key="12">Hilfe</namespace>
+      <namespace key="13">Hilfe Diskussion</namespace>
+      <namespace key="14">Kategorie</namespace>
+      <namespace key="15">Kategorie Diskussion</namespace>
+      <namespace key="100">Portal</namespace>
+      <namespace key="101">Portal Diskussion</namespace>
+    </namespaces>
+  </siteinfo>
+
+  <page>
+    <title>Tabloidformat</title>
+    <id>1284892</id>
+    <revision>
+      <id>14126726</id>
+      <timestamp>2006-02-28T03:18:46Z</timestamp>
+      <contributor>
+        <ip>134.99.6.149</ip>
+      </contributor>
+      <comment>#REDIRECT [[Zeitungsformat]]</comment>
+      <text xml:space="preserve">#REDIRECT [[Zeitungsformat]]</text>
+    </revision>
+  </page>
+
+  <page>
+    <title>Schweizer Format</title>
+    <id>510334</id>
+    <revision>
+      <id>7149664</id>
+      <timestamp>2005-01-09T13:43:30Z</timestamp>
+      <contributor>
+        <username>Rosenzweig</username>
+        <id>42689</id>
+      </contributor>
+      <text xml:space="preserve">#Redirect [[Zeitungsformat]]</text>
+    </revision>
+  </page>
+
+  <page>
+    <title>Nordisches Format</title>
+    <id>510314</id>
+    <revision>
+      <id>7149650</id>
+      <timestamp>2005-01-09T13:26:01Z</timestamp>
+      <contributor>
+        <username>Rosenzweig</username>
+        <id>42689</id>
+      </contributor>
+      <text xml:space="preserve">#Redirect [[Zeitungsformat]]</text>
+    </revision>
+  </page>
+
+ <page>
+    <title>Berliner Format</title>
+    <id>510303</id>
+    <revision>
+      <id>7149646</id>
+      <timestamp>2005-01-09T13:23:22Z</timestamp>
+      <contributor>
+        <username>Rosenzweig</username>
+        <id>42689</id>
+      </contributor>
+      <text xml:space="preserve">#Redirect [[Zeitungsformat]]</text>
+    </revision>
+  </page>
+
+  <page>
+    <title>Rheinisches Format</title>
+    <id>510307</id>
+    <revision>
+      <id>7149647</id>
+      <timestamp>2005-01-09T13:24:18Z</timestamp>
+      <contributor>
+        <username>Rosenzweig</username>
+        <id>42689</id>
+      </contributor>
+      <text xml:space="preserve">#Redirect [[Zeitungsformat]]</text>
+    </revision>
+  </page>
+
+  <page>
+    <title>Norddeutsches Format</title>
+    <id>510313</id>
+    <revision>
+      <id>7149649</id>
+      <timestamp>2005-01-09T13:25:39Z</timestamp>
+      <contributor>
+        <username>Rosenzweig</username>
+        <id>42689</id>
+      </contributor>
+      <text xml:space="preserve">#Redirect [[Zeitungsformat]]</text>
+    </revision>
+  </page>
+
+  <page>
+    <title>Zeitungsformate</title>
+    <id>193088</id>
+    <revision>
+      <id>6897529</id>
+      <timestamp>2004-04-24T17:17:46Z</timestamp>
+      <contributor>
+        <username>LosHawlos</username>
+        <id>1170</id>
+      </contributor>
+      <comment>verschoben nach &quot;Zeitungsformat&quot;</comment>
+      <text xml:space="preserve">#REDIRECT [[Zeitungsformat]]
+</text>
+    </revision>
+  </page>
+
+  <page>
+    <title>Claus Schenk von Stauffenberg</title>
+    <id>927</id>
+    <revision>
+      <id>15469369</id>
+      <timestamp>2006-04-08T13:12:13Z</timestamp>
+      <contributor>
+        <username>Srbauer</username>
+        <id>6908</id>
+      </contributor>
+      <minor />
+      <comment>redirfix</comment>
+      <text xml:space="preserve">#Redirect [[Claus Schenk Graf von Stauffenberg]]</text>
+    </revision>
+  </page>
+
+ <page>
+    <title>Zeitungsformat</title>
+    <id>193073</id>
+    <revision>
+      <id>15669671</id>
+      <timestamp>2006-04-14T18:50:58Z</timestamp>
+      <contributor>
+        <username>Rosenzweig</username>
+        <id>42689</id>
+      </contributor>
+      <comment>Revert; es gibt schon genug Beispiele, da muss nicht noch ein Blatt ohne Wikipedia-Artikel dazu</comment>
+      <text xml:space="preserve">[[Bild:NewspaperSizes200508.jpg|thumb|300px|right|Zeitungsformate, August 2005. ''[[The Guardian]]'' ist im britischen Broadsheet Format,  ''[[Neues Deutschland]]'' und ''[[Berliner Zeitung]]'' im Rheinischen Format. ''[[Le Monde]]'' ist im Berliner Format, die ''[[Daily Mail]]'' und ''[[The Times]]'' im Tabloid. Ein Blatt [[Papierformat|A4]] ist zusätzlich zu sehen.]]
+
+Die '''Zeitungsformate''' beschreiben die Größe (Breite x Höhe) einer [[Zeitung]], wenn sie nicht aufgeschlagen ist. Die Größe der heute gängigen Formate wurde [[1973]] durch die [[DIN]] 16604 festgelegt. Die Norm sollte „die Zusammenarbeit zwischen der werbungtreibenden Wirtschaft sowie den Zeitungsverlagen und Druckereien beim Einschalten von Anzeigen erleichtern und zu einem einheitlichen Sprachgebrauch bezüglich der Abmessungen führen“. In den 70er Jahren gab es noch rund 60 unterschiedliche Papierformate.
+
+== Gängige Zeitungsformate ==
+
+=== Großformate ===
+
+==== Norddeutsches Format (auch Nordisches Format) (400 x 570 mm) ====
+* [[Berliner Morgenpost]] (Satzspiegel: 375 x 528 mm)
+* [[Bild-Zeitung]] (Satzspiegel: 376 x 528 mm)
+* [[Frankfurter Allgemeine Zeitung]] (Satzspiegel: 371 x 528 mm)
+* [[Frankfurter Rundschau]] (Satzspiegel: 370,5 x 528 mm)
+* [[Hamburger Abendblatt]] (Satzspiegel: 374,5 x 528 mm)
+* [[Hannoversche Allgemeine Zeitung]] (Satzspiegel: 370,5 x 528 mm)
+* [[Süddeutsche Zeitung]] (Satzspiegel: 371 x 528 mm)
+* [[Der Tagesspiegel]] (Satzspiegel: 370 x 528 mm)
+* [[Die Welt]] (Satzspiegel: 374,5 x 528 mm)
+* [[Rheinischer Merkur]] (Satzspiegel: 373 x 520 mm)
+* [[VDI-Nachrichten]] (Satzspiegel: 370,5 x 520 mm)
+* [[Die Zeit]] (Satzspiegel: 374 x 528 mm)
+
+==== Rheinisches Format (350 x 510 mm oder 360 x 530 mm) ====
+* [[Aachener Zeitung]] (Satzspiegel: 325 x 480 mm)
+* [[Allgäuer Zeitung]] (Satzspiegel: 327 x 480 mm)
+* [[Berliner Zeitung]] (Satzspiegel: 327 x 485 mm)
+* [[Cannstatter Zeitung]]/Untertürkheimer Zeitung (Satzspiegel: 321 x 485 mm)
+* [[Freie Presse]] (Satzspiegel: 314 x 470 mm)
+* [[Heilbronner Stimme]]
+* [[Mitteldeutsche Zeitung]] (Satzspiegel: 327 x 484 mm)
+* [[Neue Osnabrücker Zeitung]]
+* [[Rheiderland-Zeitung]]
+* [[Rheinische Post]] (Satzspiegel: 325 x 480 mm)
+* [[Die Rheinpfalz]] 
+* [[Rhein-Zeitung]]
+* [[Sächsische Zeitung]]
+* [[Schleswig-Holsteinischer Zeitungsverlag]] (Satzspiegel: 325 x 487 mm)
+* [[Schweriner Volkszeitung]]
+* [[Stuttgarter Nachrichten]] (Satzspiegel: 321 x 485 mm)
+* [[Stuttgarter Zeitung]] (Satzspiegel: 321 x 485 mm)
+* [[Südkurier]] (Satzspiegel: 325 x 450 mm)
+* [[Thüringer Allgemeine]] (Satzspiegel: 326 x 480 mm)
+* [[Westfälische Nachrichten]] (Satzspiegel: 324 x 488 mm)
+* [[Südwest Presse]] (Satzspiegel: 320 x 480 mm)
+
+==== Schweizer Format (320 x 475 mm) ====
+* [[Neue Zürcher Zeitung]]
+* fast alle anderen Schweizer Tageszeitungen
+
+==== Berliner Format (315 x 470 mm) ====
+* [[Badische Zeitung]] (Satzspiegel: 280 x 420)
+* [[Braunschweiger Zeitung]]
+* [[Die Neue Epoche]] (Satzspiegel: 284 x 424)
+* [[junge Welt|junge Welt]] (Satzspiegel: 285 x 434 mm)
+* [[Direkte_Aktion_(Zeitung)|Direkte Aktion]] (Satzspiegel: 285 x 434 mm)
+* [[Nordwest-Zeitung]] (Satzspiegel: 282 x 420 mm)
+* [[Die Presse]] (Satzspiegel: 266 x 421 mm)
+* [[Der Standard]] (Satzspiegel: 272 x 428 mm)
+* [[die tageszeitung]] (Satzspiegel: 282 x 420 mm)
+* [[Die Woche]]
+* [[The Guardian]]
+* [[Salzburger Nachrichten]]
+* [[Kunstzeitung]]
+* [[Tiroler Tageszeitung]]
+* [[Financial Times Deutschland]]
+
+=== Kleinformate ===
+
+==== Halbnordisches Format (auch Tabloid oder Half-Broadsheet, 235 x 315 mm oder 285 x 400 mm) ====
+* [[Bild am Sonntag]]
+* [[B.Z.]]
+* [[Kleine Zeitung]] (Satzspiegel: 200 x 275 mm)
+* [[Kronen Zeitung]] (Satzspiegel: 200 x 275 mm)
+* [[Welt kompakt]], Auskopplung der [[Die Welt|Welt]]
+* [[Blick (Publikation)|Blick]]
+* [[20 Minuten]]
+* [[Hamburger Morgenpost]]
+
+==== Halbrheinisches Format (260 x 325 mm) ====
+* [[20 Cent]]
+* [[News Frankfurt]] Frankfurt am Main
+
+==== Halbes Berliner Format ====
+* [[Kleine Zeitung]] Graz
+
+=== Weitere Formate ===
+* Broadsheet (295 x 533 mm)
+* Halbes Schweizer Format (240 x 330 mm)
+* Tabloid Extra (305 x 457 mm)
+
+=== Sondergrößen ===
+* [[Asahi Shimbun]] (Japan) (405 x 545 mm)
+* [[Le Figaro]] (Frankreich) (425 x 600 mm)
+* [[New York Times]] (390 x 585 mm)
+* [[Prawda]] (Russland) (420 x 594 mm)
+
+== Siehe auch ==
+[[Satzspiegel]], [[Buchformat]]
+
+[[Kategorie:Zeitung]]</text>
+    </revision>
+  </page>
+
+<page>
+    <title>Ziersdorf</title>
+    <id>452711</id>
+    <revision>
+      <id>15744640</id>
+      <timestamp>2006-04-17T09:57:35Z</timestamp>
+      <contributor>
+        <username>Heinte</username>
+        <id>42674</id>
+      </contributor>
+      <minor />
+      <comment>R</comment>
+      <text xml:space="preserve">{| border=&quot;0&quot; cellpadding=&quot;2&quot; cellspacing=&quot;1&quot; align=&quot;right&quot; style=&quot;margin-left:1em; 
+background:#e3e3e3;&quot;
+! Wappen
+! Karte
+|- bgcolor=&quot;#FFFFFF&quot; align=&quot;center&quot;
+| [[Bild:Wappen fehlt.jpg|[[Wikipedia:Wappen|fehlt noch]] ]]
+| &lt;!--[[Bild:Karte_Österreich_Ziersdorf.png|180px|Lage des Orts]]--&gt;
+|-
+! colspan=&quot;2&quot; | Basisdaten
+|---- bgcolor=&quot;#FFFFFF&quot;
+| [[Bundesland (Österreich)|Bundesland]]: || [[Niederösterreich]]
+|---- bgcolor=&quot;#FFFFFF&quot;
+| [[Bezirk|Politischer Bezirk]]: || [[Bezirk Hollabrunn]] (&lt;tt&gt;HL&lt;/tt&gt;)
+|---- bgcolor=&quot;#FFFFFF&quot;
+| [[Fläche]]: || 48,72 [[Quadratkilometer|km²]]
+|---- bgcolor=&quot;#FFFFFF&quot;
+| [[Einwohner]]: || 3330 ''&lt;small&gt;(Volkszählung 2001)&lt;/small&gt;''
+|---- bgcolor=&quot;#FFFFFF&quot;
+| [[Höhe]]: ||  230 m ü. [[Normalnull|NN]]
+|---- bgcolor=&quot;#FFFFFF&quot;
+| [[Postleitzahl]]: || 3710
+|---- bgcolor=&quot;#FFFFFF&quot;
+| [[Telefonvorwahl|Vorwahl]]: || 02956
+|---- bgcolor=&quot;#FFFFFF&quot; valign=&quot;top&quot;
+| [[Geografische Lage]]: || 48,5167 n. Br. &lt;br/&gt; 15,9167 ö. L.
+|---- bgcolor=&quot;#FFFFFF&quot;
+| [[Gemeindekennziffer]]: || 31053
+|---- bgcolor=&quot;#FFFFFF&quot;
+|Anschrift der&lt;br/&gt;Verwaltung: || Marktgemeinde Ziersdorf&lt;br/&gt;Hauptplatz 1&lt;br/&gt;3710 Ziersdorf
+|---- bgcolor=&quot;#FFFFFF&quot;
+| Offizielle Website: || [http://www.ziersdorf.at www.ziersdorf.at]
+|---- bgcolor=&quot;#FFFFFF&quot;
+| E-Mail-Adresse: || [mailto:gemeinde@ziersdorf.at gemeinde@ziersdorf.at]
+|-
+! colspan=&quot;2&quot; | Politik
+|---- bgcolor=&quot;#FFFFFF&quot;
+| [[Bürgermeister]]: ||  Johann Gartner
+|}
+'''Ziersdorf''' ist eine Marktgemeinde mit 3.330 Einwohnern im [[Bezirk Hollabrunn]] in [[Niederösterreich]].
+ 
+== Geografie ==
+Ziersdorf liegt im Weinviertel in Niederösterreich. Die Fläche der Marktgemeinde umfasst 48,72 Quadratkilometer. 18,76 Prozent der Fläche sind bewaldet.
+ 
+Katastralgemeinden sind Gettsdorf, Großmeiseldorf, Hollenstein, Kiblitz, Radlbrunn, Rohrbach, Ziersdorf.
+
+== Geschichte ==
+Im österreichischen Kernland Niederösterreich liegend teilte der Ort die wechselvolle [[Geschichte Österreichs].  
+&lt;!-- === Religionen === --&gt;
+=== Einwohnerentwicklung ===
+Nach dem Ergebnis der Volkszählung 2001 gab es 3330 Einwohner. 1991 hatte die Marktgemeinde 3060 Einwohner, 1981 2999 und im Jahr 1971 3184 Einwohner.
+== Politik ==
+Bürgermeister der Marktgemeinde ist Johann Gartner, Amtsleiter Herta Ehrentraud.
+Im Marktgemeinderat gibt es bei insgesamt 23 Sitzen nach der Gemeinderatswahl vom [[6. März]] [[2005]] folgende Mandatsverteilung:
+ÖVP 14, SPÖ 9, andere keine Sitze.
+&lt;!-- === Wappen === --&gt;
+&lt;!-- === Städtepartnerschaften === --&gt;
+&lt;!-- == Kultur und Sehenswürdigkeiten == --&gt;
+&lt;!-- === Theater === --&gt;
+&lt;!-- === Museen === --&gt;
+&lt;!-- === Musik === --&gt;
+&lt;!-- === Bauwerke === --&gt;
+&lt;!-- === Parks === --&gt;
+&lt;!-- === Naturdenkmäler === --&gt;
+&lt;!-- === Sport === --&gt;
+&lt;!-- === Regelmäßige Veranstaltungen === --&gt;
+&lt;!-- === Kulinarische Spezialitäten === --&gt;
+
+== Wirtschaft und Infrastruktur ==
+Nichtlandwirtschaftliche Arbeitsstätten gab es im Jahr 2001 104, land- und forstwirtschaftliche Betriebe nach der Erhebung 1999 177. Die Zahl der Erwerbstätigen a
+m Wohnort betrug nach der Volkszählung 2001 1471. Die Erwerbsquote lag 2001 bei 45,1 Prozent. 
+&lt;!-- == Persönlichkeiten == --&gt;
+&lt;!-- === Ehrenbürger === --&gt;
+=== Söhne und Töchter der Stadt === 
+* [[Erwin Pröll]]
+*[[Josef Pröll]]&lt;!-- == Literatur == --&gt;
+&lt;!-- == Sonstiges == --&gt;
+
+== Weblinks ==
+* http://www.ziersdorf.at
+* http://www.radlbrunn.net
+* http://www.grossmeiseldorf.at
+&lt;br style=&quot;clear:both;&quot; /&gt;
+{{Navigationsleiste Städte und Gemeinden im Bezirk Hollabrunn}}
+[[Kategorie:Ort in Niederösterreich]]
+
+[[nl:Ziersdorf]]</text>
+    </revision>
+  </page>
+
+  <page>
+    <title>Rohrbach (Gemeinde Ziersdorf)</title>
+    <id>455733</id>
+    <revision>
+      <id>7107884</id>
+      <timestamp>2004-11-28T09:57:34Z</timestamp>
+      <contributor>
+        <username>Karl Gruber</username>
+        <id>3546</id>
+      </contributor>
+      <minor />
+      <text xml:space="preserve">#REDIRECT [[Ziersdorf]][[Kategorie:Ort in Niederösterreich]]</text>
+    </revision>
+  </page>
+
+  <page>
+    <title>Radlbrunn</title>
+    <id>677856</id>
+    <revision>
+      <id>7273407</id>
+      <timestamp>2005-05-05T14:13:39Z</timestamp>
+      <contributor>
+        <username>Salmi</username>
+        <id>32886</id>
+      </contributor>
+      <minor />
+      <comment>redirect</comment>
+      <text xml:space="preserve">#REDIRECT [[Ziersdorf]]</text>
+    </revision>
+  </page>
+
+  <page>
+    <title>Kiblitz</title>
+    <id>1022158</id>
+    <revision>
+      <id>10449147</id>
+      <timestamp>2005-11-01T10:43:48Z</timestamp>
+      <contributor>
+        <username>Karl Gruber</username>
+        <id>3546</id>
+      </contributor>
+      <minor />
+      <text xml:space="preserve">#REDIRECT [[Ziersdorf]] [[Kategorie:Ort in Niederösterreich]]</text>
+    </revision>
+  </page>
+  <page>
+    <title>Hollenstein (Gemeinde Ziersdorf)</title>
+    <id>1022159</id>
+    <revision>
+      <id>10450811</id>
+      <timestamp>2005-11-01T11:41:15Z</timestamp>
+      <contributor>
+        <username>Cyper</username>
+        <id>33612</id>
+      </contributor>
+      <text xml:space="preserve">#REDIRECT[[Ziersdorf]]</text>
+    </revision>
+  </page>
+
+  <page>
+    <title>Großmeiseldorf</title>
+    <id>1022161</id>
+    <revision>
+      <id>10449141</id>
+      <timestamp>2005-11-01T10:43:29Z</timestamp>
+      <contributor>
+        <username>Karl Gruber</username>
+        <id>3546</id>
+      </contributor>
+      <minor />
+      <text xml:space="preserve">#REDIRECT [[Ziersdorf]] [[Kategorie:Ort in Niederösterreich]]</text>
+    </revision>
+  </page>
+
+  <page>
+    <title>Gettsdorf</title>
+    <id>1022165</id>
+    <revision>
+      <id>10449167</id>
+      <timestamp>2005-11-01T10:44:30Z</timestamp>
+      <contributor>
+        <username>Karl Gruber</username>
+        <id>3546</id>
+      </contributor>
+      <minor />
+      <text xml:space="preserve">#REDIRECT [[Ziersdorf]] [[Kategorie:Ort in Niederösterreich]]</text>
+    </revision>
+  </page>
+  <page>
+    <title>Fahndorf</title>
+    <id>1022166</id>
+    <revision>
+      <id>10449182</id>
+      <timestamp>2005-11-01T10:44:57Z</timestamp>
+      <contributor>
+        <username>Karl Gruber</username>
+        <id>3546</id>
+      </contributor>
+      <minor />
+      <comment>redirect</comment>
+      <text xml:space="preserve">#REDIRECT [[Ziersdorf]] [[Kategorie:Ort in Niederösterreich]]</text>
+    </revision>
+  </page>
+  <page>
+    <title>Dippersdorf</title>
+    <id>1022170</id>
+    <revision>
+      <id>10449196</id>
+      <timestamp>2005-11-01T10:45:18Z</timestamp>
+      <contributor>
+        <username>Karl Gruber</username>
+        <id>3546</id>
+      </contributor>
+      <minor />
+      <comment>redirect</comment>
+      <text xml:space="preserve">#REDIRECT [[Ziersdorf]] [[Kategorie:Ort in Niederösterreich]]</text>
+    </revision>
+  </page>
+
+
+  <page>
+    <title>Franz Donders</title>
+    <id>1034089</id>
+    <revision>
+      <id>13873029</id>
+      <timestamp>2006-02-20T00:02:08Z</timestamp>
+      <contributor>
+        <username>ChristophDemmer</username>
+        <id>29738</id>
+      </contributor>
+      <minor />
+      <comment>+fr,nl</comment>
+      <text xml:space="preserve">'''Franz Cornelius Donders''' (* [[27. Mai]] [[1818]] in [[Tilburg]] in Nordbrabant; † [[24. März]] [[1889]] in [[Utrecht]]) war ein [[Niederlande|niederländischer]] [[Mediziner]] und [[Pionier (Wegbereiter)|Pionier]] auf dem Gebiet der [[Augenheilkunde]].
+
+[[Bild:Donders.jpg|left|F. C. Donders]]
+
+Donders lehrte in Utrecht ab [[1847]] als Professor, zunächst als Ophthalmologe (bis [[1862]]), dann als Physiologe. Seine wissenschaftlichen Beiträge über die Augenbewegungen, über die Verwendung von zylindrischen und prismatischen Gläsern bei Fehlsichtigkeit, über die Akkommodation und die Unterscheidung der [[Presbyopie]] von der [[Hyperopie]] (Übersichtigkeit und Alterssichtigkeit) waren bahnbrechende Beiträge zur Forschung am [[Auge]]. Auch die Korrektur des [[Astigmatismus]] durch Zylindergläser geht auf Donders zurück. [[1863]] stellte er das erste [[Tonometer]] zum Meßen des Augeninnendrucks vor. Er veranlaßte die Augenärzte sich selbst mit der Brillenverordnung zu befassen und sie nicht länger herumreisenden Händlern zu überlassen. Zusammen mit [[Hermann von Helmholtz]] und [[Albrecht von Graefe]] gilt Franz Cornelius Donders als Begründer der modernen [[Ophthalmologie]]. 
+
+== Siehe auch ==
+*[[Retinitis pigmentosa]]
+
+[[fr:Franciscus Cornelis Donders]]
+[[nl:Franciscus Cornelis Donders]]
+
+[[Kategorie:Mediziner|Donders, Franz Cornelius]]
+[[Kategorie:Niederländer|Donders, Franz Cornelius]] 
+[[Kategorie:Mann|Donders, Franz Cornelius]] 
+[[Kategorie:Geboren 1818|Donders, Franz]]
+[[Kategorie:Gestorben 1889|Donders, Franz]]
+
+{{Personendaten|
+ NAME=Donders, Franz Cornelius
+|ALTERNATIVNAMEN=
+|KURZBESCHREIBUNG=[[Holland|Niederländischer]] [[Wissenschaftler]] und [[Pionier (Wegbereiter)|Pionier]] auf dem Gebiet der [[Mikrobiologie]]
+|GEBURTSDATUM=[[27. Mai]] [[1818]]
+|GEBURTSORT=[[Tilburg]] in Nordbrabant)
+|STERBEDATUM=[[24. März]] [[1889]]
+|STERBEORT=[[Utrecht]] 
+}}</text>
+    </revision>
+  </page>
+
+  <page>
+    <title>Franz Cornelius Donders</title>
+    <id>1034097</id>
+    <revision>
+      <id>10613693</id>
+      <timestamp>2005-11-07T12:50:28Z</timestamp>
+      <contributor>
+        <username>Jan R</username>
+        <id>86325</id>
+      </contributor>
+      <text xml:space="preserve">#REDIRECT [[Franz Donders]]</text>
+    </revision>
+  </page>
+
+  <page>
+    <title>Donders</title>
+    <id>1034099</id>
+    <revision>
+      <id>10613712</id>
+      <timestamp>2005-11-07T12:51:45Z</timestamp>
+      <contributor>
+        <username>Jan R</username>
+        <id>86325</id>
+      </contributor>
+      <text xml:space="preserve">#redirect [[Franz Donders]]</text>
+    </revision>
+  </page>
+
+  <page>
+    <title>Frans Cornelis Donders</title>
+    <id>1034103</id>
+    <revision>
+      <id>10613755</id>
+      <timestamp>2005-11-07T12:53:47Z</timestamp>
+      <contributor>
+        <username>Jan R</username>
+        <id>86325</id>
+      </contributor>
+      <text xml:space="preserve">#redirect [[Franz Donders]]</text>
+    </revision>
+  </page>
+
+  <page>
+    <title>SMTP</title>
+    <id>18212</id>
+    <revision>
+      <id>6761479</id>
+      <timestamp>2003-01-23T17:24:27Z</timestamp>
+      <contributor>
+        <username>OderWat</username>
+        <id>556</id>
+      </contributor>
+      <comment>verschoben nach &quot;Simple_Mail_Transfer_Protocol&quot;</comment>
+      <text xml:space="preserve">#REDIRECT [[Simple_Mail_Transfer_Protocol]]
+</text>
+    </revision>
+  </page>
+
+
+  
+  <page>
+    <title>Rundzelle</title>
+    <id>1143963</id>
+    <revision>
+      <id>12129453</id>
+      <timestamp>2005-12-31T10:42:22Z</timestamp>
+      <contributor>
+        <username>Dplusplus</username>
+        <id>148315</id>
+      </contributor>
+      <comment>#REDIRECT [[Batterie#Baugrößen]]</comment>
+      <text xml:space="preserve">#REDIRECT [[Batterie#Baugrößen]]</text>
+    </revision>
+  </page>
+  <page>
+    <title>Mignonzelle</title>
+    <id>1143965</id>
+    <revision>
+      <id>12129471</id>
+      <timestamp>2005-12-31T10:43:04Z</timestamp>
+      <contributor>
+        <username>Dplusplus</username>
+        <id>148315</id>
+      </contributor>
+      <comment>#REDIRECT [[Batterie#Baugrößen]]</comment>
+      <text xml:space="preserve">#REDIRECT [[Batterie#Baugrößen]]</text>
+    </revision>
+  </page>
+  <page>
+    <title>Ladyzelle</title>
+    <id>1143966</id>
+    <revision>
+      <id>12129473</id>
+      <timestamp>2005-12-31T10:43:19Z</timestamp>
+      <contributor>
+        <username>Dplusplus</username>
+        <id>148315</id>
+      </contributor>
+      <comment>#REDIRECT [[Batterie#Baugrößen]]</comment>
+      <text xml:space="preserve">#REDIRECT [[Batterie#Baugrößen]]</text>
+    </revision>
+  </page>
+  <page>
+    <title>Minizelle</title>
+    <id>1143968</id>
+    <revision>
+      <id>12129477</id>
+      <timestamp>2005-12-31T10:43:33Z</timestamp>
+      <contributor>
+        <username>Dplusplus</username>
+        <id>148315</id>
+      </contributor>
+      <comment>#REDIRECT [[Batterie#Baugrößen]]</comment>
+      <text xml:space="preserve">#REDIRECT [[Batterie#Baugrößen]]</text>
+    </revision>
+  </page>
+  <page>
+    <title>Babyzelle</title>
+    <id>1143969</id>
+    <revision>
+      <id>12129479</id>
+      <timestamp>2005-12-31T10:43:47Z</timestamp>
+      <contributor>
+        <username>Dplusplus</username>
+        <id>148315</id>
+      </contributor>
+      <comment>#REDIRECT [[Batterie#Baugrößen]]</comment>
+      <text xml:space="preserve">#REDIRECT [[Batterie#Baugrößen]]</text>
+    </revision>
+  </page>
+  <page>
+    <title>Monozelle</title>
+    <id>1143971</id>
+    <revision>
+      <id>12129485</id>
+      <timestamp>2005-12-31T10:44:02Z</timestamp>
+      <contributor>
+        <username>Dplusplus</username>
+        <id>148315</id>
+      </contributor>
+      <comment>#REDIRECT [[Batterie#Baugrößen]]</comment>
+      <text xml:space="preserve">#REDIRECT [[Batterie#Baugrößen]]</text>
+    </revision>
+  </page>
+
+  <page>
+    <title>Microzelle</title>
+    <id>1143972</id>
+    <revision>
+      <id>12129493</id>
+      <timestamp>2005-12-31T10:44:22Z</timestamp>
+      <contributor>
+        <username>Dplusplus</username>
+        <id>148315</id>
+      </contributor>
+      <comment>#REDIRECT [[Batterie#Baugrößen]]</comment>
+      <text xml:space="preserve">#REDIRECT [[Batterie#Baugrößen]]</text>
+    </revision>
+  </page>
+
+
+
+
+  <page>
+    <title>Batterie</title>
+    <id>623</id>
+    <revision>
+      <id>15828576</id>
+      <timestamp>2006-04-20T05:17:05Z</timestamp>
+      <contributor>
+        <username>Ot</username>
+        <id>20783</id>
+      </contributor>
+      <minor />
+      <comment>/* Baugrößen */ link zu [[Batterieseparator]]</comment>
+      <text xml:space="preserve">{{Begriffsklärungshinweis}}
+&lt;div style=&quot;float:right;text-align:center;padding-left:20px&quot;&gt;[[Bild:Schaltzeichen_batterie.png|Schaltzeichen]]&lt;br&gt;Schaltzeichen&lt;br&gt; für Batterie&lt;/div&gt;
+Eine '''elektrische Batterie''' ist eine [[Galvanische Zelle]] oder eine Kombination (Zusammenschaltung) mehrerer gleicher Zellen in gemeinsamem Gehäuse. Ursprünglich bezeichnete Batterie nur die Zusammenschaltung mehrerer Zellen, jedoch hat sich die Wortbedeutung im Sprachgebrauch entsprechend erweitert. Eine einzeln verwendete Zelle heißt zur Verdeutlichung auch Monozelle. Wiederaufladbare Batterien werden als [[Akkumulator]] bezeichnet.
+
+== Grundlagen ==
+Die [[elektrochemische Spannungsreihe|Elektrodenmaterialien]] legen die [[Nennspannung]] der Zelle fest. Höhere Spannungen erhält man durch ein Hintereinanderschalten ([[Reihenschaltung]]) mehrerer Zellen. Die '''Kapazität''' einer Batterie wird als theoretisch entnehmbare [[Elektrische Ladung|Ladungsmenge]] in [[Amperestunde]]n (Einheit: Ah) angegeben (im Gegensatz zu einem [[Kondensator (Elektrotechnik)|Kondensator]], wo sie in [[Elektrische Kapazität|Ladung pro Spannung]] gemessen wird). 
+
+Vorwiegend aus Marketinggründen ist die Kapazität bei nicht wiederaufladbaren Batterien nicht angegeben und finden sich nur in den Datenblättern der Hersteller. Die Batteriekapazität lässt sich bei einem Entladevorgang nach einer vorgegebenen Norm messen. Die entnehmbare Kapazität hängt vom '''Entladestrom''' und der '''Entladespannung''' der Batterie ab. Es sind verschiedene Entladeverfahren üblich, u.a.: Entladung mit konstantem Strom, Entladung über konstanten Widerstand oder Entladung mit konstanter Leistung. Je nach Entladeverfahren weist die Batterie eine andere Kapazität auf. In einer sinnvollen Angabe der Nennkapazität müssen daher Entladestrom und Entladeschlussspannung mit aufgeführt werden.
+
+Generell nimmt die entnehmbare Kapazität einer Batterie mit zunehmendem Entladestrom ab. Grund hierfür sind sowohl die zunehmenden Verluste am [[Innenwiderstand]] der Batterie als auch die Tatsache, dass die chemischen Prozesse in der Batterie mit begrenzter Geschwindigkeit ablaufen. Die Verringerung der entnehmbaren Kapazität mit zunehmendem Entladestrom ist stark vom Typ der Batterie abhängig.
+
+Die im praktischen Gebrauch entnehmbare Ladungsmenge hängt ab vom Batterietyp, der Höhe des Entladestroms, der  Restspannung bei Entladungsende, des Batteriealters und der [[Temperatur]] (Siehe auch [[Energiedichte]]).
+
+Die Batteriekapazität oder der Maximalstrom bei gegebener Spannung lassen sich durch größer gebaute Zellen erhöhen. Ein [[Parallelschaltung|Parallelschalten]] von Zellen zur Kapazitätserhöhung könnte demgegenüber zur gegenseitigen Entladung führen, da sich einzelne Zellen in ihrer [[Leerlaufspannung]] etwas unterscheiden, so dass Ausgleichsströme zwischen den Zellen fließen würden. 
+
+Alle Batterien unterliegen bei Lagerung einer gewissen [[Selbstentladung]], abhängig vom Batterietyp und der Lagerungstemperatur: Je niedriger die Temperatur, desto weniger Selbstentladung findet statt. [[Akkumulator|Akkus]] verlieren ihre Ladung relativ schnell. Zink-Luft-Batterien für [[Hörgerät]]e sind hingegen am haltbarsten, weil sie nur unter Luftzufuhr Strom liefern - und die Öffnungen an der Batterie sind während der Lagerung mit einem Kunststoffkleber verschlossen.
+
+[[Bild:AA battery adapter.jpg|thumb|150px|&lt;small&gt;Batterie-Adapter: drei AA-Batterien werden zu einer Flachbatterie.&lt;/small&gt;]]
+In Deutschland regelt die ''Batterieverordnung'' die Rücknahme und Entsorgung von Batterien. Sie legt unter anderem fest, dass in Deutschland keine Batterien oder Zellen mit einem [[Quecksilber|Quecksilbergehalt]] von mehr als zwei Gewichtsprozent in den Verkehr gebracht werden dürfen. Quecksilberknopfzellen sind in Deutschland nicht mehr zulässig. Auch Alkali-Mangan-Batterien enthalten heutzutage kein Quecksilber mehr, während es in den ersten Baureihen noch zum Amalgieren des Elektrodenmaterials erforderlich war. Siehe auch [[Batterierecycling]].
+
+Nicht jeder Batterietyp ist in jedem Land erhältlich. Deshalb gibt es insbesondere Flachbatterie-[[Adapter]], welche drei AA-Batterien zu je 1,5 V aufnehmen. Der Adapter lässt sich dann überall dort verwenden, wo auch eine Flachbatterie hineinpasst. Nützlich sind Adapter auch, weil es bis jetzt keine wiederaufladbaren Flachbatterien gibt.
+
+== Typen-Variationen  == 
+Handelsübliche Batterien gibt es in zahlreichen Varianten sowohl nach dem zugrunde liegenden chemischen [[Redoxsystem]] als auch nach den elektrischen Werten oder der geometrischen bzw. konstruktiven Bauform. Von den nachfolgend aufgeführten Bezeichnungen können mehrere zusammen einen Batterietyp beschreiben, z. B. &quot;Alkali-Mangan-Batterie  –  LR 6/AM-3  –  AA  –  Mignon&quot;. Oft wird aber nur ein bestimmtes Merkmal gefordert, z. B. die Größe &quot;AA&quot; für eine speziell darauf abgestimmte Taschenlampe.
+Von einer [[Trockenbatterie]] spricht man, wenn der [[Elektrolyt]], z.B. durch Eindickung, nicht flüssig vorliegt. Dadurch wird die Batterie in beliebiger räumlicher Orientierung, also insbesondere für transportable Anwendungen, einsetzbar.
+
+=== Einsatzbereiche ===
+Nach dem Einsatzgebiet gibt es folgende Begriffe und Zuordnungen:
+* Gerätebatterien dienen zur Stromversorgung kleiner, meist tragbarer Geräte, beispielsweise in [[Taschenlampe]]n. Besonders kleine Ausführungen werden als [[Knopfzelle]] bezeichnet.
+* Insbesondere für Kraftfahrzeuge werden [[Starterbatterie]]n verwendet.
+* Elektrofahrzeuge verfügen über [[Traktionsbatterie]]n.
+* Stationäre Batterien werden bei ortsfesten Anwendungen wie beispielsweise [[Unterbrechungsfreie Stromversorgung|unterbrechungsfreien Stromversorgungen]] eingesetzt.
+
+=== Primärzellen ===
+[[Image:Panasonic-oxyride.jpg|thumb|100px|''Oxy Nickel Hydroxid'' (Oxyride) Primärzelle in der Baugröße ''AA'']] Primärzellen sind [[galvanische Zelle]]n, die nac
+h der Entladung nicht wieder neu aufgeladen werden können. Die verschiedenen Typen werden nach den eingesetzten Materialien bezeichnet:
+* [[Alkali-Mangan-Batterie]]; 1,5 Volt Nennspannung pro Zelle
+* [[Zink-Kohle-Batterie]]; 1,5 Volt pro Zelle
+* [[Oxy-Nickel-Hydroxid-Batterie]]; 1,5 Volt pro Zelle
+* [[Lithium-Batterie]]n; je nach Kathodenmaterial 2,9 bis 3,6 V
+* [[Lithium-Eisensulfid-Batterie]]; 1,5 Volt pro Zelle
+* [[Zink-Luft-Batterie]]; 1,5 V pro Zelle
+* [[Quecksilberoxid-Zink-Batterie]]; 1,35 Volt pro Zelle
+* [[Silberoxid-Zink-Batterie]]; 1,55 Volt pro Zelle
+
+=== Sekundärzellen ===
+Sekundärzellen oder [[Akkumulator]]en sind [[galvanische Zelle]]n, die nach der Entladung wieder aufgeladen werden können. Verbreitete Typen werden ebenfalls nach den verwendeten Materialien bezeichnet:
+* [[Bleiakkumulator]] (Bleidioxid/Blei); 2 Volt Nennspannung pro Zelle. Der Elektrolyt (Schwefelsäure H&lt;sub&gt;2&lt;/sub&gt;SO&lt;sub&gt;4&lt;/sub&gt;) kann in flüssiger Form, in Vlies gebunden oder als Gel eingedickt (Blei-Gel-Akku) vorhanden sein.  
+* [[Nickel-Cadmium-Akku]]; 1,2 Volt pro Zelle
+* [[Nickel-Metallhydrid-Akku]]; 1,2 Volt pro Zelle
+* [[Lithium-Ionen-Akku]]; 3,7 Volt pro Zelle
+* [[Lithium-Polymer-Akku]]
+* [[Alkali-Mangan-Batterie]] (englisch: ''Reusable Alkaline Manganese'', kurz: RAM); 1,5 Volt pro Zelle
+* [[Silber-Zink-Akku]]; 1,5 Volt pro Zelle
+* [[Nickel-Wasserstoff-Akku]]; 1,2 V pro Zelle
+* [[Zink-Brom Batterie]]; 1,76 V pro Zelle
+
+=== Baugrößen ===
+[[Bild:Batterien.JPG|thumb|200px|Handelsübliche Batterien: Flachbatterie, Mono, Baby, Mignon, Micro, 9-V-Block, Knopfzellen.]] 
+Als '''Gerätebatterien''' werden häufig die elektrischen Batterien bezeichnet, die sehr verbreitet im Alltag für die Energieversorgung von [[Elektrogeräte|Elektro
+kleingeräten]] wie [[Uhr]]en, [[Radio]]s, [[Spielzeug]], [[Taschenlampe]]n u.ä. und auch in fest installierten Geräten wie  [[Brandmelder]]n verwendet werden.
+
+Gerätebatterien müssen kompakt, lageunabhängig einsetzbar, leicht und trotzdem mechanisch widerstandsfähig sein. Sie dürfen bei normaler Lagerung und Verwendung i
+m Gerät weder auslaufen noch gasen. Sie sind in einer Vielzahl von Ausführungen auf der Basis von [[Zink-Braunstein-Zelle|Zink-Kohle-]] oder [[Alkali-Mangan-Batte
+rie]] im Handel erhältlich. Ihre Bezeichnung folgt den von der [[IEC]] festgelegten Leistungsklassen und den von der [[ANSI]] genormten Baugrößen:
+{| {{Prettytable}}
+|'''IEC, geringe Leistung (C)'''
+|'''IEC, höhere Leistung (KOH)'''
+|'''ANSI'''
+|'''Bezeichnung'''
+|'''Größe'''
+|'''Spannung (V)'''
+|'''Kapazität (Ah) Zink-Kohle ca.'''
+|'''Kapazität (Ah) Alkali-Mangan ca.'''
+|-
+|E96        ||LR 61       ||AAAA  ||Mini                             ||Ø 8,3 mm, h 42,5 mm          ||1,5 V || ? || ?
+|-
+|R03/UM-4   ||LR 03/AM-4  ||AAA   ||Micro                            ||Ø 10,3 mm, h 45 mm             ||1,5 V || ? || 0,9 - 1,25
+|-
+|R6/UM-3    ||LR 6/AM-3   ||AA    ||Mignon                           ||Ø 14,3 mm, h 51 mm             ||1,5 V || 0,75 - 0,92 || 2,2 - 2,85
+|-
+|R14/UM-2   ||LR 14/AM-2  ||C     ||Baby                             ||Ø 27 mm, h 50 mm             ||1,5 V || 1,3 || ?
+|- 
+|R20/UM-1   ||LR 20/AM-1  ||D     ||Mono                             ||Ø 35 mm, h 62 mm             ||1,5 V || 1,43 || ?
+|-
+|UM-5       ||AM 5/LR-1   ||N     ||Lady                             ||Ø 12 mm, h 30 mm             ||1,5 V || ? || ?
+|-
+|2R10       ||&amp;nbsp;      ||Duplex||Stabbatterie                     ||Ø 21,8 mm, h 74,6 mm         ||3,0 V || ? || ?
+|-
+|1203       ||LR 12/Flach ||J     ||Flat Pack oder [[Flachbatterie]] ||l 67 mm, b 62 mm, h 22 mm    ||4,5 V (3 Zellen á 1,5 V) || ? || 2,1
+|-
+|F22/E-Block||E-Block/AM-6||1604D ||E-Block oder 9-V-Block           ||l 48,5 mm, b 26,2 mm, h 17 mm||9 V (6 Zellen á 1,5 V) || 0,187|| 0,6
+|}
+
+Neben diesen &quot;Standardtypen&quot; gibt es noch eine große Formenvielfalt bei produktspezifischen Batterien für z.B. Fotoapparate und bei [[Knopfzelle]]n.
+[[Bild:Neunvalkalirp.jpg|thumb|9 V [[Alkali-Mangan-Batterie|Blockbatterie]] im Querschnitt]]
+&lt;br style=&quot;clear:both&quot; /&gt;
+
+== Siehe auch ==
+[[Batterieseparator]]
+
+== Literatur ==
+* Lucien F. Trueb, Paul Rüetschi: ''Batterien und Akkumulatoren - Mobile Energiequellen für heute und morgen''. Springer, Berlin 1998 ISBN 3-540-62997-1
+* David Linden, Thomas B. Reddy (Hrsg.): ''Handbook of Batteries''. 3. Auflage. McGraw-Hill, New York 2002 ISBN 0-071-35978-8
+* DIN 40 729 Akkumulatoren - Galvanische Sekundärelemente - Grundbegriffe
+
+== Weblinks ==
+* [http://www.baumarkt.de/b_markt/fr_info/batterie.htm Die richtige Batterie für den richtigen Einsatz], die wichtigsten Größen und Typen
+* [http://www.batteryuniversity.com/ Battery University (englisch / deutsch)]
+
+Gerätebatterien
+* [http://www.ict.fhg.de/deutsch/scope/ae/bg.html Batterie-Glossar]
+* [http://www.powerstream.com/BatteryFAQ.html Battery Chemistry FAQ] (Englisch)
+* [http://www.grs-batterien.de/ Stiftung Gemeinsames Rücknahmesystem Batterien]
+* [http://www.solarlink.de/leitfaden.htm Leitfaden für die Gleichstromversorgung]
+
+[[Kategorie: Batterie]]
+
+[[ar:بطارية كهربائية]]
+[[ca:Bateria elèctrica]]
+[[da:Batteri (elektricitet)]]
+[[en:Battery (electricity)]]
+[[es:Pila eléctrica]]
+[[fi:Akku]]
+[[fr:Batterie d'accumulateurs]]
+[[is:Rafhlaða]]
+[[it:Batteria (chimica)]]
+[[ja:電池]]
+[[ko:전지]]
+[[ku:Baterî]]
+[[nl:Batterij (elektrisch)]]
+[[pl:Bateria ogniw]]
+[[pt:Pilha]]
+[[sv:Batteri]]
+[[zh:电池]]</text>
+    </revision>
+  </page>
+
+
+
+
+  <page>
+    <title>Simple Mail Transfer Protocol</title>
+    <id>12803</id>
+    <revision>
+      <id>15788328</id>
+      <timestamp>2006-04-18T13:52:55Z</timestamp>
+      <contributor>
+        <username>Fomafix</username>
+        <id>154724</id>
+      </contributor>
+      <comment>RFC 2821 beinhaltet auch ESMTP</comment>
+      <text xml:space="preserve">{| {{Prettytable-R}}
+|-----
+! bgcolor=&quot;#C0C0FF&quot; colspan=&quot;2&quot; font=&quot;size:larger&quot; | SMTP (Simple Mail Transfer Protocol)
+|-----
+| align=&quot;left&quot; | '''Familie:'''
+| align=&quot;left&quot; | [[Internetprotokollfamilie]]
+|-----
+| align=&quot;left&quot; | '''Einsatzgebiet:'''
+| align=&quot;left&quot; | 
+Einspeisung von [[E-Mail]]&lt;br /&gt;
+(Mail Submission),&lt;br /&gt;
+Versendung von E-Mail&lt;br /&gt;
+eventuell über mehrere&lt;br /&gt;
+Stationen (Mail Transfer)
+|-----
+| align=&quot;left&quot; | '''Ports:'''
+| align=&quot;left&quot; | 
+25/TCP
+|-----
+| align=&quot;center&quot; colspan=&quot;2&quot; |
+{{Netzwerk-TCP-IP-Anwendungsprotokoll|SMTP|}}
+|-----
+| align=&quot;left&quot; | '''Standards:'''
+| align=&quot;left&quot; | 
+RFC 821 ([[1982]])
+|}
+
+Das '''Simple Mail Transfer Protocol''' SMTP (zu deutsch etwa ''Einfaches E-Mail-Übertragungsverfahren'') ist ein [[Netzwerkprotokoll|Protokoll]] der [[Internetprotokollfamilie]], das zum Austausch von [[E-Mail]]s in Computer-[[Netzwerk]]en dient. Es wird dabei vorrangig zum Einspeisen und zum Weiterleiten von E-Mails verwendet, zum Abholen von Nachrichten kommen spezialisierte Protokolle, zum Beispiel das [[POP3]]-Protokoll oder das [[Internet Message Access Protocol|IMAP-Protokoll]], zum Einsatz. SMTP Server nehmen traditionell Verbindungen auf [[Port (Protokoll)|Port]] 25 (&quot;smtp&quot;) entgegen, neuere Server auch auf Port 587 (&quot;submission&quot;).
+
+Ein Benutzer wird üblicherweise von der Abarbeitung des SMTP-Protokolls nichts mitbekommen, da dies sein Mailprogramm, der sogenannte [[Mail User Agent]] (MUA), im Hintergrund erledigt. Dieses Programm verbindet sich zu einem SMTP-[[Server]], dem [[Mail Submission Agent]] (MSA), der die Mail über weitere SMTP-Server, sogenannten [[Mail Transfer Agent]]s (MTA), zum Ziel transportiert. Da SMTP als Protokoll zum Transport von lokal erstellten Mails zwischen Servern konzipiert wurde, übernahm dabei ursprünglich ein einzelner Server auf Port 25 (&quot;smtp&quot;) die Rolle von MSA und MTA. Der dedizierte Port 587 (&quot;submission&quot;) für MSAs wurde erst [[1998]] eingeführt, um den unterschiedlichen Anforderungen beider Aufgaben gerecht zu werden: Ein MSA akzeptiert ausdrücklich nur Nachrichten berechtigter Nutzer und bereitet sie vor der Einspeisung in das Mailsystem gegebenenfalls standardkonform auf. Wegen der nahen Verwandtschaft beider Dienste wird die Funktionalität von MSA und MTA üblicherweise immer noch von nur einem Programm, das dann auf beiden Ports Verbindungen annimmt, bereitgestellt.
+
+== Das Protokoll ==
+
+Da SMTP ein textbasiertes Protokoll ist, kann unter den gängigen [[Betriebssystem]]en mit dem Kommandozeilen-Programm [[telnet]] eine E-Mail von Hand verschickt werden. Absender- und Empfängeradresse sind frei wählbar. Aus diesem Grund ist die [[E-Mail#Authentizität und Schutz des Inhaltes|Verlässlichkeit der Absenderangabe]] einer E-Mail nicht gegeben.(Anmerkung: es können sich sogar die Adressen im &lt;code&gt;MAIL FROM&lt;/code&gt;- und &lt;code&gt;RCPT TO&lt;/code&gt;-Kommando (sog. &lt;code&gt;Envelope-From&lt;/code&gt; bzw. &lt;code&gt;Envelope-To&lt;/code&gt;) von den Adressen im &lt;code&gt;From:&lt;/code&gt;- und &lt;code&gt;To:&lt;/code&gt;-Mailheader unterscheiden.)
+
+Eine typische SMTP-Sitzung zum Versenden einer E-Mail sieht folgendermaßen aus:
+
+{| border=&quot;0&quot; cellpadding=&quot;5&quot; cellspacing=&quot;0&quot; style=&quot;font-family:monospace;&quot;
+ !Client
+ !Server
+ |-
+ |bgcolor=&quot;#FFFFB0&quot;|
+ |bgcolor=&quot;#FFFFB0&quot;|220 mail.example.com SMTP Foo Mailserver 
+ |-
+ |bgcolor=&quot;#C0C0FF&quot;|HELO mail.example.org
+ |bgcolor=&quot;#C0C0FF&quot;|
+ |-
+ |bgcolor=&quot;#FFFFB0&quot;|
+ |bgcolor=&quot;#FFFFB0&quot;|250 Hello mail.example.org, nice to meet you
+ |-
+ |bgcolor=&quot;#C0C0FF&quot;|MAIL FROM:&lt;hans.muster@example.org&gt;
+ |bgcolor=&quot;#C0C0FF&quot;|
+ |-
+ |bgcolor=&quot;#FFFFB0&quot;|
+ |bgcolor=&quot;#FFFFB0&quot;|250 Sender OK
+ |-
+ |bgcolor=&quot;#C0C0FF&quot;|RCPT TO:&lt;foo@example.com&gt;
+ |bgcolor=&quot;#C0C0FF&quot;|
+ |-
+ |bgcolor=&quot;#FFFFB0&quot;|
+ |bgcolor=&quot;#FFFFB0&quot;|250 Recipient OK
+ |-
+ |bgcolor=&quot;#C0C0FF&quot;|DATA
+ |bgcolor=&quot;#C0C0FF&quot;|
+ |-
+ |bgcolor=&quot;#FFFFB0&quot;|
+ |bgcolor=&quot;#FFFFB0&quot;|354 End data with &lt;CR&gt;&lt;LF&gt;.&lt;CR&gt;&lt;LF&gt;
+ |-
+ |bgcolor=&quot;#C0C0FF&quot;|From: &lt;hans.muster@example.org&gt;&lt;br /&gt;To: &lt;foo@example.com&gt;&lt;br /&gt;Subject: Testmail&lt;br /&gt;&lt;br /&gt;Tes
+tmail&lt;br /&gt;.
+ |bgcolor=&quot;#C0C0FF&quot;|
+ |-
+ |bgcolor=&quot;#FFFFB0&quot;|
+ |bgcolor=&quot;#FFFFB0&quot;|250 Message accepted for delivery
+ |-
+ |bgcolor=&quot;#C0C0FF&quot;|QUIT
+ |bgcolor=&quot;#C0C0FF&quot;|
+ |-
+ |bgcolor=&quot;#FFFFB0&quot;|
+ |bgcolor=&quot;#FFFFB0&quot;|221 See you later
+ |}
+
+== ESMTP ==
+
+Als SMTP [[1982]] in RFC 821 definiert wurde, gab es eine überschaubare Anzahl von Hosts im [[Internet]]. Da die Verbindungen langsam und instabil waren, wurde auf Zuverlässigkeit großer Wert gelegt. [[Authentifizierung]] war nicht vorgesehen, somit war jeder Mailserver ein [[Open Relay]], über den Mails an jeden anderen Knoten weitergeleitet werden konnte. Mit der wachsenden Popularität des Internets entstand so das Problem des [[Spam (E-Mail)|Spams]].
+
+1995 wurde mit ''Extended SMTP'' (ESMTP) in RFC 1869 das Protokoll erweitert. Diese Erweiterung erlaubt, dass über ein modulares Konzept weitere Befehle (''SMTP-Verben'') definiert werden. Wenn der Sender sich beim Server nicht wie oben gezeigt mit &lt;code&gt;HELO&lt;/code&gt;, sondern mit &lt;code&gt;EHLO&lt;/code&gt; (''Extended HELO'') meldet, teilt der Server ihm im Gegenzug mit, welche Erweiterungen des Protokolls er unterstützt. Gängige Beispiele hierfür sind STARTTLS (''Secure SMTP over [[Transport Layer Security|TLS]]''), 8BITMIME (''8bit-[[Multipurpose Internet Mail Extensions|MIMEtransport]]''), DSN (''Delivery Status Notifications'') und AUTH (''[[SMTP-Auth]]'').
+
+== Sicherheitskonzepte ==
+
+{|
+!Merkmal
+!Definition
+!Konzepte
+|-
+|[[Autorisierung|Zugangskontrolle]]
+|Nur zugelassene Benutzer dürfen den Mailserver benutzen
+|[[SMTP-After-POP]], [[SMTP-Auth]]
+|-
+|[[Authentifizierung|Echtheitsprüfung]]
+|Eine eindeutige Zuordnung Absender &lt;-&gt; Nachricht ist möglich
+|[[PGP]], [[S/MIME]] (siehe [[Elektronische Unterschrift]]), [[Sender Policy Framework|SPF]]
+|-
+|[[Integrität]]
+|Die Nachricht kann auf dem Weg durchs Netz nicht unbemerkt verändert werden
+|[[PGP]], [[S/MIME]]
+|-
+|[[Vertraulichkeit]]
+|Die Nachricht wird nicht im Klartext übertragen, sondern verschlüsselt
+|[[PGP]], [[S/MIME]], [[Secure Sockets Layer|SSL]]/[[Transport Layer Security|TLS]]
+|}
+
+== Software ==
+
+Einige der am häufigsten verwendeten SMTP-Server sind:
+
+* [[Sendmail]]
+* [[Exim]]
+* [[Postfix (Mail Transfer Agent)|Postfix]]
+* [[Qmail|qmail]]
+* [[Microsoft Exchange|MS Exchange 2003]]
+
+== Literatur ==
+* RFC 821 (SMTP, Standard)
+* RFC 822 (Textformat)
+* RFC 2821 (SMTP, Proposed Standard, macht RFC 821 und RFC 1869 obsolet)
+* RFC 1652 (SMTP Service Extension for 8bit-MIMEtransport)
+* RFC 1891 (SMTP Service Extension for Delivery Status Notifications)
+* RFC 1845 (SMTP Service Extension for Checkpoint/Restart)
+* RFC 1869 (SMTP Service Extensions, ESMTP)
+* RFC 1870 (SMTP Service Extension for Message Size Declaration)
+* RFC 1893 (Enhanced Mail System Status Codes)
+* RFC 2476 (Message Submission, führt Port 587 für Message Submission ein)
+* RFC 2487 (SMTP Service Extension for Secure SMTP over TLS)
+* RFC 2505 (Anti-Spam Recommendations for SMTP MTAs)
+* RFC 2554 (SMTP Service Extension for Authentication)
+* RFC 2920 (SMTP Service Extension for Command Pipelining)
+* RFC 3030 (SMTP Service Extensions for Transmission of Large and Binary MIME Messages)
+* RFC 3207 (SMTP Service Extension for Returning Enhanced Error Codes)
+* RFC 3700 (Internet Official Protocol Standards)
+* RFC 2606 (Reserved Top Level DNS Names)
+
+== Weblinks ==
+*[http://www.kubieziel.de/computer/email.html Eine Erklärung zum Transport von E-Mails]
+*[http://www.daniel-rehbein.de/rfc2821.html Warum man Absenderadressen nicht vertrauen kann]
+
+[[Kategorie:Netzwerkprotokoll auf Anwendungsschicht]]
+[[Kategorie:Netzwerkprotokoll]]
+[[Kategorie:E-Mail]]
+
+[[ca:Simple Mail Transfer protocol]]
+[[cs:SMTP]]
+[[da:Simple Mail Transfer Protocol]]
+[[en:Simple Mail Transfer Protocol]]
+[[eo:SMTP]]
+[[es:Simple Mail Transfer Protocol]]
+[[eu:SMTP]]
+[[fi:SMTP]]
+[[fr:Simple Mail Transfer Protocol]]
+[[gl:Simple Mail Transfer Protocol]]
+[[he:Simple Mail Transfer Protocol]]
+[[hu:Simple Mail Transfer Protocol]]
+[[id:SMTP]]
+[[it:SMTP]]
+[[ja:Simple Mail Transfer Protocol]]
+[[ko:SMTP]]
+[[ku:SMTP]]
+[[lt:SMTP]]
+[[nl:Simple Mail Transfer Protocol]]
+[[nn:Simple Mail Transfer Protocol]]
+[[no:Simple Mail Transfer Protocol]]
+[[pl:SMTP]]
+[[pt:Simple Mail Transfer Protocol]]
+[[ro:Simple Mail Transfer Protocol]]
+[[ru:SMTP]]
+[[sl:SMTP]]
+[[sv:SMTP]]
+[[th:Simple Mail Transfer Protocol]]
+[[tr:SMTP]]
+[[uk:SMTP]]
+[[zh:简单邮件传输协议]]</text>
+    </revision>
+  </page>
+
+  <page>
+    <title>SMTP</title>
+    <id>18212</id>
+    <revision>
+      <id>6761479</id>
+      <timestamp>2003-01-23T17:24:27Z</timestamp>
+      <contributor>
+        <username>OderWat</username>
+        <id>556</id>
+      </contributor>
+      <comment>verschoben nach &quot;Simple_Mail_Transfer_Protocol&quot;</comment>
+      <text xml:space="preserve">#REDIRECT [[Simple_Mail_Transfer_Protocol]]
+</text>
+    </revision>
+  </page>
+
+
+</mediawiki>

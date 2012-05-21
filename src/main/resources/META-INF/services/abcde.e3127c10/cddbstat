@@ -1,0 +1,29 @@
+210 OK, status information follows (until terminating `.')
+Server status:
+    current proto: 6
+    max proto: 6
+    interface: http
+    gets: no
+    puts: no
+    updates: no
+    posting: no
+    validation: accepted
+    quotes: yes
+    strip ext: no
+    secure: no
+    current users: 52
+    max users: 100
+Database entries: 3183923
+Database entries by category:
+    data: 78463
+    folk: 259711
+    jazz: 190268
+    misc: 993984
+    rock: 816415
+    country: 91354
+    blues: 165004
+    newage: 125007
+    reggae: 43777
+    classical: 289704
+    soundtrack: 130236
+.

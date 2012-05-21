@@ -1,0 +1,5 @@
+# Here the URLStreamproviders can be specified - Leech will find them, specify your own ones inside you own jar manifest entries.
+
+de.dfki.km.leech.io.FileURLStreamProvider
+de.dfki.km.leech.io.HttpURLStreamProvider
+de.dfki.km.leech.io.ImapURLStreamProvider

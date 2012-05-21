@@ -1,0 +1,275 @@
+package de.dfki.km.leech.util;
+
+
+
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.util.regex.MatchResult;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+
+
+public class StringUtils
+{
+
+
+
+    /**
+     * Escapes all occurences of the given chars by adding a preceding '\'
+     * 
+     * @param strOriginString the String you want to escape
+     * @param chars2escape the characters you want to escape
+     * 
+     * @return the escaped String
+     */
+    static public String escapeChars(String strOriginString, char... chars2escape)
+    {
+        String strEscapedString = strOriginString;
+        for (char char2escape : chars2escape)
+            strEscapedString = strEscapedString.replace(String.valueOf(char2escape).toString(), "\\" + char2escape);
+
+        return strEscapedString;
+    }
+
+
+
+    /**
+     * Finds the occurences of a regular expression in a given String
+     * 
+     * @param strRegEx the regular expression to search
+     * @param strInput the input String
+     * 
+     * @return the Matcher Object, the results can be 'iterated' with 'Matcher.find()' and 'Matcher.toMatchResult();'
+     */
+    public static Matcher find(String strRegEx, String strInput)
+    {
+        return Pattern.compile(strRegEx).matcher(strInput);
+    }
+
+
+
+    /**
+     * Gets the first occurence of a regular expression in a given String
+     * 
+     * @param strRegEx the regular expression to search
+     * @param strInput the input String
+     * 
+     * @return the first occurence, of null in the case there was no match at all
+     */
+    public static MatchResult findFirst(String strRegEx, String strInput)
+    {
+        Matcher matcher = Pattern.compile(strRegEx).matcher(strInput);
+
+        if(matcher.find())
+            return matcher.toMatchResult();
+        else
+            return null;
+    }
+
+
+
+    /**
+     * Gets the last occurence of a regular expression in a given String
+     * 
+     * @param strRegEx the regular expression to search
+     * @param strInput the input String
+     * 
+     * @return the last occurence, of null in the case there was no match at all
+     */
+    public static MatchResult findLast(String strRegEx, String strInput)
+    {
+        Matcher matcher = Pattern.compile(strRegEx).matcher(strInput);
+
+        MatchResult lastMatch = null;
+
+        while (matcher.find())
+            lastMatch = matcher.toMatchResult();
+
+        return lastMatch;
+    }
+
+
+
+    /**
+     * Checks whether a given String can be parsed as Double
+     * 
+     * @param string2Check the String you want to check
+     * 
+     * @return true in the case the String can be parsed as Double
+     */
+    static public boolean isDouble(String string2Check)
+    {
+        try
+        {
+            Double.valueOf(string2Check);
+
+            return true;
+        }
+        catch (NumberFormatException e)
+        {
+            return false;
+        }
+    }
+
+
+
+    /**
+     * Checks whether a given String can be parsed as Float
+     * 
+     * @param string2Check the String you want to check
+     * 
+     * @return true in the case the String can be parsed as Float
+     */
+    static public boolean isFloat(String string2Check)
+    {
+        try
+        {
+            Float.valueOf(string2Check);
+
+            return true;
+        }
+        catch (NumberFormatException e)
+        {
+            return false;
+        }
+    }
+
+
+
+    /**
+     * Checks whether a given String can be parsed as Integer
+     * 
+     * @param string2Check the String you want to check
+     * 
+     * @return true in the case the String can be parsed as Integer
+     */
+    static public boolean isInteger(String string2Check)
+    {
+        try
+        {
+            Integer.valueOf(string2Check);
+
+            return true;
+        }
+        catch (NumberFormatException e)
+        {
+            return false;
+        }
+    }
+
+
+
+    /**
+     * Checks whether a given String can be parsed as Long
+     * 
+     * @param string2Check the String you want to check
+     * 
+     * @return true in the case the String can be parsed as Long
+     */
+    static public boolean isLong(String string2Check)
+    {
+        try
+        {
+            Long.valueOf(string2Check);
+
+            return true;
+        }
+        catch (NumberFormatException e)
+        {
+            return false;
+        }
+    }
+
+
+
+    /**
+     * Checks whether a String is not null and - in the case it isn't - has more content than whitespace. This is usefull in the case you wnt to
+     * ensure there is at least some (non-whitespace) content inside a String.
+     * 
+     * @param string2check the String you wants to check
+     * 
+     * @return true in the case there is some none-whitespace content, false otherwise
+     */
+    static public boolean nullOrWhitespace(String string2check)
+    {
+        return !(string2check != null && string2check.trim().length() > 0);
+    }
+
+
+
+    /**
+     * Computes the SHA1 hash for the given byte array.
+     * 
+     * @param bytes the byte array
+     * 
+     * @return SHA1 hash for the given byte array
+     */
+    public static String sha1Hash(byte[] bytes)
+    {
+        try
+        {
+            MessageDigest md = MessageDigest.getInstance("SHA-1");
+            md.update(bytes);
+
+            byte[] digest = md.digest();
+
+            BigInteger integer = new BigInteger(1, digest);
+
+            return integer.toString(16);
+
+
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
+    }
+
+
+
+    /**
+     * Computes the SHA1 hash for the given string.
+     * 
+     * @param string The string for which we'd like to get the SHA1 hash.
+     * 
+     * @return The generated SHA1 hash
+     */
+    public static String sha1Hash(String string)
+    {
+        try
+        {
+            return sha1Hash(string.getBytes());
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
+    }
+
+
+
+    /**
+     * Unescapes all occurences of the given chars by deleting a preceding '\'
+     * 
+     * @param strEscapedString the String you want to unescape
+     * @param chars2unescape the characters you want to unescape
+     * 
+     * @return the unescaped String
+     */
+    static public String unescapeChars(String strEscapedString, char... chars2unescape)
+    {
+        String strUnescapedString = strEscapedString;
+        for (char char2unescape : chars2unescape)
+            strUnescapedString = strUnescapedString.replace("\\" + char2unescape, String.valueOf(char2unescape));
+
+        return strUnescapedString;
+    }
+
+
+
+
+
+
+
+}

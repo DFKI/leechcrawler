@@ -1,0 +1,552 @@
+<HTML>
+<HEAD>
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.02 [en] (X11; U; SunOS 5.6 sun4u) [Netscape]">
+   <TITLE>The Extension Mechanism</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+&nbsp;
+<TABLE summary="layout" BORDER=0 WIDTH="100%" >
+<TR>
+<TD WIDTH="60"><IMG SRC="../../images/javalogo52x88.gif" ALT="Java" BORDER=0 HEIGHT=88 WIDTH=52>&nbsp;</TD>
+
+<TD>
+<CENTER>
+<H1>
+Extension Mechanism Architecture</H1></CENTER>
+</TD>
+
+<TD></TD>
+</TR>
+</TABLE>
+
+<H2>
+Contents</H2>
+
+<UL>
+<LI>
+<A HREF="#intro">Introduction</A></LI>
+
+<LI>
+<A HREF="#mechanism">The Extension Mechanism</A></LI>
+
+<UL>
+<LI>
+<A HREF="#architecture">Architecture</A></LI>
+
+<LI>
+<A HREF="#deployment">Optional Package Deployment</A></LI>
+
+<LI>
+<A HREF="#bundled">Bundled Optional Packages</A></LI>
+
+<LI>
+<A HREF="#installed">Installed Optional Packages</A></LI>
+</UL>
+
+<LI>
+<A HREF="#sealing">Optional Package Sealing</A></LI>
+
+<LI>
+<A HREF="#security">Optional Package Security</A></LI>
+
+<LI>
+<A HREF="#apidetails">API Details</A></LI>
+</UL>
+<A NAME="intro"></A>
+<H2>
+Introduction</H2>
+
+<BLOCKQUOTE>
+<i>Note:</i> Optional packages are the new name for what used to be known as 
+<i>standard extensions</i>. The "extension mechanism" 
+is that functionality of the Java 2 SDK and Java 2 Runtime Environment 
+that supports the use of optional packages.  
+<p>
+
+This document describes the Java platform's mechanism for handling
+<I>optional packages</I>. An optional package is a group of packages housed in one or
+more <A HREF="../jar/jarGuide.html">JAR</A> files that implement an API
+that extends the Java platform. Optional package classes extend the platform in
+the sense that the virtual machine can find and load them without their
+being on the class path, much as if they were classes in the platform's
+core API.
+
+<P>An implementation of an optional package may consist of code written in the
+Java programming language and, less commonly, platform-specific native
+code. In addition, it may include properties, localization catalogs, images,
+serialized data, and other resources specific to the optional package.
+
+<P>Support for optional packages in browsers such as Internet Explorer and Netscape
+Navigator is available through the Java Plug-in.
+
+<P>A optional package is an implementation of an open, standard
+API (examples of optional packages from Sun are <A HREF="http://java.sun.com/products/servlet">JavaServlet</A>,
+<A HREF="http://java.sun.com/products/java-media/3D">Java3D</A>, <A HREF="http://java.sun.com/products/JavaManagement/">JavaManagement</A>).
+Most optional packages are rooted in the <TT>javax.*</TT> namespace,
+although there may be exceptions.</BLOCKQUOTE>
+<A NAME="mechanism"></A>
+<H2>
+The Extension Mechanism</H2>
+
+<BLOCKQUOTE><A NAME="architecture"></A>
+<H3>
+Architecture</H3>
+The extension mechanism is designed to contain the following elements:
+<UL>
+<LI>
+an optional package or application packaged as a JAR file can declare dependencies
+on other JAR files, thus allowing an application to consist of multiple
+modules, and,</LI>
+
+<LI>
+the class loading mechanism is augmented to search installed optional packages
+(and other libraries) for classes, and, if that fails, to search along
+an application-specified path for classes.</LI>
+</UL>
+Applications must therefore, in general, be prepared to specify <I>and</I>
+supply the optional packages (and, more generally, libraries) that it needs. The
+system will prefer installed copies of optional packages (and libraries) if they
+exist; otherwise, it will delegate to the class loader of the application
+to find and load the referenced optional package (and library) classes.
+
+<P>This architecture, since it allows applications, applets and servlets
+to extend their own class path, also permits packaging and deploying these
+as multiple JAR files.
+
+<P>Each optional package or application consists of at least one JAR file containing
+an optional manifest, code and assorted resources. As described below,
+this primary JAR file can also include additional information in its manifest
+to describe dependencies on other JAR files. The <B><TT>jar</TT></B> command
+line tool included with the Java 2 SDK provides a convenient means of
+packaging optional packages, although any ZIP-compatible archiving tool should
+work as well. (See the reference pages for the <B><TT>jar</TT></B> tool:
+[<A HREF="../../tooldocs/windows/jar.html">Windows</A>][<A HREF="../../tooldocs/solaris/jar.html">Solaris</A>])
+
+<P>An optional package or application may refer to additional JAR files which
+will be referenced from the primary JAR, and these can optionally contain
+their own dependency information as well.
+
+<P>Packages comprising optional packages should be named per the standard package
+naming conventions when implementing optional packages. These conventions are
+outlined in <I>The Java Language Specification</I>, but the requirement
+that the domain prefix be specified in all upper case letters has been
+removed. For example, the package name <TT>com.sun.server</TT> is an accepted
+alternative to <TT>COM.sun.server</TT>. Unique package naming is recommended
+in order to avoid conflicts, because applications and optional packages may share
+the same class loader.&nbsp;<A NAME="deployment"></A>
+<H3>
+Optional Package Deployment</H3>
+An optional package may either be bundled with an application or installed in
+the JRE for use by all applications. Bundled optional packages are provided at
+the same code base as the application and will automatically be downloaded
+in the case of network applications (applets). For this reason, bundled
+optional packages are often called <I>download</I> optional packages. Installed optional packages
+are loaded when first used and will be shared by all applications running
+on the same runtime environment.
+
+<P>When packaging optional packages, the JAR file manifest can be used to identify
+vendor and version information (see <I><A HREF="../versioning/index.html">The
+Java Versioning Specification</A></I>).
+
+<P>Classes for installed optional packages are <I>shared</I> by all code in the
+same virtual machine. Thus, installed optional packages are similar to the platform's
+core classes (in <TT>rt.jar</TT>), but with an associated class loader
+and a pre-configured security policy as described below.
+
+<P>Classes for bundled optional packages are <I>private</I> to the class loader
+of the application, applet or servlet. In the case of network applications
+such as applets, these optional packages will be automatically downloaded as needed.
+Since class loaders are currently associated with a codebase, this permits
+multiple applets originating from the same codebase to share implementations
+(JARs).&nbsp;<A NAME="bundled"></A>
+<H3>
+Bundled Optional Packages</H3>
+The manifest for an application or optional package can specify one or more relative
+URLs referring to the JAR files and directories for the optional packages (and
+other libraries) that it needs. These relative URLs will be treated relative
+to the code base that the containing application or optional package JAR file
+was loaded from.
+
+<P>An application (or, more generally, JAR file) specifies the relative
+URLs of the optional packages (and libraries) that it needs via the manifest attribute
+<TT>Class-Path</TT>. This attribute lists the URLs to search for implementations
+of optional packages (or other libraries) if they cannot be found as optional packages
+installed on the host Java virtual machine<B>*</B>. These relative URLs may include
+JAR files and directories for any libraries or resources needed by the
+application or optional package. Relative URLs not ending with '/' are assumed
+to refer to JAR files. For example,
+<BLOCKQUOTE>
+<PRE>Class-Path: servlet.jar infobus.jar acme/beans.jar images/</PRE>
+</BLOCKQUOTE>
+Multiple <TT>Class-Path</TT> headers may be specified, and are combined
+sequentially.
+
+<P>Currently, the URLs must be <I>relative</I> to the code base of the
+JAR file for security reasons. Thus, remote optional packages will originate from
+the same code base as the application. A future enhancement will leverage
+the facilities of the Java 2 Platform's Security APIs to allow references to JAR
+files at other URLs.
+
+<P>Each relative URL is resolved against the code base that the containing
+application or optional package was loaded from. If the resulting URL is invalid
+or refers to a resource that cannot be found then it is ignored.
+
+<P>The resulting URLs are used to extend the class path for the application,
+applet, or servlet by inserting the URLs in the class path immediately
+following the URL of the containing JAR file. Any duplicate URLs are omitted.
+For example, given the following class path:
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; a.jar b.jar</PRE>
+If optional package <TT>b.jar</TT> contained the following <TT>Class-Path</TT>
+manifest attribute:
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Class-Path: x.jar a.jar</PRE>
+Then the resulting application class path would be the following:
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; a.jar b.jar x.jar</PRE>
+Of course, if <TT>x.jar</TT> had dependencies of its own then these would
+be added according to the same rules and so on for each subsequent URL.
+In the actual implementation, JAR file dependencies are processed lazily
+so that the JAR files are not actually opened until needed.&nbsp;<A NAME="installed"></A>
+<H3>
+Installed Optional Packages</H3>
+In Sun's implementation of the Java 2 Platform, the JAR files
+of a installed optional package are placed in a standard local code source
+<BLOCKQUOTE>
+<PRE>&lt;java-home>\lib\ext&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Windows]
+&lt;java-home>/lib/ext&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Solaris]</PRE>
+</BLOCKQUOTE>
+Its native code libraries, if any, are placed in
+<BLOCKQUOTE>
+<PRE>&lt;java-home>\bin&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Windows]
+&lt;java-home>/lib/&lt;arch>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Solaris]</PRE>
+</BLOCKQUOTE>
+Here <TT>&lt;java-home></TT> refers to the directory where the runtime
+software is installed (which is the top-level directory of the JRE or the
+<TT>jre</TT> directory in the Java 2 SDK), and <TT>&lt;arch></TT> refers
+to the Solaris processor architecture (<TT>sparc</TT> or <TT>x86</TT>).
+
+<P>A installed optional package may additionally contain one or more shared libraries
+(such as .dll files) and executables. Native libraries may also be placed
+in <TT>jre/lib/ext/&lt;arch></TT> for both Windows and Solaris, where <TT>&lt;arch></TT>
+will be <TT>x86</TT> on Windows systems. The <TT>jre/lib/ext/&lt;arch></TT>
+directory is searched <I>after</I> <TT>jre\bin</TT> (Windows) or <TT>jre/lib/&lt;arch></TT>
+(Solaris).
+
+<P>Currently, an optional package that contains native code cannot be downloaded
+by network code, whether such code is trusted or not, into the virtual
+machine at execution time. An optional package that contains native code and is
+bundled with a network application must be installed in the Java 2 SDK 
+or Java 2 Runtime Environment.
+
+<P>By default, installed optional packages in this standard directory are trusted.
+That is, they are granted the same privileges as if they were core platform
+classes (those in <TT>rt.jar</TT>). This default privilege is specified
+in the system policy file, but can be overridden for a particular optional package
+by adding the appropriate policy file entry.
+
+<P>Note also that if a installed optional package JAR is signed by a trusted entity,
+then it will be granted the privileges associated with the trusted signer.
+
+<P>Other locations for installed optional packages can be specified through the
+system property <TT>java.ext.dirs</TT>. This property specifies one or
+more directories to search for installed optional packages, each separated by
+<TT>File.pathSeparatorChar</TT>. The default setting for this property
+is the standard directory for installed optional packages indicated above.</BLOCKQUOTE>
+<A NAME="sealing"></A>
+<H2>
+Optional Package Sealing</H2>
+
+<BLOCKQUOTE>JAR files and packages can be optionally <I>sealed</I>, so
+that an optional package or package can enforce consistency within a version.
+
+<P>A package sealed within a JAR specifies that all classes defined in
+that package must originate from the same JAR. Otherwise, a <TT>SecurityException</TT>
+is thrown.
+
+<P>A sealed JAR specifies that all packages defined by that JAR are sealed
+unless overridden specifically for a package.
+
+<P>A sealed package is specified via the manifest attribute, <TT>Sealed</TT>,
+whose value is <TT>true</TT> or <TT>false</TT> (case irrelevant). For example,
+<BLOCKQUOTE>
+<PRE>Name: javax/servlet/internal/
+Sealed: true</PRE>
+</BLOCKQUOTE>
+specifies that the <TT>javax.servlet.internal</TT> package is sealed, and
+that all classes in that package must be loaded from the same JAR file.
+
+<P>If this attribute is missing, the package sealing attribute is that
+of the containing JAR file.
+
+<P>A sealed JAR is specified via the same manifest header, <TT>Sealed</TT>,
+with the value again of either <TT>true</TT> or <TT>false</TT>. For example,
+<BLOCKQUOTE>
+<PRE>Sealed: true</PRE>
+</BLOCKQUOTE>
+specifies that all packages in this archive are sealed unless explicitly
+overridden for a particular package with the <TT>Sealed</TT> attribute
+in a manifest entry.
+
+<P>If this attribute is missing, the module is assumed to <I>not</I> be
+sealed, for backwards compatibility. The system then defaults to examining
+package headers for sealing information.
+
+<P>Package sealing is also important for security, because it restricts
+access to package-protected members to only those classes defined in the
+package that originated from the same JAR file.
+
+<P>Package sealing is checked for installed as well as downloaded optional packages,
+and will result in a <TT>SecurityException</TT> if violated. Also, the
+null package is not sealable, so classes that are to be sealed must be
+placed in their own packages.&nbsp;<!--
+<a name="exported"></a>
+<h3>Exported Packages: How does an optional package hide implementation?</h3>
+An optional package JAR file can optionally limit the packages that are visible
+to other applications and optional packages that use it. This feature can be used
+to hide packages that are part of an optional package's implementation but not
+part of its specification. By default, all packages in an optional packages
+are exported. The special "null" package is always exported and can
+never be hidden.
+
+<p>
+The exported packages for a JAR file can be specified using the 
+main manifest attribute <tt>Exported-Packages</tt> whose value is
+a list of one or more space-delimited package names. Any name ending
+with '*' will match any packages matching the specified prefix. For
+example:
+<pre>
+	Exported-Packages: com.sun.3d javax.3d.*
+</pre>
+specifies that package <tt>com.sun.3d</tt> should be exported, as
+well as any packages beginning with the prefix <tt>javax.3d</tt>.
+This feature can be used to export a package and all of its subpackages.
+
+<p>
+The per-entry manifest attribute <tt>Exported-Package</tt>, whose value is
+<tt>true</tt> or <tt>false</tt>, can also be used to specify whether
+or not a package is exported. It will override any packages specified
+through the <tt>Exported-Packages</tt> main attribute. For example,
+<pre>
+	Name: javax/3d/impl/
+	Exported-Package: false
+</pre>
+specifies that package <tt>java.3d.impl</tt> should <i>not</i> be exported.
+--></BLOCKQUOTE>
+<A NAME="security"></A>
+<H2>
+Optional Package Security</H2>
+
+<BLOCKQUOTE>The code source for a installed optional package (namely <TT>&lt;java-home>/lib/ext</TT>)
+has a pre-configured security policy associated with it. In Sun's implementation,
+the exact level of trust granted to JARs in this directory is specified
+by the standard security policy configuration file
+<BLOCKQUOTE>
+<PRE>&lt;java-home>/lib/security/java.policy</PRE>
+</BLOCKQUOTE>
+The default policy is for a installed optional package to behave the same way
+it would if were part of the core platform. This follows from the common
+need for a installed optional package to load native code.
+
+<P>The Java Security Model provides some safety when installed optional package
+code is called from untrusted code. However optional package code must be carefully
+reviewed for potential security breaches wherever it uses privileged blocks.
+
+<P>A remotely loaded optional package that needs to use access-checked system
+services (such as file I/O) to function correctly must either be signed
+by a trusted entity or loaded from a trusted source.
+
+<P>Consult the Java <A HREF="../security/index.html">security documentation</A>
+for further details regarding how to write optional package and application code
+to use the Java 2 Platform's security features.</BLOCKQUOTE>
+<A NAME="apidetails"></A>
+<H2>
+API Details</H2>
+
+<BLOCKQUOTE>The following classes in the Java 2 platform support the extension
+mechanism:
+<UL>
+<LI>
+<B><TT><A HREF="../../api/java/lang/ClassLoader.html">public class java.lang.ClassLoader</A></TT></B>
+(<I>changed</I>)</LI>
+
+
+<P>The class loader delegation model allows a "parent" class loader to
+be specified which will always be searched first when loading a class or
+resource before attempting to load it locally. New class loader implementations
+override the methods <TT>findClass</TT> and <TT>findResource</TT> in order
+to specify how classes and resources are loaded locally.
+<UL>
+<LI>
+<TT>getSystemClassLoader</TT></LI>
+
+<BR>Returns the system class loader for delegation. This is the default
+delegation parent for new ClassLoader instances, and is typically the class
+loader used to start the application.
+<LI>
+<TT>loadClass</TT></LI>
+
+<BR>If the class has already been loaded then just return it. Otherwise,
+try loading the class from the parent class loader (or virtual machine's
+built-in class loader, called the bootstrap class loader, if no parent
+was specified). If still not found, then call the method <TT>findClass</TT>
+to load the class locally.
+
+<P>&nbsp;
+<LI>
+<TT>findClass</TT></LI>
+
+<BR>Looks in this class loader for the specified class. This method should
+be overridden in new class loader implementations. Its default implementation
+throws <TT>ClassNotFoundException</TT>.
+
+<P>&nbsp;
+<LI>
+<TT>getResource</TT></LI>
+
+<BR>Try fetching the resource from the parent class loader (or bootstrap
+class loader if no parent was specified). If still not found, then call
+the method <TT>getLocalResource</TT> to load the resource locally.
+
+<P>&nbsp;
+<LI>
+<TT>findResource</TT></LI>
+
+<BR>Looks in this class loader for the specified resource. This method
+should be overridden by new class loader implementations. Its default implementation
+returns <TT>null</TT>.
+
+<P>&nbsp;
+<LI>
+<TT>getResources</TT></LI>
+
+<BR>Returns an enumeration of all the resource URLs matching the specified
+resource name. This enumeration includes all of the matched resources of
+the parent class loader followed by the enumeration returned by <TT>findResources</TT>.
+
+<P>&nbsp;
+<LI>
+<TT>findResources</TT></LI>
+
+<BR>Returns an enumeration of all the local resource URLs matching the
+given name. This method should be overridden by new class loader implementations.
+Its default implementation returns <TT>null</TT>.
+
+<P>&nbsp;</UL>
+The delegation model provides a consistent and well defined search policy
+for loading classes and resources that simplifies class loader implementation.
+These changes are backward compatible and will not affect existing class
+loader implementations. However, applications that wish to create their
+own class loaders and use optional packages must use the delegation model.
+
+<P>The following example demonstrates a simple network class loader:
+<PRE>&nbsp;&nbsp;&nbsp; public class NetClassLoader extends ClassLoader {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; URL url;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public NetClassLoader(URL url, ClassLoader parent) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; super(parent);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; this.url = url;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; protected Class findClass(String name)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; throws ClassNotFoundException
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .. load class from URL ...
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; protected URL findResource(String name) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; try {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; URL u = new URL(url, name);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (u.openConnection() != null) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return u;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } else {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return null;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } catch (java.net.MalformedURLException mue) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // handle exception
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } catch (java.io.IOException ioe) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // handle exception
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }
+&nbsp;&nbsp;&nbsp; }</PRE>
+This example will search the parent class loader (or bootstrap class loader,
+if no parent was specified) for classes and resources before checking the
+given URL. Classes and resources will be loaded according to the delegation
+model as described above.
+<LI>
+<B><TT><A HREF="../../api/java/lang/Package.html">public class java.lang.Package</A></TT></B></LI>
+
+
+<P>The method <TT>isSealed</TT> can be used to check if a package has been
+sealed, in which case it will return <TT>true</TT>. A second form of this
+method takes a URL and will return <TT>true</TT> if the package is sealed
+with respect to the specified URL. This can be used to in class loader
+implementations to keep track of currently sealed packages when loading
+new classes.
+<LI>
+<B><TT><A HREF="../../api/java/net/URLClassLoader.html">public class java.net.URLClassLoader</A></TT></B></LI>
+
+
+<P>This class provides the basic class loader support for optional packages and
+applications. It overrides both the <TT>findClass</TT> and <TT>findResource</TT>
+methods to search one or more base URLs for classes and resources. The
+search is lazy, such that a URL is not opened until needed.
+
+<P><TT>URLClassLoader</TT> manages a search path of URLs that is used to
+load classes and resources. Initially, this is set to the URLs specified
+when the class loader was created, but can be extended by <TT>Class-Path</TT>
+manifest attribute as described above.
+
+<P><TT>URLClassLoader</TT> supports all of the manifest attributes for
+versioning specified in <I>The Java Versioning Specification</I>.
+
+<P>In addition, the following main manifest attributes are supported:
+
+<P>&nbsp;
+<UL>
+<LI>
+<TT>Main-Class:</TT> &lt;classname> <I>(no default)</I></LI>
+
+<BR>Specifies the main class of an application. This is used for invoking
+an application JAR file.
+
+<P>&nbsp;
+<LI>
+<TT>Class-Path:</TT> &lt;urls..> <I>(no default)</I></LI>
+
+<BR>Local search path of relative JAR and directory URLs for loading classes
+and resources. URLs not ending in '/' are assumed to refer to JAR files.
+
+<P>&nbsp;
+<LI>
+<TT>Sealed:</TT> &lt;<TT>true</TT>|<TT>false</TT>> <I>(default </I><TT>false</TT><I>)</I></LI>
+
+<BR>All of the packages defined in this JAR file, with the exception of
+the "null" package, are sealed. The "null" package can never be sealed.
+This header can also be used to seal individual packages.
+
+<P>&nbsp;</UL>
+</UL>
+</BLOCKQUOTE>
+
+<P>
+<FONT SIZE="-1"><B>*As used on this web site, the terms "Java Virtual Machine" 
+or "JVM" mean a virtual machine for the Java platform.</B></FONT>
+<P>
+
+<HR SIZE=3 NOSHADE>
+<TABLE summary="layout" BORDER=0 WIDTH="100%" >
+<TR VALIGN=TOP>
+<TD><FONT SIZE=-2>Copyright &copy; 1997-1999 <A HREF="http://www.sun.com/">Sun
+Microsystems, Inc.</A> All Rights Reserved.</FONT>&nbsp;
+
+<P><FONT SIZE=-1>Please send comments to: <A HREF="mailto:david.connelly@Eng.Sun.COM">Java
+Software</A>&nbsp;</FONT></TD>
+
+<TD ALIGN=RIGHT><IMG SRC="../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 HEIGHT=30 WIDTH=64>&nbsp;
+
+<P><!--
+   <i>JavaSoft</i>
+--></TD>
+</TR>
+</TABLE>
+<!-- Created: Wed Oct  8 18:25:04 PDT 1997 -->
+</BODY>
+</HTML>

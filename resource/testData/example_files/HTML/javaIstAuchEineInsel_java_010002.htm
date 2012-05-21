@@ -1,0 +1,557 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Java ist auch eine Insel (2. Aufl.) – 1.3 Eigenschaften von Java</title>
+<meta name="title" content="Java ist auch eine Insel (2. Auflage)">
+<meta name="author" content="Christian Ullenboom">
+<meta name="publisher" content="Galileo Press GmbH 2003">
+<meta name="copyright" content="Galileo Press GmbH 2003">
+<meta name="description" content="Java ist auch eine Insel - Programmieren für die Java 2-Plattform in der Version 1.4">
+<meta name="audience" content=" Alle ">
+<meta name="robots" content="INDEX,FOLLOW">
+<meta http-equiv="content-language" content="de">
+<link rel="stylesheet" type="text/css" href="common/galileo_open.css"><script type="text/javascript" language="JavaScript"><!--
+function OpenWin(url,name,height,width)
+{
+	var InfoWin = window.open(url,name,"directories=0,height="+height+",width=" + width + ",hotkeys=0,location=0,menubar=0,resizable=1,screenX=150,screenY=10,left=150,top=10,scrollbars=1,status=1,titlebar=0,toolbar=0");
+	InfoWin.focus();
+}
+//--></script></head>
+<body vlink="#000099" link="#000099" alink="#000099">
+<table width="100%" height="74" border="0" cellpadding="0" cellspacing="0" bgcolor="#000066">
+<tr>
+<td height="74" valign="bottom" colspan="2"><a href="http://www.galileocomputing.de/"><img src="common/openbook.gif" width="200" height="70" border="0" alt="Galileo Computing < openbook >"></a></td>
+<td width="80" height="74">
+<table height="75" border="0" cellpadding="0" cellspacing="0" bgcolor="#000066">
+<tr height="45">
+<td>
+</td>
+<td align="right" valign="bottom" height="45"><img height="1" width="120" src="common/leer.gif"><a href="http://www.galileocomputing.de/"><img height="40" width="89" src="common/jupiter2.gif" border="0" alt="Galileo Computing - Programming the Net" align="middle"></a></td>
+</tr>
+<tr height="25">
+<td width="510" height="25">
+</td>
+<td align="left" valign="top" height="25"><a href="http://www.galileocomputing.de/"><img height="25" width="167" src="common/gc.gif" border="0" alt="Galileo Computing - Programming the Net"></a></td>
+</tr>
+</table>
+</td>
+</tr>
+</table><br><br><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td width="10"><img src="common/spacer10.gif" width="10" height="10"></td>
+<td width="156" valign="top">
+<table border="0" cellpadding="0" cellspacing="0" width="100%" align="left">
+<tr>
+<td colspan="2" class="nav1" align="left" valign="top" height="350">
+
+<table>
+<tr>
+<td><A class="navs" id="XPGxx1"></A><A class="navs" id="Xxx30209"></A><A class="navs" href="./index.htm#Xxx998439">Inhalt</A></td>
+</tr>
+<tr>
+<td><a class="navs" href="./java_000000.htm">Vorwort</a></td>
+</tr>
+<tr>
+<td><A class="navs" id="Xxx30208"></A><A class="navs" id="Xxx130361"></A><A class="navs" id="Xxx130360"></A><A class="navh" href="./java_010000.htm">1    Schon wieder eine neue Sprache?</A></td>
+</tr>
+<tr>
+<td><A class="navs" id="Xxx130427"></A><A class="navs" id="Xxx130426"></A><A class="navs" href="./java_020000.htm">2    Sprachbeschreibung</A></td>
+</tr>
+<tr>
+<td><A class="navs" id="Xxx130565"></A><A class="navs" id="Xxx130564"></A><A class="navs" href="./java_030000.htm">3    Klassen und Objekte</A></td>
+</tr>
+<tr>
+<td><A class="navs" id="Xxx130631"></A><A class="navs" id="Xxx130630"></A><A class="navs" href="./java_040000.htm">4    Der Umgang mit Zeichenketten</A></td>
+</tr>
+<tr>
+<td><A class="navs" id="XPGxx5"></A><A class="navs" id="Xxx130699"></A><A class="navs" id="Xxx130698"></A><A class="navs" href="./java_050000.htm">5    Mathematisches</A></td>
+</tr>
+<tr>
+<td><A class="navs" id="Xxx130739"></A><A class="navs" id="Xxx130738"></A><A class="navs" href="./java_060000.htm">6    Eigene Klassen schreiben</A></td>
+</tr>
+<tr>
+<td><A class="navs" id="Xxx130895"></A><A class="navs" id="Xxx130894"></A><A class="navs" href="./java_070000.htm">7    Exceptions</A></td>
+</tr>
+<tr>
+<td><A class="navs" id="Xxx130939"></A><A class="navs" id="Xxx130938"></A><A class="navs" href="./java_080000.htm">8    Die Funktionsbibliothek</A></td>
+</tr>
+<tr>
+<td><A class="navs" id="Xxx130971"></A><A class="navs" id="Xxx130970"></A><A class="navs" href="./java_090000.htm">9    Threads und nebenläufige Programmierung</A></td>
+</tr>
+<tr>
+<td><A class="navs" id="Xxx131071"></A><A class="navs" id="Xxx131070"></A><A class="navs" href="./java_100000.htm">10    Raum und Zeit</A></td>
+</tr>
+<tr>
+<td><A class="navs" id="Xxx131107"></A><A class="navs" id="Xxx131106"></A><A class="navs" href="./java_110000.htm">11    Datenstrukturen und Algorithmen</A></td>
+</tr>
+<tr>
+<td><A class="navs" id="Xxx131231"></A><A class="navs" id="Xxx131230"></A><A class="navs" href="./java_120000.htm">12    Datenströme und Dateien</A></td>
+</tr>
+<tr>
+<td><A class="navs" id="XPGxx13"></A><A class="navs" id="Xxx131371"></A><A class="navs" id="Xxx131370"></A><A class="navs" href="./java_130000.htm">13    Die eXtensible Markup Language (XML)</A></td>
+</tr>
+<tr>
+<td><A class="navs" id="Xxx131433"></A><A class="navs" id="Xxx131432"></A><A class="navs" href="./java_140000.htm">14    Grafikprogrammierung mit dem AWT</A></td>
+</tr>
+<tr>
+<td><A class="navs" id="Xxx131585"></A><A class="navs" id="Xxx131584"></A><A class="navs" href="./java_150000.htm">15    Komponenten, Container und Ereignisse</A></td>
+</tr>
+<tr>
+<td><A class="navs" id="Xxx131765"></A><A class="navs" id="Xxx131764"></A><A class="navs" href="./java_160000.htm">16    Netzwerkprogrammierung</A></td>
+</tr>
+<tr>
+<td><A class="navs" id="XPGxx19"></A><A class="navs" id="Xxx131875"></A><A class="navs" id="Xxx131874"></A><A class="navs" href="./java_170000.htm">17    Servlets und Java Server Pages</A></td>
+</tr>
+<tr>
+<td><A class="navs" id="Xxx132055"></A><A class="navs" id="Xxx132054"></A><A class="navs" href="./java_180000.htm">18    Verteilte Programmierung mit RMI und SOAP</A></td>
+</tr>
+<tr>
+<td><A class="navs" id="Xxx132135"></A><A class="navs" id="Xxx132134"></A><A class="navs" href="./java_190000.htm">19    Applets, Midlets und Sound</A></td>
+</tr>
+<tr>
+<td><A class="navs" id="Xxx132179"></A><A class="navs" id="Xxx132178"></A><A class="navs" href="./java_200000.htm">20    Datenbankmanagement mit JDBC</A></td>
+</tr>
+<tr>
+<td><A class="navs" id="Xxx132265"></A><A class="navs" id="Xxx132264"></A><A class="navs" href="./java_210000.htm">21    Reflection</A></td>
+</tr>
+<tr>
+<td><A class="navs" id="Xxx132309"></A><A class="navs" id="Xxx132308"></A><A class="navs" href="./java_220000.htm">22    Komponenten durch Bohnen</A></td>
+</tr>
+<tr>
+<td><A class="navs" id="XPGxx25"></A><A class="navs" id="Xxx132365"></A><A class="navs" id="Xxx132364"></A><A class="navs" href="./java_230000.htm">23    Java Native Interface (JNI)</A></td>
+</tr>
+<tr>
+<td><A class="navs" id="Xxx132391"></A><A class="navs" id="Xxx132390"></A><A class="navs" href="./java_240000.htm">24    Sicherheitskonzepte</A></td>
+</tr>
+<tr>
+<td><A class="navs" id="Xxx132425"></A><A class="navs" id="Xxx132424"></A><A class="navs" href="./java_250000.htm">25    Dienstprogramme für die Java-Umgebung</A></td>
+</tr>
+<tr>
+<td><A class="navs" id="Xxx132483"></A><A class="navs" id="Xxx132482"></A><A class="navs" href="./java_260000.htm">26    Style-Guide</A></td>
+</tr>
+<tr>
+<td><A class="navs" id="Xxx132527"></A><A class="navs" id="Xxx132526"></A><A class="navs" href="./java_270000.htm">A    Literatur</A></td>
+</tr>
+<tr>
+<td><A class="navs" id="Xxx132529"></A><A class="navs" id="Xxx132528"></A><A class="navs" href="./java_280000.htm">B    Spenden</A></td>
+</tr>
+<tr>
+<td><A class="navs" id="Xxx132531"></A><A class="navs" id="Xxx132530"></A><A class="navs" href="./stichwort.htm">    Index</A></td>
+</tr>
+<tr>
+<td><A class="navs" href="http://www.galileopro.de/openbook/javainsel/galileocomputing_javainsel2.zip">    Download (ca. 8,5 MB)</A></td>
+</tr>
+</table><!--Bis hier-->
+</td>
+<td width="1" align="left" valign="bottom" rowspan="2" bgcolor="#aaaaaa"><img src="common/leer.gif" width="2" height="1"></td>
+</tr>
+<tr>
+<td height="1" align="right" valign="top" colspan="2" bgcolor="Gray" width="156"><img src="common/leer.gif" width="154" height="1"></td>
+</tr>
+<tr>
+<td height="1" align="right" valign="top" colspan="2" bgcolor="#aaaaaa" width="156"><img src="common/spacer10.gif" width="10" height="1"></td>
+</tr>
+</table>
+</td>
+<td width="10"><img src="common/spacer10.gif" width="10" height="10"></td>
+<td width="85%" valign="top" align="center">
+<div align="center">
+<table width="98%" border="0" cellspacing="0" cellpadding="0" bgcolor="#FFFFFF">
+<tr>
+<td width="100%" class="nav1" colspan="1" height="22" align="center">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="33%"><a class="navs" href="java_010001.htm">&lt;&lt; zurück</a></td>
+<td width="33%">
+<div align="center"><a href="http://www.galileocomputing.de/" class="navs">Galileo Computing /</a><a class="navs" href="http://www.galileocomputing.de/katalog/openbook/"> &lt;openbook&gt; /</a><a href="index.htm" class="navs"> JavaInsel</a></div>
+</td>
+<td align="right" width="33%">
+<div align="right"><a class="navs" href="java_010003.htm">vor &gt;&gt;</a></div>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td width="100%" valign="top">
+<table width="100%" border="0" cellpadding="10" cellspacing="0" bgcolor="#dddddd">
+<tr>
+<td colspan="2"><a href="http://www.galileocomputing.de/katalog/buecher/titel/gp/GPP-opjiII/titelID-502" class="buchtitel">Java ist auch eine Insel (2. Aufl.)</a><span class="autor"> von Christian Ullenboom</span><br />
+                      <span class="untertitel">Programmieren für die Java 2-Plattform in der Version 1.4</span></td>
+</tr>
+<tr>
+<td bgcolor="#dddddd" valign="top" width="90"><a href="http://www.galileocomputing.de/katalog/buecher/titel/gp/GPP-opjiII/titelID-502" class="buchtitel"><img src="common/304_90px.gif" border="0" alt="Java ist auch eine Insel (2. Auflage)" align="left"></a></td>
+<td bgcolor="#dddddd" width="80%">
+<table border="0">
+<tr>
+<td valign="baseline"><img src="common/pfeil_u.gif" width="10" height="10" border="0" alt="gp"></td>
+<td valign="baseline" colspan="3" class="kap"><b>Kapitel <T1Verweis class="T1Verweis"><a id="Xax998827"></a><a href="./java_010000.htm#Xxx998815">1 Schon wieder eine neue Sprache?</a></T1Verweis></b></td>
+</tr>
+<tr>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"><img src="common/pfeil_rechts5.gif" width="10" height="10" border="0" alt="gp"></td>
+<td valign="baseline" colspan="2"><b><T2Verweis class="T2Verweis"><a id="Xax998828"></a><a href="./java_010000.htm#Xxx998137">1.1 Der erste Kontakt</a></T2Verweis></b></td>
+</tr>
+<tr>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"><img src="common/pfeil_rechts5.gif" width="10" height="10" border="0" alt="gp"></td>
+<td valign="baseline" colspan="2"><b><T2Verweis class="T2Verweis"><a id="Xxx998827"></a><a href="./java_010001.htm#Rxxjava_010001256HistorischerHintergrund">1.2 Historischer Hintergrund</a></T2Verweis></b></td>
+</tr>
+<tr>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"><img src="common/pfeil_rechts5.gif" width="10" height="10" border="0" alt="gp"></td>
+<td valign="baseline" colspan="2"><b><T2Verweis class="T2Verweis"><a id="Xxx998835"></a><a href="./java_010002.htm#Rxxjava_010002256EigenschaftenvonJava" class="navh2">1.3 Eigenschaften von Java</a></T2Verweis></b></td>
+</tr>
+<tr>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"><img src="common/pfeil_rechts5.gif" width="10" height="10" border="0" alt="gp"></td>
+<td valign="baseline"><b><T3Verweis class="T3Verweis"><a id="Xxx998840"></a><a href="./java_010002.htm#Rxxjava_010002258DievirtuelleMaschine">1.3.1 Die virtuelle Maschine</a></T3Verweis></b></td>
+</tr>
+<tr>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"><img src="common/pfeil_rechts5.gif" width="10" height="10" border="0" alt="gp"></td>
+<td valign="baseline"><b><T3Verweis class="T3Verweis"><a id="Xxx998848"></a><a href="./java_010002.htm#Rxxjava_010002272KeinPraprozessor">1.3.2 Kein Präprozessor</a></T3Verweis></b></td>
+</tr>
+<tr>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"><img src="common/pfeil_rechts5.gif" width="10" height="10" border="0" alt="gp"></td>
+<td valign="baseline"><b><T3Verweis class="T3Verweis"><a id="Xxx998853"></a><a href="./java_010002.htm#Rxxjava_010002277UberladeneOperatoren">1.3.3 Überladene Operatoren</a></T3Verweis></b></td>
+</tr>
+<tr>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"><img src="common/pfeil_rechts5.gif" width="10" height="10" border="0" alt="gp"></td>
+<td valign="baseline"><b><T3Verweis class="T3Verweis"><a id="Xxx998858"></a><a href="./java_010002.htm#Rxxjava_010002280ZeigerundReferenzen">1.3.4 Zeiger und Referenzen</a></T3Verweis></b></td>
+</tr>
+<tr>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"><img src="common/pfeil_rechts5.gif" width="10" height="10" border="0" alt="gp"></td>
+<td valign="baseline"><b><T3Verweis class="T3Verweis"><a id="Xxx998863"></a><a href="./java_010002.htm#Rxxjava_010002307GarbageCollector">1.3.5 Garbage-Collector</a></T3Verweis></b></td>
+</tr>
+<tr>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"><img src="common/pfeil_rechts5.gif" width="10" height="10" border="0" alt="gp"></td>
+<td valign="baseline"><b><T3Verweis class="T3Verweis"><a id="Xxx998868"></a><a href="./java_010002.htm#Rxxjava_010002311Ausnahmenbehandlung">1.3.6 Ausnahmenbehandlung</a></T3Verweis></b></td>
+</tr>
+<tr>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"><img src="common/pfeil_rechts5.gif" width="10" height="10" border="0" alt="gp"></td>
+<td valign="baseline"><b><T3Verweis class="T3Verweis"><a id="Xxx998873"></a><a href="./java_010002.htm#Rxxjava_010002315ObjektorientierunginJava">1.3.7 Objektorientierung in Java</a></T3Verweis></b></td>
+</tr>
+<tr>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"><img src="common/pfeil_rechts5.gif" width="10" height="10" border="0" alt="gp"></td>
+<td valign="baseline"><b><T3Verweis class="T3Verweis"><a id="Xxx998878"></a><a href="./java_010002.htm#Rxxjava_010002318JavaSecurityModel">1.3.8 Java-Security-Model</a></T3Verweis></b></td>
+</tr>
+<tr>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"><img src="common/pfeil_rechts5.gif" width="10" height="10" border="0" alt="gp"></td>
+<td valign="baseline" colspan="2"><b><T2Verweis class="T2Verweis"><a id="Xxx998893"></a><a href="./java_010003.htm#Rxxjava_010003284JavaimVergleichzuanderenSprachen">1.4 Java im Vergleich zu anderen Sprachen</a></T2Verweis></b></td>
+</tr>
+<tr>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"><img src="common/pfeil_rechts5.gif" width="10" height="10" border="0" alt="gp"></td>
+<td valign="baseline"><b><T3Verweis class="T3Verweis"><a id="Xxx998883"></a><a href="./java_010003.htm#Rxxjava_010003260JavaundJavaScript">1.4.1 Java und JavaScript</a></T3Verweis></b></td>
+</tr>
+<tr>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"><img src="common/pfeil_rechts5.gif" width="10" height="10" border="0" alt="gp"></td>
+<td valign="baseline"><b><T3Verweis class="T3Verweis"><a id="Xxx998888"></a><a href="./java_010003.htm#Rxxjava_010003262Normierungsversuche">1.4.2 Normierungsversuche</a></T3Verweis></b></td>
+</tr>
+<tr>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"><img src="common/pfeil_rechts5.gif" width="10" height="10" border="0" alt="gp"></td>
+<td valign="baseline" colspan="2"><b><T2Verweis class="T2Verweis"><a id="Xxx998901"></a><a href="./java_010004.htm#Rxxjava_010004256DieRollevonJavaimWeb">1.5 Die Rolle von Java im Web</a></T2Verweis></b></td>
+</tr>
+<tr>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"><img src="common/pfeil_rechts5.gif" width="10" height="10" border="0" alt="gp"></td>
+<td valign="baseline" colspan="2"><b><T2Verweis class="T2Verweis"><a id="Xxx998906"></a><a href="./java_010005.htm#Rxxjava_010005256AufkommenvonStandaloneApplikationen">1.6 Aufkommen von Stand-alone-Applikationen</a></T2Verweis></b></td>
+</tr>
+<tr>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"><img src="common/pfeil_rechts5.gif" width="10" height="10" border="0" alt="gp"></td>
+<td valign="baseline" colspan="2"><b><T2Verweis class="T2Verweis"><a id="Xxx998911"></a><a href="./java_010006.htm#Rxxjava_010006256EntwicklungsundLaufzeitumgebungen">1.7 Entwicklungs- und Laufzeitumgebungen</a></T2Verweis></b></td>
+</tr>
+<tr>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"><img src="common/pfeil_rechts5.gif" width="10" height="10" border="0" alt="gp"></td>
+<td valign="baseline"><b><T3Verweis class="T3Verweis"><a id="Xxx998916"></a><a href="./java_010006.htm#Rxxjava_010006258AllerAnfangmitdemJavaSDK">1.7.1 Aller Anfang mit dem Java SDK</a></T3Verweis></b></td>
+</tr>
+<tr>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"><img src="common/pfeil_rechts5.gif" width="10" height="10" border="0" alt="gp"></td>
+<td valign="baseline"><b><T3Verweis class="T3Verweis"><a id="Xxx998924"></a><a href="./java_010006.htm#Rxxjava_010006264DieEntwicklungsumgebungvonSun">1.7.2 Die Entwicklungsumgebung von Sun: Sun ONE Studie (früher Forte) und NetBeans</a></T3Verweis></b></td>
+</tr>
+<tr>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"><img src="common/pfeil_rechts5.gif" width="10" height="10" border="0" alt="gp"></td>
+<td valign="baseline"><b><T3Verweis class="T3Verweis"><a id="Xxx998929"></a><a href="./java_010006.htm#Rxxjava_010006268UmgebungenvonIBM">1.7.3 Umgebungen von IBM</a></T3Verweis></b></td>
+</tr>
+<tr>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"><img src="common/pfeil_rechts5.gif" width="10" height="10" border="0" alt="gp"></td>
+<td valign="baseline"><b><T3Verweis class="T3Verweis"><a id="Xxx998934"></a><a href="./java_010006.htm#Rxxjava_010006272TogetherJ">1.7.4 TogetherJ</a></T3Verweis></b></td>
+</tr>
+<tr>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"><img src="common/pfeil_rechts5.gif" width="10" height="10" border="0" alt="gp"></td>
+<td valign="baseline"><b><T3Verweis class="T3Verweis"><a id="Xxx998939"></a><a href="./java_010006.htm#Rxxjava_010006276JBuildervonBorland">1.7.5 JBuilder von Borland</a></T3Verweis></b></td>
+</tr>
+<tr>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"><img src="common/pfeil_rechts5.gif" width="10" height="10" border="0" alt="gp"></td>
+<td valign="baseline"><b><T3Verweis class="T3Verweis"><a id="Xxx998944"></a><a href="./java_010006.htm#Rxxjava_010006281DievirtuelleMaschineKaffevonTransvirtualTechnologies">1.7.6 Die virtuelle Maschine Kaffe von Transvirtual Technologies</a></T3Verweis></b></td>
+</tr>
+<tr>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"><img src="common/pfeil_rechts5.gif" width="10" height="10" border="0" alt="gp"></td>
+<td valign="baseline"><b><T3Verweis class="T3Verweis"><a id="Xxx998949"></a><a href="./java_010006.htm#Rxxjava_010006285DieEntwicklungsumgebungCodeGuide">1.7.7 Die Entwicklungsumgebung CodeGuide</a></T3Verweis></b></td>
+</tr>
+<tr>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"><img src="common/pfeil_rechts5.gif" width="10" height="10" border="0" alt="gp"></td>
+<td valign="baseline"><b><T3Verweis class="T3Verweis"><a id="Xxx998954"></a><a href="./java_010006.htm#Rxxjava_010006325EinWortzuMicrosoftJavaundzuJ">1.7.8 Ein Wort zu Microsoft, Java und zu J++</a></T3Verweis></b></td>
+</tr>
+<tr>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"><img src="common/pfeil_rechts5.gif" width="10" height="10" border="0" alt="gp"></td>
+<td valign="baseline"><b><T3Verweis class="T3Verweis"><a id="Xxx998959"></a><a href="./java_010006.htm#Rxxjava_010006329DirektausfuhrbareProgrammefurWindowscompilieren">1.7.9 Direkt ausführbare Programme für Windows compilieren</a></T3Verweis></b></td>
+</tr>
+<tr>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"><img src="common/pfeil_rechts5.gif" width="10" height="10" border="0" alt="gp"></td>
+<td valign="baseline" colspan="2"><b><T2Verweis class="T2Verweis"><a id="Xxx998964"></a><a href="./java_010007.htm#Rxxjava_010007256InstallationsanleitungfurdasJava2SDKunterMicrosoftWindows">1.8 Installationsanleitung für das Java 2 SDK unter Microsoft Windows</a></T2Verweis></b></td>
+</tr>
+<tr>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"><img src="common/pfeil_rechts5.gif" width="10" height="10" border="0" alt="gp"></td>
+<td valign="baseline"><b><T3Verweis class="T3Verweis"><a id="Xxx998972"></a><a href="./java_010007.htm#Rxxjava_010007258DasJava2SDKbeziehen">1.8.1 Das Java 2 SDK beziehen</a></T3Verweis></b></td>
+</tr>
+<tr>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"><img src="common/pfeil_rechts5.gif" width="10" height="10" border="0" alt="gp"></td>
+<td valign="baseline"><b><T3Verweis class="T3Verweis"><a id="Xxx998980"></a><a href="./java_010007.htm#Rxxjava_010007261JavaSDKinstallieren">1.8.2 Java SDK installieren</a></T3Verweis></b></td>
+</tr>
+<tr>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"><img src="common/pfeil_rechts5.gif" width="10" height="10" border="0" alt="gp"></td>
+<td valign="baseline"><b><T3Verweis class="T3Verweis"><a id="Xxx998985"></a><a href="./java_010007.htm#Rxxjava_010007264CompilerundInterpreternutzen">1.8.3 Compiler und Interpreter nutzen</a></T3Verweis></b></td>
+</tr>
+<tr>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"><img src="common/pfeil_rechts5.gif" width="10" height="10" border="0" alt="gp"></td>
+<td valign="baseline" colspan="2"><b><T2Verweis class="T2Verweis"><a id="Xxx998990"></a><a href="./java_010008.htm#Rxxjava_010008256DasersteProgrammcompilierenundtesten">1.9 Das erste Programm compilieren und testen</a></T2Verweis></b></td>
+</tr>
+<tr>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"> </td>
+<td valign="baseline" width="10"><img src="common/pfeil_rechts5.gif" width="10" height="10" border="0" alt="gp"></td>
+<td valign="baseline"><b><T3Verweis class="T3Verweis"><a id="XPGxx30"></a><a id="Xxx998998"></a><a href="./java_010008.htm#Rxxjava_010008271HaufigeCompilerundInterpreterprobleme">1.9.1 Häufige Compiler- und Interpreterprobleme</a></T3Verweis></b></td>
+</tr>
+</table><br></td>
+</tr>
+</table>
+<table width="100%" cellpadding="20" cellspacing="0" border="0" bgcolor="#eeeeee">
+<tr>
+<td>
+
+
+<a name="t21"></a><a name="t2t31"></a><br><div align="center"><a href="#top"><img src="common/jupiters.gif" width="58" height="20" border="0" alt="Galileo Computing"></a></div>
+<h2 class="t2"><a id="XPGxx35" name="XPGxx35"></a><a id="Xxx998135" name="Xxx998135"></a>1.3 <a id="Rxxjava_010002256EigenschaftenvonJava" name="Rxxjava_010002256EigenschaftenvonJava"></a><a id="Rxxjava_010002256EigenschaftenvonJava" name="Rxxjava_010002256EigenschaftenvonJava"></a><a id="RxxJava_010002256EigenschaftenvonJava" name="RxxJava_010002256EigenschaftenvonJava"></a>Eigenschaften von Java 
+			<a href="#t2t32"><img src="common/down.gif" width="15" height="15" border="0" alt="down"></a><img src="common/15x15leer.gif" width="15" height="15" border="0" alt="top"></h2>
+<p><a id="Xxx998136" name="Xxx998136"></a>Java ist eine objektorientierte Programmiersprache, die sich durch einige zentrale Eigenschaften auszeichnet. Diese machen sie universell einsetzbar und für die Industrie als robuste Programmiersprache interessant. Da Java objektorientiert ist, spiegelt es den Wunsch der Entwickler wider, moderne und wiederverwertbare Softwarekomponenten zu programmieren.</p>
+<a name="t31"></a><br><div align="center"><a href="#top"><img src="common/jupiters.gif" width="58" height="20" border="0" alt="Galileo Computing"></a></div><a name="t2t32"></a><h3 class="t3"><a id="Xxx998137" name="Xxx998137"></a>1.3.1 <a id="Rxxjava_010002258DievirtuelleMaschine" name="Rxxjava_010002258DievirtuelleMaschine"></a><a id="Rxxjava_010002258DievirtuelleMaschine" name="Rxxjava_010002258DievirtuelleMaschine"></a><a id="RxxJava_010002258DievirtuelleMaschine" name="RxxJava_010002258DievirtuelleMaschine"></a>Die virtuelle Maschine 
+			<a href="#t2t33"><img src="common/down.gif" width="15" height="15" border="0" alt="down"></a><a href="#t2t31"><img src="common/top.gif" width="15" height="15" border="0" alt="top"></a></h3>
+<p><a id="Xxx998138" name="Xxx998138"></a>Zunächst ist Java eine Programmiersprache wie jede andere auch. Nur im Gegensatz zu herkömmlichen Programmiersprachen, die Maschinencode für eine spezielle Plattform generieren, erzeugt der Java-Compiler Programmcode für eine <a id="Xxx998139" name="Xxx998139"></a>virtuelle Maschine, den so genannten <b>Bytecode</b>. Bytecode<a id="Xxx998140" name="Xxx998140"></a> ist vergleichbar mit Mikroprozessorcode für einen erdachten Prozessor, der Anweisungen, arithmetische Operationen, Sprünge und Weiteres kennt. Dieser virtuelle Prozessor wurde mittlerweile auch in Silizium gegossen – eine Entwicklung, die verstärkt von Sun beziehungsweise Lizenznehmern verfolgt wird. Der Prototyp dieses Prozessors (genannt <a id="Xxx998141" name="Xxx998141"></a><b>PicoJava</b>) ist verfügbar und findet bald Einzug in so genannte Network-Computer. Das sind Computer ohne bewegliche Peripherie, wie Festplatten, die als Terminal am Netz hängen. Bei der Entwicklung des Prozessors stand nicht die maximale Geschwindigkeit im Vordergrund, sondern die Kosten pro Chip, um ihn in jedes Haushaltsgerät einzubauen zu können. Das Interesse an einem Java-On-A-Chip<a id="Xxx998142" name="Xxx998142"></a> ist inzwischen stark zurückgegangen.</p>
+<table width="100%" border="0" cellspacing="1" cellpadding="3">
+<tr>
+<td>
+<table border="0" cellspacing="0" cellpadding="1">
+<tr>
+<td bgcolor="#000000">
+<table border="0" cellspacing="0" cellpadding="4">
+<tr>
+<td bgcolor="#FFFFFF" align="center" valign="middle"><a id="Xxx998148" name="Xxx998148"></a>
+<a name="bild1"></a><a href="#bild99" onClick="OpenWin('bilder/javaimhaushalt.gif','Abbildung',600,600)"><img border="0" src="bilderklein/kleinjavaimhaushalt.gif" alt="Abbildung"></a>
+
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table><br>
+<p><a id="Xxx998149" name="Xxx998149"></a>Damit aber der Programmcode des virtuellen Prozessors ausgeführt werden kann, muss ein Interpreter die Befehlsfolgen dekodieren und ausführen. Dies nennen wir dann <b>virtuelle Maschine<a id="Xxx998150" name="Xxx998150"></a>5</b><a href="#ftn1"><b><sup>1 
+		</sup></b></a>. Somit ist Java eine compilierte, aber auch interpretierte Programmiersprache – von der Hardwaremethode einmal abgesehen. Der Compiler, der von Sun selbst in Java geschrieben ist, generiert den Bytecode. Doch nicht nur aus der Programmiersprache Java lässt sicht Bytecode erzeugen. Zurzeit gibt es bei verschiedenen Herstellern Entwicklungen von ADA-Compilern und sogar C-Compilern, die Bytecode erstellen. Auch die OOP-Programmiersprache EIFFEL<a href="#ftn2"><sup>2 
+		</sup></a><a id="Xxx998157" name="Xxx998157"></a> – unter der Leitung von <a id="Xxx998158" name="Xxx998158"></a>Bertrand Meyer – generiert <a id="XPGxx36" name="XPGxx36"></a>Java-Bytecode. Ebenso gibt es eine <a id="Xxx998159" name="Xxx998159"></a>Scheme<a href="#ftn3"><sup>3 
+		</sup></a>-Umgebung, die komplett in Java programmiert ist. Der Compiler erstellt für den LISP-Dialekt ebenfalls Java-Bytecode. Eine Webseite, die Programmiersprachen für die JVM aufzeigt, ist <span class="listing"><a href="http://flp.cs.tu-berlin.de/~tolk/vmlanguages.html" target="_blank">http://flp.cs.tu-berlin.de/~tolk/vmlanguages.html</a></span>. Mittlerweile ist Java nicht nur interpretierte Sprache, sondern zugleich auch interpretierende Sprache. Das zeigen unterschiedliche Computer- und Prozessor-Emulationsprogramme.<a href="#ftn4"><sup>4 
+		</sup></a></p>
+<p><a id="Xxx998170" name="Xxx998170"></a>Nach der Übersetzungsphase führt die <b>Laufzeitumgebung<a id="Xxx998168" name="Xxx998168"></a></b> (auch <b>Run-Time-Interpreter<a id="Xxx998169" name="Xxx998169"></a></b> genannt), die Java Virtuelle Maschine<a id="Xxx998171" name="Xxx998171"></a>, den Bytecode aus<a href="#ftn5"><sup>5 
+		</sup></a>. Das Interpretieren bereitet noch Geschwindigkeitsprobleme, da das Erkennen, Dekodieren und Ausführen der Befehle Zeit kostet. Im Schnitt sind Java-Programme drei bis zehn Mal langsamer als C(++)-Programme. Die Technik der <a id="Xxx998178" name="Xxx998178"></a>Just-In-Time(<a id="Xxx998179" name="Xxx998179"></a>JIT)-Compiler<a href="#ftn6"><sup>6 
+		</sup></a>mildert das Problem. Ein JIT-Compiler beschleunigt die Ausführung der Programme, indem die Programmanweisungen der virtuellen Maschine für die physikalische übersetzt werden.</p>
+<p><a id="Xxx998184" name="Xxx998184"></a>Es steht anschließend ein auf die Architektur angepasstes Programm im Speicher, das ohne Interpretation schnell ausgeführt wird. Auch Netscape übernahm im Windows-Communicator<a href="#ftn7"><sup>7 
+		</sup></a>4.0 einen JIT (ein Produkt von ehemals Symantec), um an Geschwindigkeit zuzulegen – obwohl diese Variante noch nicht den gesamten 1.1 Standard beherrschte. (Erst in der Version 4.06 von Netscape kam die volle Unterstützung für Java 1.1.) Mit dieser Technik liegt die Geschwindigkeit zwar in vielen Fällen immer noch unter der von C, aber der Abstand ist geringer. Nur durch den Einsatz der PicoJava-Prozessoren lassen sich um deutlich schnellere Ausführungszeiten erzielen<a href="#ftn8"><sup>8 
+		</sup></a>.</p>
+<a name="t32"></a><br><div align="center"><a href="#top"><img src="common/jupiters.gif" width="58" height="20" border="0" alt="Galileo Computing"></a></div><a name="t2t33"></a><h3 class="t3"><a id="Xxx998191" name="Xxx998191"></a>1.3.2 <a id="Rxxjava_010002272KeinPraprozessor" name="Rxxjava_010002272KeinPraprozessor"></a><a id="Rxxjava_010002272KeinPraprozessor" name="Rxxjava_010002272KeinPraprozessor"></a><a id="RxxJava_010002272KeinPraprozessor" name="RxxJava_010002272KeinPraprozessor"></a>Kein Präprozessor 
+			<a href="#t2t34"><img src="common/down.gif" width="15" height="15" border="0" alt="down"></a><a href="#t2t32"><img src="common/top.gif" width="15" height="15" border="0" alt="top"></a></h3>
+<p><a id="Xxx998194" name="Xxx998194"></a>In C(++) ersetzt ein Präprozessor<a id="Xxx998192" name="Xxx998192"></a> Makros etwa für bedingte Compilierung<a id="Xxx998193" name="Xxx998193"></a> oder Header-Dateien<a id="Xxx998195" name="Xxx998195"></a>. Einen Präprozessor gibt es in Java nicht und entsprechend keine Header-Dateien. Diese sind in Java nicht nötig, da der Compiler die benötigten Informationen über die Software-Schnittstellen von Klassen direkt aus den Klassendateien liest. Ein schmutziger Trick wie</p>
+<pre class="Listing"><a id="Xxx998196" name="Xxx998196"></a>#define private public
+#include "allesMoegliche"</pre>
+<p><a id="XPGxx37" name="XPGxx37"></a><a id="Xxx998198" name="Xxx998198"></a>oder Makros<a id="Xxx998197" name="Xxx998197"></a>, die Fehler durch doppelte Auswertung erzeugen, sind damit von vornherein ausgeschlossen. Im Übrigen findet sich der Private/Public-Hack im Quellcode von Suns StarOffice<a id="Xxx998199" name="Xxx998199"></a>. Mit der oberen Definition wird jedes Auftreten von <span class="listing">private</span> durch <span class="listing">public</span> ersetzt mit der Konsequenz, dass der Zugriffsschutz ausgehebelt ist.</p>
+<p><a id="Xxx998201" name="Xxx998201"></a>Leider ist damit auch eine bedingte Compilierung mit <span class="listing">#ifdef<a id="Xxx998200" name="Xxx998200"></a></span> nicht mehr möglich. Dies führt vereinzelt dazu, dass ein externer Präprozessor benutzt werden muss, um den Quellcode entsprechend zu bearbeiten.</p>
+<a name="t33"></a><br><div align="center"><a href="#top"><img src="common/jupiters.gif" width="58" height="20" border="0" alt="Galileo Computing"></a></div><a name="t2t34"></a><h3 class="t3"><a id="Xxx998203" name="Xxx998203"></a>1.3.3 <a id="Rxxjava_010002277UberladeneOperatoren" name="Rxxjava_010002277UberladeneOperatoren"></a><a id="Rxxjava_010002277UberladeneOperatoren" name="Rxxjava_010002277UberladeneOperatoren"></a><a id="RxxJava_010002277UberladeneOperatoren" name="RxxJava_010002277UberladeneOperatoren"></a><a id="Xxx998202" name="Xxx998202"></a>Überladene Operatoren 
+			<a href="#t2t35"><img src="common/down.gif" width="15" height="15" border="0" alt="down"></a><a href="#t2t33"><img src="common/top.gif" width="15" height="15" border="0" alt="top"></a></h3>
+<p><a id="Xxx998204" name="Xxx998204"></a>Wenn wir Operatoren wie das Plus- oder Minuszeichen verwenden und damit Ausdrücke zusammenfügen, machen wir dies meistens mit bekannten Rechengrößen. So fügt ein Plus zwei Ganzzahlen, aber auch zwei Fließkommazahlen (Gleitkommazahlen) zusammen. Einige Programmiersprachen – meistens Skriptsprachen – erlauben auch das „Rechnen“ mit Zeichenketten, mit einem Plus können diese beispielsweise aneinander gehängt werden. Die meisten Programmiersprachen erlauben es jedoch nicht, die Operatoren mit neuer Bedeutung zu versehen und damit Objekte zu verknüpfen. In C++ jedoch ist das Überladen von Operatoren möglich, sodass etwa das Pluszeichen dafür genutzt werden kann, zum Beispiel geometrische Punktobjekte zu addieren. Dies ist praktisch bei umfangreicheren Rechnungen mit Objekten, da dort nicht über die Methoden umständliche Verbindungen geschaffen werden, sondern über ein Operatorzeichen angenehm kurze. Obwohl zuweilen ganz praktisch – das Standardbeispiel sind Objekte für komplexen Zahlen und Brüche –, verführt die Möglichkeit, Operatoren durch den Programmierer zu überladen, oft zu unsinnigem Gebrauch. In Java ist daher das Überladen der Operatoren bisher nicht möglich. Es kann aber gut sein, dass dies sich in Zukunft ändert.</p>
+<p><a id="Xxx998205" name="Xxx998205"></a>Die Grundrechenarten sind für Ganzzahlen und Gleitkommazahlen überladen und ebenso ein einfaches Und, Oder oder Xor für Ganzzahlen und boolesche Werte. Der einzige auffällige überladene Operator in Java für Objekte ist das Pluszeichen bei Strings. Zeichenketten können damit leicht zusammengesetzt werden. Informatiker verwenden in dem Zusammenhang auch gerne das Wort Konkatenation (selten Katenation). Bei einem String „Hallo“und „du da“ ist „Hallo du da“ die Konkatenation der Zeichenketten.</p>
+<a name="t34"></a><br><div align="center"><a href="#top"><img src="common/jupiters.gif" width="58" height="20" border="0" alt="Galileo Computing"></a></div><a name="t2t35"></a><h3 class="t3"><a id="Xxx998206" name="Xxx998206"></a>1.3.4 <a id="Rxxjava_010002280ZeigerundReferenzen" name="Rxxjava_010002280ZeigerundReferenzen"></a><a id="Rxxjava_010002280ZeigerundReferenzen" name="Rxxjava_010002280ZeigerundReferenzen"></a><a id="RxxJava_010002280ZeigerundReferenzen" name="RxxJava_010002280ZeigerundReferenzen"></a>Zeiger und Referenzen 
+			<a href="#t2t36"><img src="common/down.gif" width="15" height="15" border="0" alt="down"></a><a href="#t2t34"><img src="common/top.gif" width="15" height="15" border="0" alt="top"></a></h3>
+<p><a id="Xxx998209" name="Xxx998209"></a>In Java gibt es keine Zeiger<a id="Xxx998207" name="Xxx998207"></a> (engl. <a id="Xxx998208" name="Xxx998208"></a>Pointer), wie sie aus anderen Programmiersprachen bekannt und gefürchtet sind. Da eine objektorientierte Programmiersprache aber ohne Verweise nicht funktioniert, werden <a id="Xxx998210" name="Xxx998210"></a>Referenzen eingeführt. Eine Referenz repräsentiert ein Objekt, und eine Variable speichert diese Referenz. Die Referenz hat einen Typ, der sich nicht ändern kann. Ein Auto bleibt ein Auto und kann nicht als Laminiersystem angesprochen werden. Eine Referenz unter Java ist nicht als Zeiger auf Speicherbereiche zu sehen.</p>
+
+<a id="Xxx998217" name="Xxx998217"></a><table width="100%" border="0" cellspacing="1" cellpadding="3">
+<tr>
+<td class="tabellentext" valign="top" bgcolor="#000000"><a id="Xxx998213" name="Xxx998213"></a><b>Beispiel</b>   Dass das Pfuschen in C++ leicht möglich ist und wir Zugriff auf private Elemente über eine Zeigerarithmetik bekommen können, zeigt das folgende Programm. Für uns Java-Programmierer ist dies ein abschreckendes Beispiel.
+<pre class="Listing"><a id="Xxx998214" name="Xxx998214"></a>#include &lt;string.h&gt;
+#include &lt;iostream.h&gt;
+
+class Ganz_unsicher {
+public:
+  Ganz_unsicher() { strcpy(passwort, "geheim"); }
+
+private:
+  char passwort[100];
+};</pre>
+</td>
+</tr>
+<tr>
+<td class="tabellentext" valign="top" bgcolor="#000000">
+<pre class="Listing"><a id="Xxx998216" name="Xxx998216"></a>void main()
+{
+  Ganz_unsicher gleich_passierts;
+  char *boesewicht = (char*)&amp;gleich_passierts;
+  cout &lt;&lt; "Passwort: " &lt;&lt; boesewicht &lt;&lt; endl;
+}</pre>
+</td>
+</tr>
+</table><br>
+<p><a id="Xxx998218" name="Xxx998218"></a>Diese sehr gepfuschte Art demonstriert, wie problematisch der Einsatz von Zeigern sein kann. Der Zeiger, der zunächst als Referenz auf die Klasse <span class="listing">Ganz_unsicher</span> gedacht war, mutiert durch die explizite Typumwandlung zu einem Char-Pointer <span class="listing">boesewicht</span>. Problem<a id="XPGxx38" name="XPGxx38"></a>los können über diesen byteweise die Zeichen aus dem Speicher ausgelesen werden. Das erlaubt auch indirekt Zugriff auf die privaten Daten. In Java ist dies nicht möglich, die Implementierung ist sicher, es gibt keinen Zugriff auf private Daten einer Klasse. Zunächst einmal würde der Compiler eine Fehlermeldung geben oder das Laufzeitsystem eine Ausnahme (Exception) auslösen, wenn beispielsweise eine Klasse über das Netz geladen wird.</p>
+<a name="t35"></a><br><div align="center"><a href="#top"><img src="common/jupiters.gif" width="58" height="20" border="0" alt="Galileo Computing"></a></div><a name="t2t36"></a><h3 class="t3"><a id="Xxx998219" name="Xxx998219"></a>1.3.5 <a id="Rxxjava_010002307GarbageCollector" name="Rxxjava_010002307GarbageCollector"></a><a id="Rxxjava_010002307GarbageCollector" name="Rxxjava_010002307GarbageCollector"></a><a id="RxxJava_010002307GarbageCollector" name="RxxJava_010002307GarbageCollector"></a>Garbage-Collector 
+			<a href="#t2t37"><img src="common/down.gif" width="15" height="15" border="0" alt="down"></a><a href="#t2t35"><img src="common/top.gif" width="15" height="15" border="0" alt="top"></a></h3>
+<p><a id="Xxx998220" name="Xxx998220"></a>In Programmiersprachen wie C++ lässt sich etwa die Hälfte der Fehler auf falsche Speicher-Allokation zurückführen. Arbeiten mit Objekten heißt unweigerlich: Anlegen und Löschen. Die Java-Laufzeitumgebung sorgt sich jedoch selbstständig um die Verwaltung dieser Objekte – die Konsequenz ist: Sie müssen nicht freigegeben werden, ein Garbage-Collector<a id="Xxx998221" name="Xxx998221"></a> (kurz GC<a id="Xxx998222" name="Xxx998222"></a>) entfernt sie. Der GC ist Teil des Laufzeitsystems von Java. Das Generieren eines Objekts in einem Block mit anschließender Operation zieht eine Aufräumaktion des GCs nach sich. Nach Verlassen des Wirkungsbereichs erkennt das System das nicht mehr referenzierte Objekt. Ein weiterer Vorteil für den GC: Bei der Benutzung von Unterprogrammen werden oft Objekte zurückgegeben, und in herkömmlichen Programmiersprachen beginnt wieder die Diskussion, welcher Programmteil das Objekt jetzt löschen muss oder ob es nur eine Referenz ist. In Java ist das egal, auch wenn ein Objekt nur Rückgabewert einer Methode ist (anonymes Objekt).</p>
+<p><a id="Xxx998223" name="Xxx998223"></a>Der GC ist ein spezieller Thread-Prozess, der Objekte markiert, auf die nicht mehr verwiesen wird. Dann entfernt er sie von Zeit zu Zeit. Damit macht der Garbage-Collector die Funktionen <a id="Xxx998224" name="Xxx998224"></a><span class="listing">free()</span> aus C oder <a id="Xxx998225" name="Xxx998225"></a><span class="listing">delete()</span> aus C++ überflüssig. Wir können uns über diese Technik freuen, denn viele Probleme sind damit verschwunden. Nicht freigegebene Speicherbereiche gibt es in jedem größeren Programm, und falsche Destruktoren sind <a id="XPGxx39" name="XPGxx39"></a>vielfach dafür verantwortlich. An dieser Stelle sollte nicht verschwiegen werden, dass es auch ähnliche Techniken für C(++) gibt.<a href="#ftn9"><sup>9 
+		</sup></a></p>
+<a name="t36"></a><br><div align="center"><a href="#top"><img src="common/jupiters.gif" width="58" height="20" border="0" alt="Galileo Computing"></a></div><a name="t2t37"></a><h3 class="t3"><a id="Xxx998230" name="Xxx998230"></a>1.3.6 <a id="Rxxjava_010002311Ausnahmenbehandlung" name="Rxxjava_010002311Ausnahmenbehandlung"></a><a id="Rxxjava_010002311Ausnahmenbehandlung" name="Rxxjava_010002311Ausnahmenbehandlung"></a><a id="RxxJava_010002311Ausnahmenbehandlung" name="RxxJava_010002311Ausnahmenbehandlung"></a>Ausnahme<a id="Xxx998229" name="Xxx998229"></a>nbehandlung 
+			<a href="#t2t38"><img src="common/down.gif" width="15" height="15" border="0" alt="down"></a><a href="#t2t36"><img src="common/top.gif" width="15" height="15" border="0" alt="top"></a></h3>
+<p><a id="Xxx998232" name="Xxx998232"></a><a id="Xxx998231" name="Xxx998231"></a>Java unterstützt ein modernes System, um mit Laufzeitfehlern umzugehen. In der Programmiersprache wurden Exceptions<a id="Xxx998233" name="Xxx998233"></a> eingeführt: Objekte, die zur Laufzeit generiert werden und einen Fehler anzeigen. Diese Problemstellen können durch Programmkonstrukte gekapselt werden. Die Lösung ist in vielen Fällen sauberer als die mit Rückgabewerten und unleserlichen Ausdrücken im Programmfluss. In C++ gibt es ebenso Exceptions, diese werden aber nicht so intensiv wie in Java benutzt.</p>
+<p><a id="Xxx998236" name="Xxx998236"></a>Aus Geschwindigkeitsgründen wird die Überwachung von <a id="Xxx998234" name="Xxx998234"></a>Array-Grenzen (engl. <a id="Xxx998235" name="Xxx998235"></a>Range-Checking) in C(++)<a href="#ftn10"><sup>10 
+		</sup></a> nicht durchgeführt. Und der fehlerhafte Zugriff auf das Element <span class="listing">n + 1</span> eines Felds der Größe n kann zweierlei bewirken: Ein Zugriffsfehler tritt auf, oder, viel schlimmer, andere Daten werden beim Schreibzugriff überschrieben, und der Fehler ist nicht nachvollziehbar. Schon in PASCAL<a id="Xxx998240" name="Xxx998240"></a> wurde eine Grenzüberwachung<a id="Xxx998241" name="Xxx998241"></a> mit compiliert. Das Laufzeitsystem von Java überprüft automatisch die Grenzen eines Arrays. Diese Überwachungen können nicht, wie es diverse PASCAL-Compiler erlauben, abgeschaltet werden, sondern sind immer eingebaut. Eine clevere Laufzeitumgebung kann herausfinden, ob keine Überschreitung möglich ist, und diese Abfrage dann wegoptimieren.</p>
+<a name="t37"></a><br><div align="center"><a href="#top"><img src="common/jupiters.gif" width="58" height="20" border="0" alt="Galileo Computing"></a></div><a name="t2t38"></a><h3 class="t3"><a id="Xxx998242" name="Xxx998242"></a>1.3.7 <a id="Rxxjava_010002315ObjektorientierunginJava" name="Rxxjava_010002315ObjektorientierunginJava"></a><a id="Rxxjava_010002315ObjektorientierunginJava" name="Rxxjava_010002315ObjektorientierunginJava"></a><a id="RxxJava_010002315ObjektorientierunginJava" name="RxxJava_010002315ObjektorientierunginJava"></a>Objektorientierung in Java 
+			<a href="#t2t39"><img src="common/down.gif" width="15" height="15" border="0" alt="down"></a><a href="#t2t37"><img src="common/top.gif" width="15" height="15" border="0" alt="top"></a></h3>
+<p><a id="Xxx998245" name="Xxx998245"></a>Die Sprache Java ist nicht bis zur letzten Konsequenz objektorientiert<a id="Xxx998243" name="Xxx998243"></a>, so wie <a id="Xxx998244" name="Xxx998244"></a>Smalltalk es vorbildlich zeigt.<a id="Xxx998246" name="Xxx998246"></a> Primitive Datentypen (beispielsweise Ganzzahlen oder Fließkommazahlen) werden nicht als Objekte verwaltet. Der Grund ist vermutlich in der Performance zu sehen. Der Compiler ist somit besser in der Lage, die Programme zu optimieren.</p>
+<p><a id="Xxx998248" name="Xxx998248"></a>Java ist als Sprache entworfen worden, die es einfach machen soll, fehlerfreie Software<a id="Xxx998247" name="Xxx998247"></a> zu schreiben. In C-Programmen erwartet uns statistisch gesehen alle 55 Programmzeilen ein Fehler. Selbst in großen Softwarepaketen, die erst ab einer Millionen Codezeilen anfangen, findet sich, unabhängig von der zugrunde liegenden Programmiersprache, im Schnitt alle 200 Programmzeilen ein Fehler. Selbstverständlich gilt es, diese Fehler zu beheben, obwohl bis heute noch keine umfassende Strategie für Softwareentwicklung im Großen gefunden wurde. Viele Arbeiten der Informatik beschäftigen sich mit der Frage, wie Tausende Programmierer über Jahrzehnte miteinander arbeiten und Software entwerfen können. Dieses Problem ist nicht einfach zu lösen und wurde im Zuge der Softwarekrise in den Sechzigerjahren heftig diskutiert.</p>
+<a name="t38"></a><br><div align="center"><a href="#top"><img src="common/jupiters.gif" width="58" height="20" border="0" alt="Galileo Computing"></a></div><a name="t2t39"></a><h3 class="t3"><a id="XPGxx40" name="XPGxx40"></a><a id="Xxx998249" name="Xxx998249"></a>1.3.8 <a id="Rxxjava_010002318JavaSecurityModel" name="Rxxjava_010002318JavaSecurityModel"></a><a id="Rxxjava_010002318JavaSecurityModel" name="Rxxjava_010002318JavaSecurityModel"></a><a id="RxxJava_010002318JavaSecurityModel" name="RxxJava_010002318JavaSecurityModel"></a>Java-Security-Model 
+			<img src="common/15x15leer.gif" width="15" height="15" border="0" alt="top"><a href="#t2t38"><img src="common/top.gif" width="15" height="15" border="0" alt="top"></a></h3>
+<p><a id="Xxx998251" name="Xxx998251"></a>Das <a id="Xxx998250" name="Xxx998250"></a>Java-Security-Model gewährleistet den sicheren Programmablauf auf verschiedensten Ebenen. Der Verifier liest Code und überprüft die strukturelle Korrektheit und Typsicherheit. Der Klassenlader<a id="Xxx998252" name="Xxx998252"></a> (engl. <a id="Xxx998253" name="Xxx998253"></a>Class Loader) lädt Dateien entweder vom externen Medium wie Festplatte oder auch Netzwerk und überträgt die Java-Binaries zum Interpreter. Dort überwacht ein <a id="Xxx998254" name="Xxx998254"></a>Security-Manager Zugriffe auf das Dateisystem, die Netzwerk-Ports, externe Prozesse und die Systemressourcen. Treten Sicherheitsprobleme auf, so werden diese durch Exceptions zur Laufzeit gemeldet. Das Sicherheitsmodell ist vom Programmierer erweiterbar.</p>
+<table width="100%" border="0" cellspacing="1" cellpadding="3">
+<tr>
+<td>
+<table border="0" cellspacing="0" cellpadding="1">
+<tr>
+<td bgcolor="#000000">
+<table border="0" cellspacing="0" cellpadding="4">
+<tr>
+<td bgcolor="#FFFFFF" align="center" valign="middle"><a id="Xxx998260" name="Xxx998260"></a>
+<a name="bild1"></a><a href="#bild99" onClick="OpenWin('bilder/securitymanager.gif','Abbildung',600,600)"><img border="0" src="bilderklein/kleinsecuritymanager.gif" alt="Abbildung"></a>
+
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table><br>
+
+<br><br><br><br><hr>
+<p><sup>1  
+					</sup><a id="ftn1" name="ftn1"></a><a id="Xxx998153" name="Xxx998153"></a>Auch die erhabene OO-Sprache Smalltalk bedient sich einer virtuellen Maschine.
+</p>
+<p><sup>2  
+					</sup><a id="ftn2" name="ftn2"></a><a id="Xxx998156" name="Xxx998156"></a><span class="listing"><a href="http://www.loria.fr/projets/SmallEiffel/" target="_blank">http://www.loria.fr/projets/SmallEiffel/</a></span>
+</p>
+<p><sup>3  
+					</sup><a id="ftn3" name="ftn3"></a><a id="Xxx998162" name="Xxx998162"></a><span class="listing"><a href="http://www.adahome.com/Resources/Ada_Java.html" target="_blank">http://www.adahome.com/Resources/Ada_Java.html</a></span>
+</p>
+<p><sup>4  
+					</sup><a id="ftn4" name="ftn4"></a><a id="Xxx998166" name="Xxx998166"></a> Dies beweist <b>Hob<a id="Xxx998165" name="Xxx998165"></a></b>, ein portabler ZX-Spectrum-Emulator, der komplett in Java geschrieben ist. Auf der Web-Seite <span class="listing"><a href="http://www.emuunlim.com/hob/" target="_blank">http://www.emuunlim.com/hob/</a></span> gibt es noch viele Spiele dazu, die als Applet ausprobiert werden können. Ebenfalls gibt es den C=64-Emulator-Versuch <b>jc64<a id="Xxx998167" name="Xxx998167"></a></b> unter <span class="listing"><a href="http://sourceforge.net/projects/jc64" target="_blank">http://sourceforge.net/projects/jc64</a></span>.
+</p>
+<p><sup>5  
+					</sup><a id="ftn5" name="ftn5"></a><a id="Xxx998174" name="Xxx998174"></a> Die Idee des Bytecodes (Framemaker schlägt hier als Korrekturvorschlag „Bote Gottes“ vor) ist schon alt. Die Firma <a id="Xxx998175" name="Xxx998175"></a>Datapoint schuf um 1970 die Programmiersprache PL/B, die Programme auf Bytecode abbildet. Auch verwendet die Originalimplementierung von <a id="Xxx998176" name="Xxx998176"></a>UCSD-Pascal, etwa Anfang 1980, einen Zwischencode – kurz <a id="Xxx998177" name="Xxx998177"></a>p-code.
+</p>
+<p><sup>6  
+					</sup><a id="ftn6" name="ftn6"></a><a id="Xxx998183" name="Xxx998183"></a> Diese Idee ist auch schon alt: <a id="Xxx998182" name="Xxx998182"></a>HP hatte um 1970 JIT-Compiler für BASIC-Maschinen.
+</p>
+<p><sup>7  
+					</sup><a id="ftn7" name="ftn7"></a><a id="Xxx998187" name="Xxx998187"></a> Netscape hört es gar nicht gerne, wenn der Web-Browser als Navigator bezeichnet wird. Hier im Tutorial verwenden wir dies allerdings synonym. Die Firma versteht den Communicator als Web-Lösung, die nicht nur aus einem Web-Browser besteht. Es wird gemunkelt, dass Mitarbeiter aus der Firma rausfliegen, wenn sie das Wort „Navigator“ nur in den Mund nehmen ...
+</p>
+<p><sup>8  
+					</sup><a id="ftn8" name="ftn8"></a><a id="Xxx998190" name="Xxx998190"></a>Es ist schon paradox, eine plattformunabhängige Sprache vorzuschlagen und dann einen Prozessor zu entwickeln, der anschließend das Problem der langsamen Ausführung löst.
+</p>
+<p><sup>9  
+					</sup><a id="ftn9" name="ftn9"></a><a id="Xxx998228" name="Xxx998228"></a>Ein bekannter Garbage-Collector stammt von Hans-J. Boehm, Alan J. Demers und Mark Weiser. Er ist unter <span class="listing"><a href="http://reality.sgi.com/boehm_mti/gc.html" target="_blank">http://reality.sgi.com/boehm_mti/gc.html</a></span> zu finden. Der Algorithmus arbeitet jedoch konservativ, das heißt, er findet nicht garantiert alle unerreichbaren Speicherbereiche, sondern nur einige. Eingesetzt wird der Boehm-Demers-Weiser-GC unter anderem in der X11-Bibliothek benutzt. Dort sind die <span class="listing">malloc()</span>- und <span class="listing">free()</span>-Funktionen einfach durch neue Methoden ausgetauscht.
+</p>
+<p><sup>10  
+					</sup><a id="ftn10" name="ftn10"></a><a id="Xxx998239" name="Xxx998239"></a>  In C++ ließe sich eine Variante mit einem überladenen Operator lösen.
+</p>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td width="100%" class="nav1" colspan="1" height="22" align="center">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="33%"><a class="navs" href="java_010001.htm">&lt;&lt; zurück</a></td>
+<td width="33%">
+<div align="center"><a class="navs" href="#">&lt;top&gt;</a></div>
+</td>
+<td align="right" width="33%">
+<div align="right"><a class="navs" href="java_010003.htm">vor &gt;&gt;</a></div>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+</td>
+
+</tr>
+</table><br><br><hr width="70%" align="center"><br><div align="center">
+<p class="standard"><b>Copyright © Galileo Press GmbH 2003</b><br>Für Ihren privaten Gebrauch dürfen Sie die Online-Version natürlich ausdrucken. Ansonsten unterliegt das &lt;openbook&gt; denselben Bestimmungen, wie die gebundene Ausgabe: Das Werk einschließlich aller seiner Teile ist urheberrechtlich geschützt. Alle Rechte vorbehalten einschließlich der Vervielfältigung, Übersetzung, Mikroverfilmung sowie Einspeicherung und Verarbeitung in elektronischen Systemen.</p><br><a href="http://www.galileocomputing.de/">[Galileo Computing]</a><br><br>Galileo Press GmbH, Gartenstraße 24, 53229 Bonn, Tel.: 0228.42150.0, Fax 0228.42150.77, <a href="mailto:info@galileo-press.de">info@galileo-press.de</a></div><br><br></body>
+</html>

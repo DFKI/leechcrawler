@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info>
+	<mime-type type="application/wikipedia+xml">
+		<sub-class-of type="application/xml" />
+		<acronym>wikipedia</acronym>
+		<_comment>Wikipedia dump xml file</_comment>
+		<root-XML localName="mediawiki"
+			namespaceURI="http://www.mediawiki.org/xml/export-0.4/" />
+		<root-XML localName="mediawiki"
+			namespaceURI="http://www.mediawiki.org/xml/export-0.5/" />
+		<glob pattern="*.xml" />
+	</mime-type>
+</mime-info>
