@@ -1,7 +1,8 @@
 Leech
 =====
 
-Crawling capabilities for Apache Tika. Crawl content out of e.g. file systems, http(s) sources (webcrawling) or imap(s) servers. Leech offers additional Tika parsers providing crawling capabilities.
+Crawling capabilities for Apache Tika. Crawl content out of e.g. file systems, http(s) sources (webcrawling) or imap(s) servers. Leech offers additional Tika parsers providing crawling capabilities.  
+Leech is the successor of Aperture from the DFKI GmbH Knowledge management group (RDF free).
 
 The key intentions of Leech:
 * Ease of use - crawl a data source with a few lines of code.
