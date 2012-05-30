@@ -75,7 +75,7 @@
 
         }, "stop thread");
 
-        stop.start();
+    stop.start();
     
     new Leech().parse("sourceUrl", new PrintlnContentHandler(Granularity.title), crawlerContext.createParseContext());
 
