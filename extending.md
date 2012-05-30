@@ -13,7 +13,7 @@ This is to generate streams and preliminary metadata out of URLs before extracti
  2. If still necessary, register a new mime type in the list of the Tika mimetypes. [How to](http://tika.apache.org/1.0/parser_guide.html#Add_your_MIME-Type)
  3. Create a new implementation of de.dfki.km.leech.parser.CrawlerParser for your mimetype. You will get incremental crawling, crawl interruption, error handling, etc. for free.  
 
-Thus, Leech supports URLS with your new datasource, including the protocol, connection is according your own url scheme.
+Thus, Leech supports URLs with your new datasource, including the protocol, connection is according your own url scheme.
 In the case you can't or don't want to write everything that is necessary for connection into your URL scheme, write an
 own configuration object / parse context class and put it into the parse context parameter. You can consider it both
 at URLStreamProvider and CrawlerParser. Your crawler will become fully configurable.
