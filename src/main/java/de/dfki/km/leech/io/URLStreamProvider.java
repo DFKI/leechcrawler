@@ -34,12 +34,6 @@ import de.dfki.km.leech.parser.incremental.IncrementalCrawlingHistory;
  * 
  * 
  * @author Christian Reuschling, Dipl.Ing.(BA)
- * 
- * 
- *         TODO beim IMAP URLStreamProvider abchecken, ob der Stream schon eine connection aufmacht, wenn er erstellt wird - wir wollen erst dann eine
- *         connection, wenn die dataHistoryIDs ausgewertet sind, aus performancegründen. Vielleicht kann man da ja nen Wrapper drum rum bauen...hat
- *         sich eigentlich erledigt, da wir hier ja keine Stream erstellen, sondern lediglich die URL-Klasse befähigen, streams aufzumachen. Wir
- *         können uns ja bei der Stream-errstellung dann später raussuchen, ob wir nen Stream machen oder nicht
  */
 abstract public class URLStreamProvider
 {

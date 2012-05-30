@@ -37,22 +37,6 @@ public class PrintlnContentHandler extends DataSinkContentHandler
 
 
 
-    public boolean isShowOnlyErrors()
-    {
-        return m_showOnlyErrors;
-    }
-
-
-
-    public PrintlnContentHandler setShowOnlyErrors(boolean showOnlyErrors)
-    {
-        m_showOnlyErrors = showOnlyErrors;
-        
-        return this;
-    }
-
-
-
     protected DataSinkContentHandler m_wrappedDataSinkContentHandler;
 
 
@@ -78,23 +62,6 @@ public class PrintlnContentHandler extends DataSinkContentHandler
         super();
         m_granularity = granularity;
     }
-
-
-
-    public PrintlnContentHandler setGranularity(Granularity granularity)
-    {
-        m_granularity = granularity;
-        
-        return this;
-    }
-
-
-
-    public Granularity getGranularity()
-    {
-        return m_granularity;
-    }
-
 
 
 
@@ -132,6 +99,7 @@ public class PrintlnContentHandler extends DataSinkContentHandler
 
 
 
+
     public PrintlnContentHandler(Metadata metadata, Granularity granularity, DataSinkContentHandler wrappedDataSinkContentHandler)
     {
         super(metadata);
@@ -142,11 +110,68 @@ public class PrintlnContentHandler extends DataSinkContentHandler
 
 
 
+    public Granularity getGranularity()
+    {
+        return m_granularity;
+    }
+
+
+
     public DataSinkContentHandler getWrappedDataSinkContentHandler()
     {
         return m_wrappedDataSinkContentHandler;
     }
 
+
+
+    public boolean isShowOnlyErrors()
+    {
+        return m_showOnlyErrors;
+    }
+
+
+
+    @Override
+    public void processErrorData(Metadata metadata)
+    {
+        StringBuilder strbMessage = new StringBuilder();
+
+        if(m_granularity != Granularity.nothing) strbMessage.append("## PrintlnContentHandler ERROR data ##########################\n");
+
+        if(m_granularity == Granularity.all || m_granularity == Granularity.title || m_granularity == Granularity.titlePlusMetadata
+                || m_granularity == Granularity.titlePlusFulltext)
+        {
+            String strInfo = metadata.get(IncrementalCrawlingHistory.dataEntityExistsID);
+            if(strInfo == null) strInfo = metadata.get(DublinCore.SOURCE);
+            if(strInfo == null) strInfo = metadata.get(Metadata.RESOURCE_NAME_KEY);
+
+            strbMessage.append(strInfo).append("\n");
+        }
+
+
+        if(m_granularity == Granularity.all || m_granularity == Granularity.metadata || m_granularity == Granularity.titlePlusMetadata)
+        {
+            // errorMessage
+            // errorStacktrace
+            strbMessage.append("## metadata:\n");
+            for (String strFieldName : metadata.names())
+            {
+                for (String strValue : metadata.getValues(strFieldName))
+                    strbMessage.append(strFieldName + ": '" + strValue + "'\n");
+            }
+        }
+
+
+
+        if(m_granularity != Granularity.nothing) strbMessage.append("\n");
+
+
+        if(m_granularity != Granularity.nothing) Logger.getLogger(PrintlnContentHandler.class.getName()).info(strbMessage.toString());
+
+
+        if(m_wrappedDataSinkContentHandler != null) m_wrappedDataSinkContentHandler.processErrorData(metadata);
+
+    }
 
 
 
@@ -201,6 +226,7 @@ public class PrintlnContentHandler extends DataSinkContentHandler
 
         if(m_wrappedDataSinkContentHandler != null) m_wrappedDataSinkContentHandler.processModifiedData(metadata, strFulltext);
     }
+
 
 
 
@@ -301,46 +327,20 @@ public class PrintlnContentHandler extends DataSinkContentHandler
 
 
 
-    @Override
-    public void processErrorData(Metadata metadata)
+    public PrintlnContentHandler setGranularity(Granularity granularity)
     {
-        StringBuilder strbMessage = new StringBuilder();
-
-        if(m_granularity != Granularity.nothing) strbMessage.append("## PrintlnContentHandler ERROR data ##########################\n");
-
-        if(m_granularity == Granularity.all || m_granularity == Granularity.title || m_granularity == Granularity.titlePlusMetadata
-                || m_granularity == Granularity.titlePlusFulltext)
-        {
-            String strInfo = metadata.get(IncrementalCrawlingHistory.dataEntityExistsID);
-            if(strInfo == null) strInfo = metadata.get(DublinCore.SOURCE);
-            if(strInfo == null) strInfo = metadata.get(Metadata.RESOURCE_NAME_KEY);
-
-            strbMessage.append(strInfo).append("\n");
-        }
-
-
-        if(m_granularity == Granularity.all || m_granularity == Granularity.metadata || m_granularity == Granularity.titlePlusMetadata)
-        {
-            // errorMessage
-            // errorStacktrace
-            strbMessage.append("## metadata:\n");
-            for (String strFieldName : metadata.names())
-            {
-                for (String strValue : metadata.getValues(strFieldName))
-                    strbMessage.append(strFieldName + ": '" + strValue + "'\n");
-            }
-        }
+        m_granularity = granularity;
+        
+        return this;
+    }
 
 
 
-        if(m_granularity != Granularity.nothing) strbMessage.append("\n");
-
-
-        if(m_granularity != Granularity.nothing) Logger.getLogger(PrintlnContentHandler.class.getName()).info(strbMessage.toString());
-
-
-        if(m_wrappedDataSinkContentHandler != null) m_wrappedDataSinkContentHandler.processErrorData(metadata);
-
+    public PrintlnContentHandler setShowOnlyErrors(boolean showOnlyErrors)
+    {
+        m_showOnlyErrors = showOnlyErrors;
+        
+        return this;
     }
 
 

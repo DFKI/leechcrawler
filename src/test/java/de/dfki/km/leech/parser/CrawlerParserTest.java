@@ -34,6 +34,7 @@ public class CrawlerParserTest
 
     protected class StopRunnable implements Runnable
     {
+
         @Override
         public void run()
         {
@@ -72,7 +73,7 @@ public class CrawlerParserTest
 
 
 
-    CrawlerContext m_crawlerContext;
+     CrawlerContext m_crawlerContext;
 
 
 
@@ -233,22 +234,42 @@ public class CrawlerParserTest
 
 
 
-        Granularity bVerbose = Granularity.title;
+        Granularity granularity = Granularity.title;
 
 
-        m_crawlerContext = new CrawlerContext().setIncrementalCrawlingHistoryPath("./history/forResourceDir");
+        final CrawlerContext crawlerContext = new CrawlerContext().setIncrementalCrawlingHistoryPath("./history/forResourceDir");
 
         System.out.println("§§§ will start indexing");
 
 
         // jetzt noch ein Thread, der des Teil stoppt
 
-        Thread stop = new Thread(new StopRunnable(), "stop 1");
+        Thread stop = new Thread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                try
+                {
+                    Thread.sleep(2000);
+
+                    System.out.println("request stop");
+                    crawlerContext.requestStop();
+
+                    System.out.println("stopped finished");
+                }
+                catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+
+        }, "stop thread");
 
         stop.start();
 
 
-        leech.parse(new File("resource/testData"), new PrintlnContentHandler(bVerbose), m_crawlerContext.createParseContext());
+        leech.parse(new File("resource/testData"), new PrintlnContentHandler(granularity), crawlerContext.createParseContext());
 
 
 
@@ -259,7 +280,7 @@ public class CrawlerParserTest
         stop.start();
 
 
-        leech.parse(new File("resource/testData"), new PrintlnContentHandler(bVerbose), m_crawlerContext.createParseContext());
+        leech.parse(new File("resource/testData"), new PrintlnContentHandler(granularity), crawlerContext.createParseContext());
 
 
 
@@ -370,24 +391,30 @@ public class CrawlerParserTest
 
         Leech leech = new Leech();
         CrawlerContext crawlerContext = new CrawlerContext().setIncrementalCrawlingHistoryPath("./history/4dataDirOrFile");
-        leech.parse("URL4FileOrDirOrWebsiteOrImapfolderOrImapmessageOrSomething", new DataSinkContentHandlerAdapter()
+
+
+
+
+        leech.parse("URL4FileOrDirOrWebsiteOrImapfolderOrImapmessageOrSomething", new DataSinkContentHandler()
         {
             @Override
             public void processNewData(Metadata metadata, String strFulltext)
             {
                 System.out.println("Extracted metadata:\n" + metadata + "\nExtracted fulltext:\n" + strFulltext);
             }
-            
             @Override
             public void processModifiedData(Metadata metadata, String strFulltext)
             {
             }
-            
             @Override
             public void processRemovedData(Metadata metadata)
             {
             }
-            
+            @Override
+            public void processErrorData(Metadata metadata)
+            {
+            }
+
         }, crawlerContext.createParseContext());
 
     }
