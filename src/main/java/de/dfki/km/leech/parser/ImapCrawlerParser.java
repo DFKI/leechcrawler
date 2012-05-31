@@ -1,3 +1,24 @@
+/*
+    Leech - crawling capabilities for Apache Tika
+    
+    Copyright (C) 2012 DFKI GmbH, Author: Christian Reuschling
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+    Contact us by mail: christian.reuschling@dfki.de
+*/
+
 package de.dfki.km.leech.parser;
 
 
@@ -34,12 +55,6 @@ import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
-
-import com.sun.mail.iap.ProtocolException;
-import com.sun.mail.iap.Response;
-import com.sun.mail.imap.IMAPFolder;
-import com.sun.mail.imap.protocol.BASE64MailboxEncoder;
-import com.sun.mail.imap.protocol.IMAPProtocol;
 
 import de.dfki.km.leech.Leech;
 import de.dfki.km.leech.config.CrawlerContext;
@@ -463,48 +478,6 @@ public class ImapCrawlerParser extends CrawlerParser
             if(stream != null) stream.close();
         }
 
-    }
-
-
-
-    private boolean uidsAreSticky(final Folder folder) throws MessagingException
-    {
-
-        // TODO brauchen wir diese Methode noch? Wenn wir mit den momentanen MessageUIDs crawlen, und die dataExistsId aus dem header generieren
-        // (folder+messageId), dann darf sich die UID gerne jedesmal pro message ändern - wir gehen eh alle durch, und checken dann eh nicht nach der
-        // UID, ob des Teil schon mal gecrawlt wurde.
-        if(m_hsImapFolder2Stickyness.containsKey(folder)) return m_hsImapFolder2Stickyness.get(folder);
-
-        Boolean bStickyness = (Boolean) ((IMAPFolder) folder).doCommand(new IMAPFolder.ProtocolCommand()
-        {
-            @Override
-            public Object doCommand(IMAPProtocol p) throws ProtocolException
-            {
-                String fullName = BASE64MailboxEncoder.encode(((IMAPFolder) folder).getFullName());
-                Response[] resps = p.command("EXAMINE " + fullName, null);
-                if(resps == null)
-                {
-                    return Boolean.TRUE;
-                }
-                else
-                {
-                    for (Response res : resps)
-                    {
-                        String rest = res.getRest();
-                        if(rest.contains("UIDNOTSTICKY"))
-                        {
-                            return Boolean.FALSE;
-                        }
-                    }
-                    return Boolean.TRUE;
-                }
-            }
-        });
-
-        m_hsImapFolder2Stickyness.put(folder, bStickyness);
-
-
-        return bStickyness.booleanValue();
     }
 
 

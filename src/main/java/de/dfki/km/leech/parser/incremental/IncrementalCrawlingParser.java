@@ -1,3 +1,24 @@
+/*
+    Leech - crawling capabilities for Apache Tika
+    
+    Copyright (C) 2012 DFKI GmbH, Author: Christian Reuschling
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+    Contact us by mail: christian.reuschling@dfki.de
+*/
+
 package de.dfki.km.leech.parser.incremental;
 
 
@@ -135,8 +156,6 @@ public class IncrementalCrawlingParser extends ParserDecorator
                 // wenn wir unmodified sind, dann wollen wir nur weitermachen, wenn es ein crawlerParser ist - evtl. sind verlinkte Inhalte ja auch
                 // modified
                 String strDataEntityModState = metadata.get(IncrementalCrawlingParser.DATA_ENTITY_MODIFICATION_STATE);
-                // TODO: kann man das hier auch machen, ohne den detector? Hier werden teuer unsere DataStreams initialisiert, auch wenn das Teil nicht
-                // prozessiert werden soll
                 MediaType type = m_leech.getDetector().detect(stream, metadata);
                 Parser finalParser4Type = TikaUtils.getParser4Type((CompositeParser) getWrappedParser(), type, context);
 
