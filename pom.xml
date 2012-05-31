@@ -4,7 +4,7 @@
 	<groupId>de.dfki.km</groupId>
 	<artifactId>leech</artifactId>
 	<packaging>jar</packaging>
-	<version>0.1-SNAPSHOT</version>
+	<version>0.9-SNAPSHOT</version>
 	<name>leech</name>
 	<url>http://maven.apache.org</url>
 	<dependencies>
