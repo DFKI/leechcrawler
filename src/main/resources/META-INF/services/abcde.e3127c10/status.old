@@ -1,8 +1,0 @@
-abcde-version=2.3.99-$Revision: 222M $
-cdparanoia-audio-tracks=16
-cddbmethod=cddb
-cddb-statcomplete
-cddb-querycomplete
-cddb-read-1-complete
-cddb-choice=1
-cddb-readcomplete
