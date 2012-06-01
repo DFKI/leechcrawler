@@ -1,0 +1,11 @@
+# Ignore everything in this directory
+.classpath
+.project
+.settings/
+history/
+praeampel.txt
+resource/
+target/
+
+# Except this file
+#!.gitignore
