@@ -1,23 +1,18 @@
 /*
-    Leech - crawling capabilities for Apache Tika
-    
-    Copyright (C) 2012 DFKI GmbH, Author: Christian Reuschling
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-    Contact us by mail: christian.reuschling@dfki.de
-*/
+ * Leech - crawling capabilities for Apache Tika
+ * 
+ * Copyright (C) 2012 DFKI GmbH, Author: Christian Reuschling
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * Contact us by mail: christian.reuschling@dfki.de
+ */
 
 package de.dfki.km.leech;
 
@@ -109,13 +104,21 @@ public class Leech extends Tika
 
 
     @Override
+    public String detect(File file) throws IOException
+    {
+        return detect(new URLName(file.toURI().toURL()));
+    }
+
+
+
+
+    @Override
     public String detect(URL url)
     {
         throw new UnsupportedOperationException(
                 "The java.net.URL class methods are not supported because our mechanism supporting new protocols and the according stream creation differ.\n"
                         + "Use the according URLName method instead");
     }
-
 
 
 
@@ -188,6 +191,14 @@ public class Leech extends Tika
     public Parser getParser()
     {
         return new URLFilteringParser(new IncrementalCrawlingParser(super.getParser()));
+    }
+
+
+
+    @Override
+    public Reader parse(File file) throws IOException
+    {
+        return parse(new URLName(file.toURI().toURL()));
     }
 
 
@@ -297,6 +308,8 @@ public class Leech extends Tika
 
 
 
+
+
     /**
      * Parse a directory or a file by specifying a ParseContext config. You can pass in an CrawlerContext instance to e.g. set the ContentHandler for
      * recursive crawls. This one will be newly instantiated with the default constructor for every recursive call. Alternatively, you can also set a
@@ -345,6 +358,8 @@ public class Leech extends Tika
 
 
 
+
+
     /**
      * Parse a stream with a callback-contenthandler. We recommend to use an own implementation of DataSinkContentHandler. In the case you want to use
      * another ContentHandler, be aware that this Object is re-used at every recursive invocation. So make sure that this is possible, and all
@@ -383,10 +398,6 @@ public class Leech extends Tika
             ExceptionUtils.handleException(e, null, metadata, context.get(CrawlerContext.class), context, 0, handler);
         }
     }
-
-
-
-
 
 
 
@@ -733,6 +744,14 @@ public class Leech extends Tika
             if(stream != null) stream.close();
         }
 
+    }
+
+
+
+    @Override
+    public String parseToString(File file) throws IOException, TikaException
+    {
+        return parseToString(new URLName(file.toURI().toURL()));
     }
 
 

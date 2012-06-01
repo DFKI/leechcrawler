@@ -6,7 +6,20 @@
 	<packaging>jar</packaging>
 	<version>0.9-SNAPSHOT</version>
 	<name>leech</name>
-	<url>http://maven.apache.org</url>
+	<url>http://leechcrawler.github.com/leech/</url>
+
+
+	<distributionManagement>
+		<repository>
+			<!-- <id>artifactory2-libs-releases-local</id> -->
+			<id>artifactory2-libs-snapshots-local</id>
+			<name>DFKI Artifactory</name>
+			<url>http://www.dfki.uni-kl.de/artifactory/</url>
+		</repository>
+	</distributionManagement>
+
+
+
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
