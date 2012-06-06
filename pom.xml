@@ -31,13 +31,31 @@
 	
 	
 	
-	<distributionManagement>
-		<repository>
-			<!-- <id>artifactory2-libs-releases-local</id> -->
+	<!--<distributionManagement>-->
+		<!--<repository>
+			 <id>artifactory2-libs-releases-local</id> 
 			<id>artifactory2-libs-snapshots-local</id>
 			<name>DFKI Artifactory</name>
 			<url>http://www.dfki.uni-kl.de/artifactory/</url>
+		</repository>-->
+		<!--<snapshotRepository>
+			<id>artifactory2-libs-snapshots-local</id>
+			<url>http://www.dfki.uni-kl.de/artifactory/libs-snapshots-local</url>
+		</snapshotRepository>
+	
+	</distributionManagement>-->
+	
+	
+	<distributionManagement>
+		<repository>
+			<id>artifactory2-libs-releases-local</id>
+			<url>http://www.dfki.uni-kl.de/artifactory2/libs-releases-local</url>
 		</repository>
+		<snapshotRepository>
+			<id>artifactory2-libs-snapshots-local</id>
+			<url>http://www.dfki.uni-kl.de/artifactory2/libs-snapshots-local</url>
+			<uniqueVersion>false</uniqueVersion>
+		</snapshotRepository>
 	</distributionManagement>
 	
 	
@@ -91,7 +109,7 @@
 		</repository>
 	</repositories>
 	
-		
+	
 	
 	<build>
 		<pluginManagement>
@@ -263,7 +281,7 @@
 			<properties>
 				<binsrc-finalname>${project.build.finalName}-binsrc</binsrc-finalname>
 			</properties>
-		
+			
 			<build>
 				<plugins>
 		            <!-- install binsrc.jar -->
@@ -312,11 +330,11 @@
 							</execution>
 						</executions>
 					</plugin>
-		
+					
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-antrun-plugin</artifactId>
-		
+						
 						<executions>
 							<execution>
 								<id>package-binsrc</id>
@@ -330,14 +348,14 @@
 										<property name="destfile" value="${project.build.directory}/${binsrc-finalname}.jar"/>
 										<property name="classes-jar" value="${project.build.directory}/${project.build.finalName}.jar"/>
 										<property name="sources-jar" value="${project.build.directory}/${project.build.finalName}-sources.jar"/>
-		
+										
 										<echo message="binsrc-file: ${destfile}" />
 										<echo message="build folder: ${project.build.directory}" />
 										<echo message="classes-jar: ${classes-jar}" />
 										<echo message="sources-jar: ${sources-jar}" />
-		
+										
 										<delete file="${destfile}" />
-		
+										
 										<jar destfile="${destfile}" filesetmanifest="mergewithoutmain">
 											<zipfileset excludes="META-INF/*.SF" src="${classes-jar}"/>
 											<zipfileset excludes="META-INF/*.SF" src="${sources-jar}"/>
