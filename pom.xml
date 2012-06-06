@@ -31,20 +31,6 @@
 	
 	
 	
-	<!--<distributionManagement>-->
-		<!--<repository>
-			 <id>artifactory2-libs-releases-local</id> 
-			<id>artifactory2-libs-snapshots-local</id>
-			<name>DFKI Artifactory</name>
-			<url>http://www.dfki.uni-kl.de/artifactory/</url>
-		</repository>-->
-		<!--<snapshotRepository>
-			<id>artifactory2-libs-snapshots-local</id>
-			<url>http://www.dfki.uni-kl.de/artifactory/libs-snapshots-local</url>
-		</snapshotRepository>
-	
-	</distributionManagement>-->
-	
 	
 	<distributionManagement>
 		<repository>
