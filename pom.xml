@@ -28,6 +28,18 @@
 	
 	
 	
+	<repositories>
+		<repository>
+			<id>info-bliki-repository</id>
+			<url>http://gwtwiki.googlecode.com/svn/maven-repository/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 	
 	
 	
@@ -82,18 +94,6 @@
 	</dependencies>
 	
 	
-	<repositories>
-		<repository>
-			<id>info-bliki-repository</id>
-			<url>http://gwtwiki.googlecode.com/svn/maven-repository/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
 	
 	
 	
