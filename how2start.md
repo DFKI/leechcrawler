@@ -24,4 +24,6 @@ and in the \<dependencies\> section
   	</dependency>
 
 
-**You can also [download](https://github.com/leechcrawler/leech/downloads) all needed libraries.**
+**You can also [download](https://github.com/leechcrawler/leech/downloads) all needed libraries in the case you don't use maven.**
+
+**As a next step, try out our [Code snippets / examples](https://github.com/leechcrawler/leech/blob/master/codeSnippets.md) section.**
