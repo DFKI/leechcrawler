@@ -22,3 +22,6 @@ and in the \<dependencies\> section
   	   <artifactId>leech</artifactId>
   	   <version>0.9-SNAPSHOT</version>
   	</dependency>
+
+
+**You can also [download](https://github.com/leechcrawler/leech/downloads) all needed libraries.**
