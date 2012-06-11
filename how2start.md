@@ -20,5 +20,10 @@ and in the \<dependencies\> section
   	<dependency>
   	   <groupId>de.dfki.km</groupId>
   	   <artifactId>leech</artifactId>
-  	   <version>0.9-SNAPSHOT</version>
+  	   <version>0.9</version>
   	</dependency>
+
+
+**You can also [download](https://github.com/leechcrawler/leech/downloads) all needed libraries in the case you don't use maven.**
+
+**As a next step, try out our [Code snippets / examples](https://github.com/leechcrawler/leech/blob/master/codeSnippets.md) section.**
