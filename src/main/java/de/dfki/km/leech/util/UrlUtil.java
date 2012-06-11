@@ -18,6 +18,8 @@ package de.dfki.km.leech.util;
 
 
 
+import java.io.File;
+import java.net.MalformedURLException;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
@@ -32,30 +34,6 @@ import javax.mail.URLName;
  */
 public class UrlUtil
 {
-
-    /**
-     * Remove relative references and "mistakes" like double slashes from the path.
-     * 
-     * @param path The path to normalize.
-     * @return The normalized path.
-     */
-    public static String normalizePath(String path)
-    {
-        String result = path;
-
-        // replace all double slashes with a single slash
-        result = replace("//", "/", result);
-
-        // replace all references to the current directory with nothing
-        result = replace("/./", "/", result);
-
-        // replace all references to the parent directory with nothing
-        result = result.replaceAll("/[^/]+/\\.\\./", "/");
-
-        return result;
-    }
-
-
 
     public static String extractFolder(URLName url)
     {
@@ -87,56 +65,25 @@ public class UrlUtil
 
 
     /**
-     * Substitute String "old" by String "new" in String "text" everywhere.
+     * Remove relative references and "mistakes" like double slashes from the path.
      * 
-     * @param olds The String to be substituted.
-     * @param news The String containing the new content.
-     * @param text The String in which the substitution is done.
-     * @return The result String containing the substitutions; if no substitutions were made, the specified 'text' instance is returned.
+     * @param path The path to normalize.
+     * @return The normalized path.
      */
-    protected static String replace(String olds, String news, String text)
+    public static String normalizePath(String path)
     {
-        if(olds == null || olds.length() == 0)
-        {
-            // nothing to substitute.
-            return text;
-        }
-        if(text == null)
-        {
-            return null;
-        }
+        String result = path;
 
-        // search for any occurences of 'olds'.
-        int oldsIndex = text.indexOf(olds);
-        if(oldsIndex == -1)
-        {
-            // Nothing to substitute.
-            return text;
-        }
+        // replace all double slashes with a single slash
+        result = replace("//", "/", result);
 
-        // we're going to do some substitutions.
-        StringBuilder buffer = new StringBuilder(text.length());
-        int prevIndex = 0;
+        // replace all references to the current directory with nothing
+        result = replace("/./", "/", result);
 
-        while (oldsIndex >= 0)
-        {
-            // first, add the text between the previous and the current occurence
-            buffer.append(text.substring(prevIndex, oldsIndex));
+        // replace all references to the parent directory with nothing
+        result = result.replaceAll("/[^/]+/\\.\\./", "/");
 
-            // then add the substition pattern
-            buffer.append(news);
-
-            // remember the index for the next loop
-            prevIndex = oldsIndex + olds.length();
-
-            // search for the next occurence
-            oldsIndex = text.indexOf(olds, prevIndex);
-        }
-
-        // add the part after the last occurence
-        buffer.append(text.substring(prevIndex));
-
-        return buffer.toString();
+        return result;
     }
 
 
@@ -207,7 +154,7 @@ public class UrlUtil
 
             // normalize the fields
             protocol = protocol.toLowerCase();
-            host = host.toLowerCase();
+            if(host != null) host = host.toLowerCase();
 
 
             String file = "";
@@ -229,5 +176,85 @@ public class UrlUtil
         {
             throw new RuntimeException("Error while normalizing the url " + url.toString() + ". Is it a well formed URL? ");
         }
+    }
+
+
+
+    /**
+     * Substitute String "old" by String "new" in String "text" everywhere.
+     * 
+     * @param olds The String to be substituted.
+     * @param news The String containing the new content.
+     * @param text The String in which the substitution is done.
+     * @return The result String containing the substitutions; if no substitutions were made, the specified 'text' instance is returned.
+     */
+    protected static String replace(String olds, String news, String text)
+    {
+        if(olds == null || olds.length() == 0)
+        {
+            // nothing to substitute.
+            return text;
+        }
+        if(text == null)
+        {
+            return null;
+        }
+
+        // search for any occurences of 'olds'.
+        int oldsIndex = text.indexOf(olds);
+        if(oldsIndex == -1)
+        {
+            // Nothing to substitute.
+            return text;
+        }
+
+        // we're going to do some substitutions.
+        StringBuilder buffer = new StringBuilder(text.length());
+        int prevIndex = 0;
+
+        while (oldsIndex >= 0)
+        {
+            // first, add the text between the previous and the current occurence
+            buffer.append(text.substring(prevIndex, oldsIndex));
+
+            // then add the substition pattern
+            buffer.append(news);
+
+            // remember the index for the next loop
+            prevIndex = oldsIndex + olds.length();
+
+            // search for the next occurence
+            oldsIndex = text.indexOf(olds, prevIndex);
+        }
+
+        // add the part after the last occurence
+        buffer.append(text.substring(prevIndex));
+
+        return buffer.toString();
+    }
+
+
+
+
+
+    static public URLName sourceString2URL(String strSourceString) throws MalformedURLException
+    {
+        URLName url;
+
+        try
+        {
+            url = new URLName(strSourceString);
+
+            // wenn kein Protokoll angegeben ist, kucken wir mal, ob es ein File ist
+            if(url.getProtocol() == null) url = new URLName(new File(strSourceString).toURI().toURL());
+
+        }
+        catch (Exception e)
+        {
+            // wenn die URL nicht geparst werden kann, dann probieren wir auch mal obs ein File ist
+            url = new URLName(new File(strSourceString).toURI().toURL());
+        }
+
+        return url;
     }
 }

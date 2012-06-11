@@ -1,4 +1,3 @@
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.dfki.km</groupId>
@@ -75,7 +74,7 @@
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-core</artifactId>
-			<version>3.5.0</version>
+			<version>3.6.0</version>
 		</dependency>
 		
 		
@@ -107,7 +106,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<!--<version>2.3.2</version>-->
+					<version>2.3.2</version>
 					<configuration>
 						<source>${maven.compiler.source}</source>
 						<target>${maven.compiler.target}</target>
@@ -117,7 +116,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-javadoc-plugin</artifactId>
-					<!--<version>2.5</version>-->
+					<version>2.5</version>
 					<configuration>
 						<encoding>${maven.compiler.encoding}</encoding>
 						<quiet>true</quiet>
@@ -126,7 +125,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-resources-plugin</artifactId>
-					<!--<version>2.5</version>-->
+					<version>2.5</version>
 					<configuration>
 						<encoding>${maven.compiler.encoding}</encoding>
 					</configuration>
@@ -134,22 +133,22 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-source-plugin</artifactId>
-					<!--<version>2.1.2</version>-->
+					<version>2.1.2</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-deploy-plugin</artifactId>
-					<!--<version>2.5</version>-->
+					<version>2.5</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-install-plugin</artifactId>
-					<!--<version>2.3.1</version>-->
+					<version>2.3.1</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-release-plugin</artifactId>
-					<!--<version>2.2</version>-->
+					<version>2.2</version>
 				</plugin>
 				
 				<plugin>
@@ -176,7 +175,8 @@
 			-->
 			<id>javadoc</id>
 			<activation>
-				<property>  <!-- does not work for me, why???? -->
+			    <activeByDefault>true</activeByDefault>
+				<property>
 					<name>javadoc</name>
 				</property>
 			</activation>
@@ -203,7 +203,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
-						<!--<version>2.5</version>-->
+						<version>2.5</version>
 						<reportSets>
 							<reportSet>
 								<id>javadoc</id>
@@ -226,7 +226,7 @@
 			<activation>
 				<activeByDefault>true</activeByDefault>
 				<property>
-					<name>package-binsrc</name>
+					<name>package-source</name>
 				</property>
 			</activation>
 			
@@ -234,7 +234,7 @@
 				<plugins>
 					<plugin>
 						<artifactId>maven-source-plugin</artifactId>
-						<!--<version>2.1.2</version>-->
+						<version>2.1.2</version>
 						<executions>
 							<execution>
 								<id>package-source-jar</id>
@@ -256,115 +256,13 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-assembly-plugin</artifactId>
-						<!--<version>2.2-beta-5</version>-->
+						<version>2.3</version>
 					</plugin>
 				</plugins>
 			</build>
 		</profile>
 		
-		<profile>
-			<id>package-binsrc</id>
-		    <!-- additionally packages a <finalname>-binsrc.jar containing classes and sources in one jar. -->
-		    <!-- Depends on package-source. --> 
-            <!-- (since package-binsrc and package-source attach goals to the same phase and goal can not
-                  be ordered, it happens that package-binsrc runs before package-src.
-                  activation via -Dpackage-binsrc helps)  -->
-			<activation>
-				<property>
-					<name>package-binsrc</name>
-				</property>
-			</activation>
-			<properties>
-				<binsrc-finalname>${project.build.finalName}-binsrc</binsrc-finalname>
-			</properties>
-			
-			<build>
-				<plugins>
-		            <!-- install binsrc.jar -->
-					<plugin>
-						<artifactId>maven-install-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>binsrc-install</id>
-								<phase>install</phase>
-								<goals>
-									<goal>install-file</goal>
-								</goals>
-								<inherited>false</inherited>
-								<configuration>
-									<file>${project.build.directory}/${binsrc-finalname}.jar</file>
-									<groupId>${project.groupId}</groupId>
-									<artifactId>${project.artifactId}</artifactId>
-									<version>${project.version}</version>
-									<packaging>jar</packaging>
-									<classifier>binsrc</classifier>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
 		
-                    <!-- deploy binsrc.jar -->
-					<plugin>
-						<artifactId>maven-deploy-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>deploy-binsrc</id>
-								<phase>deploy</phase>
-								<goals>
-									<goal>deploy-file</goal>
-								</goals>
-								<inherited>true</inherited>
-								<configuration>
-									<url>${project.distributionManagement.repository.url}</url>
-									<file>${project.build.directory}/${binsrc-finalname}.jar</file>
-									<groupId>${project.groupId}</groupId>
-									<artifactId>${project.artifactId}</artifactId>
-									<version>${project.version}</version>
-									<packaging>jar</packaging>
-									<classifier>binsrc</classifier>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-					
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-antrun-plugin</artifactId>
-						
-						<executions>
-							<execution>
-								<id>package-binsrc</id>
-								<phase>package</phase>
-								<goals>
-									<goal>run</goal>
-								</goals>
-								<inherited>false</inherited>
-								<configuration>
-									<tasks>
-										<property name="destfile" value="${project.build.directory}/${binsrc-finalname}.jar"/>
-										<property name="classes-jar" value="${project.build.directory}/${project.build.finalName}.jar"/>
-										<property name="sources-jar" value="${project.build.directory}/${project.build.finalName}-sources.jar"/>
-										
-										<echo message="binsrc-file: ${destfile}" />
-										<echo message="build folder: ${project.build.directory}" />
-										<echo message="classes-jar: ${classes-jar}" />
-										<echo message="sources-jar: ${sources-jar}" />
-										
-										<delete file="${destfile}" />
-										
-										<jar destfile="${destfile}" filesetmanifest="mergewithoutmain">
-											<zipfileset excludes="META-INF/*.SF" src="${classes-jar}"/>
-											<zipfileset excludes="META-INF/*.SF" src="${sources-jar}"/>
-										</jar>
-									</tasks>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		
-		</profile>
 	</profiles>
 
 

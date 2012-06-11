@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -83,8 +82,6 @@ import de.dfki.km.leech.util.UrlUtil;
  * crawlerContext.requestStop()
  * </code>
  * 
- * TODO: diese methoden sollten noch getestet werden - insbesondere ob die geerbten single-file-tika-methoden noch funktionieren, und da nicht unnötig
- * inkrementelles usw eingeschaltet ist
  * 
  * @author Christian Reuschling, Dipl.Ing.(BA)
  */
@@ -360,131 +357,7 @@ public class Leech extends Tika
 
 
 
-    /**
-     * Parse a stream with a callback-contenthandler. We recommend to use an own implementation of DataSinkContentHandler. In the case you want to use
-     * another ContentHandler, be aware that this Object is re-used at every recursive invocation. So make sure that this is possible, and all
-     * internal members (e.g. writers, etc.) are re-initialized at the new invocation (maybe clear them inside endDocument(), or inside
-     * startDocument()). In the case the handler does not have any internal states that are critical, there should be no problems at all.In the case
-     * you have a critical handler with a default constructor, you can also set the class name inside the CrawlerContext object inside ParseContext.
-     * In this case, a new handler object will be created at every recursive call..
-     * 
-     * @param stream the stream you want to crawl/extract content from
-     * @param handler the handler that should handle the extracted data
-     * 
-     * @throws IOException
-     * @throws SAXException
-     * @throws TikaException
-     */
-    public void parse(InputStream stream, ContentHandler handler) throws IOException, SAXException, TikaException
-    {
-        ParseContext context = new ParseContext();
-        context.set(Parser.class, super.getParser());
-
-        context.set(CrawlerContext.class, new CrawlerContext().setContentHandler(handler));
-
-        Metadata metadata;
-
-        if(handler instanceof DataSinkContentHandler)
-            metadata = ((DataSinkContentHandler) handler).getMetaData();
-        else
-            metadata = new Metadata();
-
-        try
-        {
-            getParser().parse(stream, handler, metadata, context);
-        }
-        catch (Exception e)
-        {
-            ExceptionUtils.handleException(e, null, metadata, context.get(CrawlerContext.class), context, 0, handler);
-        }
-    }
-
-
-
-    /**
-     * Parse a directory or a file with a callback-contenthandler. We recommend to use an own implementation of DataSinkContentHandler. In the case
-     * you want to use another ContentHandler, be aware that this Object is re-used at every recursive invocation. So make sure that this is possible,
-     * and all internal members (e.g. writers, etc.) are re-initialized at the new invocation (maybe clear them inside endDocument(), or inside
-     * startDocument()). In the case the handler does not have any internal states that are critical, there should be no problems at all.In the case
-     * you have a critical handler with a default constructor, you can also set the class name inside the CrawlerContext object inside ParseContext.
-     * In this case, a new handler object will be created at every recursive call..
-     * 
-     * @param stream the stream you want to crawl/extract content from
-     * @param handler the handler that should handle the extracted data
-     * @param context the parsing context to use. An entry with the configured parser will be added by the method. You can pass in an CrawlerContext
-     *            instance to e.g. set the contentHandler for recursive crawls or enable incremental crawling.
-     * 
-     * @throws IOException
-     * @throws SAXException
-     * @throws TikaException
-     */
-    public void parse(InputStream stream, ContentHandler handler, ParseContext context) throws IOException, SAXException, TikaException
-    {
-        context.set(Parser.class, super.getParser());
-
-        CrawlerContext crawlerContext = context.get(CrawlerContext.class);
-        if(crawlerContext == null)
-        {
-            crawlerContext = new CrawlerContext();
-            context.set(CrawlerContext.class, crawlerContext);
-        }
-        crawlerContext.setContentHandler(handler);
-
-        Metadata metadata;
-
-        if(handler instanceof DataSinkContentHandler)
-            metadata = ((DataSinkContentHandler) handler).getMetaData();
-        else
-            metadata = new Metadata();
-
-        try
-        {
-            getParser().parse(stream, handler, metadata, context);
-        }
-        catch (Exception e)
-        {
-            ExceptionUtils.handleException(e, null, metadata, context.get(CrawlerContext.class), context, 0, handler);
-        }
-    }
-
-
-
-    /**
-     * Parse a stream by specifying a ParseContext config. You can pass in an CrawlerContext instance to e.g. set the ContentHandler for recursive
-     * crawls. This one will be newly instantiated with the default constructor for every recursive call.
-     * 
-     * @param stream the stream you want to crawl/extract content from
-     * @param context the parsing context to use. An entry with the configured parser will be added by the method. You can pass in an CrawlerContext
-     *            instance to e.g. set the contentHandler for recursive crawls or enable incremental crawling.
-     * 
-     * @throws IOException
-     * @throws SAXException
-     * @throws TikaException
-     */
-    public void parse(InputStream stream, ParseContext context) throws IOException, SAXException, TikaException
-    {
-        context.set(Parser.class, super.getParser());
-
-
-        ContentHandler handler = getContentHandler(context);
-
-        Metadata metadata;
-
-        if(handler instanceof DataSinkContentHandler)
-            metadata = ((DataSinkContentHandler) handler).getMetaData();
-        else
-            metadata = new Metadata();
-
-        try
-        {
-            getParser().parse(stream, handler, metadata, context);
-        }
-        catch (Exception e)
-        {
-            ExceptionUtils.handleException(e, null, metadata, new CrawlerContext(), context, 0, handler);
-        }
-    }
-
+   
 
 
     /**
@@ -505,7 +378,7 @@ public class Leech extends Tika
      */
     public void parse(String strSourceString, ContentHandler handler) throws IOException, SAXException, TikaException
     {
-        parse(sourceString2URL(strSourceString), handler);
+        parse(UrlUtil.sourceString2URL(strSourceString), handler);
     }
 
 
@@ -531,7 +404,7 @@ public class Leech extends Tika
      */
     public void parse(String strSourceString, ContentHandler handler, ParseContext context) throws IOException, SAXException, TikaException
     {
-        parse(sourceString2URL(strSourceString), handler, context);
+        parse(UrlUtil.sourceString2URL(strSourceString), handler, context);
     }
 
 
@@ -552,7 +425,7 @@ public class Leech extends Tika
      */
     public void parse(String strSourceString, ParseContext context) throws IOException, SAXException, TikaException
     {
-        parse(sourceString2URL(strSourceString), context);
+        parse(UrlUtil.sourceString2URL(strSourceString), context);
     }
 
 
@@ -789,23 +662,7 @@ public class Leech extends Tika
 
 
 
-    protected URLName sourceString2URL(String strSourceString) throws MalformedURLException
-    {
-        URLName url;
-
-        try
-        {
-            url = new URLName(strSourceString);
-
-        }
-        catch (Exception e)
-        {
-            // wenn die URL nicht geparst werden kann, dann probieren wir mal obs ein File ist
-            url = new URLName(new File(strSourceString).toURI().toURL());
-        }
-
-        return url;
-    }
+    
 
 
 

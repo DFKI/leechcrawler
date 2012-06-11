@@ -187,7 +187,7 @@ abstract public class URLStreamProvider
      * is only for identifying the occurence, not to check whether it has changed (e.g. a filename). Needed by Leech in order to perform incremental
      * crawling.<br>
      * {@link IncrementalCrawlingHistory#dataEntityContentFingerprint} : some fingerprint/identifier that gives the hint whether the content of the
-     * data entity has changed, e.g. the modifed date of a file. Needed by Leech in order to perform incremental crawling.<br>
+     * data entity has changed, e.g. the modified date of a file. Needed by Leech in order to perform incremental crawling.<br>
      * <br>
      * <b>IMPORTANT 2</b><br>
      * It is very good style to check whether there exists some metadata inside the parameter object, and only generate these entries NOT INSIDE YET.
