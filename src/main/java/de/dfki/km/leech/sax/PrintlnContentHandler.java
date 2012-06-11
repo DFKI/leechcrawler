@@ -44,14 +44,14 @@ public class PrintlnContentHandler extends DataSinkContentHandler
 {
 
 
-    static public enum Granularity {
+    static public enum Verbosity {
         all, fulltext, metadata, nothing, title, titlePlusFulltext, titlePlusMetadata
     }
 
 
 
 
-    protected Granularity m_granularity = Granularity.all;
+    protected Verbosity m_verbosity = Verbosity.all;
 
 
     protected boolean m_showOnlyErrors = false;
@@ -78,19 +78,19 @@ public class PrintlnContentHandler extends DataSinkContentHandler
 
 
 
-    public PrintlnContentHandler(Granularity granularity)
+    public PrintlnContentHandler(Verbosity granularity)
     {
         super();
-        m_granularity = granularity;
+        m_verbosity = granularity;
     }
 
 
 
-    public PrintlnContentHandler(Granularity granularity, DataSinkContentHandler wrappedDataSinkContentHandler)
+    public PrintlnContentHandler(Verbosity granularity, DataSinkContentHandler wrappedDataSinkContentHandler)
     {
         super();
 
-        m_granularity = granularity;
+        m_verbosity = granularity;
         m_wrappedDataSinkContentHandler = wrappedDataSinkContentHandler;
     }
 
@@ -112,28 +112,28 @@ public class PrintlnContentHandler extends DataSinkContentHandler
 
 
 
-    public PrintlnContentHandler(Metadata metadata, Granularity granularity)
+    public PrintlnContentHandler(Metadata metadata, Verbosity granularity)
     {
         super(metadata);
-        m_granularity = granularity;
+        m_verbosity = granularity;
     }
 
 
 
 
-    public PrintlnContentHandler(Metadata metadata, Granularity granularity, DataSinkContentHandler wrappedDataSinkContentHandler)
+    public PrintlnContentHandler(Metadata metadata, Verbosity granularity, DataSinkContentHandler wrappedDataSinkContentHandler)
     {
         super(metadata);
 
-        m_granularity = granularity;
+        m_verbosity = granularity;
         m_wrappedDataSinkContentHandler = wrappedDataSinkContentHandler;
     }
 
 
 
-    public Granularity getGranularity()
+    public Verbosity getGranularity()
     {
-        return m_granularity;
+        return m_verbosity;
     }
 
 
@@ -157,10 +157,10 @@ public class PrintlnContentHandler extends DataSinkContentHandler
     {
         StringBuilder strbMessage = new StringBuilder();
 
-        if(m_granularity != Granularity.nothing) strbMessage.append("## PrintlnContentHandler ERROR data ##########################\n");
+        if(m_verbosity != Verbosity.nothing) strbMessage.append("## PrintlnContentHandler ERROR data ##########################\n");
 
-        if(m_granularity == Granularity.all || m_granularity == Granularity.title || m_granularity == Granularity.titlePlusMetadata
-                || m_granularity == Granularity.titlePlusFulltext)
+        if(m_verbosity == Verbosity.all || m_verbosity == Verbosity.title || m_verbosity == Verbosity.titlePlusMetadata
+                || m_verbosity == Verbosity.titlePlusFulltext)
         {
             String strInfo = metadata.get(IncrementalCrawlingHistory.dataEntityExistsID);
             if(strInfo == null) strInfo = metadata.get(DublinCore.SOURCE);
@@ -170,7 +170,7 @@ public class PrintlnContentHandler extends DataSinkContentHandler
         }
 
 
-        if(m_granularity == Granularity.all || m_granularity == Granularity.metadata || m_granularity == Granularity.titlePlusMetadata)
+        if(m_verbosity == Verbosity.all || m_verbosity == Verbosity.metadata || m_verbosity == Verbosity.titlePlusMetadata)
         {
             // errorMessage
             // errorStacktrace
@@ -184,10 +184,10 @@ public class PrintlnContentHandler extends DataSinkContentHandler
 
 
 
-        if(m_granularity != Granularity.nothing) strbMessage.append("\n");
+        if(m_verbosity != Verbosity.nothing) strbMessage.append("\n");
 
 
-        if(m_granularity != Granularity.nothing) Logger.getLogger(PrintlnContentHandler.class.getName()).info(strbMessage.toString());
+        if(m_verbosity != Verbosity.nothing) Logger.getLogger(PrintlnContentHandler.class.getName()).info(strbMessage.toString());
 
 
         if(m_wrappedDataSinkContentHandler != null) m_wrappedDataSinkContentHandler.processErrorData(metadata);
@@ -207,10 +207,10 @@ public class PrintlnContentHandler extends DataSinkContentHandler
             StringBuilder strbMessage = new StringBuilder();
 
 
-            if(m_granularity != Granularity.nothing) strbMessage.append("## PrintlnContentHandler MODIFIED data ##########################\n");
+            if(m_verbosity != Verbosity.nothing) strbMessage.append("## PrintlnContentHandler MODIFIED data ##########################\n");
 
-            if(m_granularity == Granularity.all || m_granularity == Granularity.title || m_granularity == Granularity.titlePlusMetadata
-                    || m_granularity == Granularity.titlePlusFulltext)
+            if(m_verbosity == Verbosity.all || m_verbosity == Verbosity.title || m_verbosity == Verbosity.titlePlusMetadata
+                    || m_verbosity == Verbosity.titlePlusFulltext)
             {
                 String strInfo = metadata.get(IncrementalCrawlingHistory.dataEntityExistsID);
                 if(strInfo == null) strInfo = metadata.get(DublinCore.SOURCE);
@@ -220,7 +220,7 @@ public class PrintlnContentHandler extends DataSinkContentHandler
             }
 
 
-            if(m_granularity == Granularity.all || m_granularity == Granularity.metadata || m_granularity == Granularity.titlePlusMetadata)
+            if(m_verbosity == Verbosity.all || m_verbosity == Verbosity.metadata || m_verbosity == Verbosity.titlePlusMetadata)
             {
                 strbMessage.append("## metadata:\n");
                 for (String strFieldName : metadata.names())
@@ -231,17 +231,17 @@ public class PrintlnContentHandler extends DataSinkContentHandler
             }
 
 
-            if(m_granularity == Granularity.all || m_granularity == Granularity.fulltext || m_granularity == Granularity.titlePlusFulltext)
+            if(m_verbosity == Verbosity.all || m_verbosity == Verbosity.fulltext || m_verbosity == Verbosity.titlePlusFulltext)
             {
                 strFulltext = strFulltext.replaceAll("[\\n\\s]+", " ");
                 strFulltext = strFulltext.substring(0, Math.min(strFulltext.length(), 2345));
                 strbMessage.append("## fulltext (without newlines, reduced whitespace, fixed length): \n" + strFulltext).append("\n");
             }
 
-            if(m_granularity != Granularity.nothing) strbMessage.append("\n");
+            if(m_verbosity != Verbosity.nothing) strbMessage.append("\n");
 
 
-            if(m_granularity != Granularity.nothing) Logger.getLogger(PrintlnContentHandler.class.getName()).info(strbMessage.toString());
+            if(m_verbosity != Verbosity.nothing) Logger.getLogger(PrintlnContentHandler.class.getName()).info(strbMessage.toString());
 
         }
 
@@ -260,10 +260,10 @@ public class PrintlnContentHandler extends DataSinkContentHandler
 
             StringBuilder strbMessage = new StringBuilder();
 
-            if(m_granularity != Granularity.nothing) strbMessage.append("## PrintlnContentHandler - NEW data ##########################\n");
+            if(m_verbosity != Verbosity.nothing) strbMessage.append("## PrintlnContentHandler - NEW data ##########################\n");
 
-            if(m_granularity == Granularity.all || m_granularity == Granularity.title || m_granularity == Granularity.titlePlusMetadata
-                    || m_granularity == Granularity.titlePlusFulltext)
+            if(m_verbosity == Verbosity.all || m_verbosity == Verbosity.title || m_verbosity == Verbosity.titlePlusMetadata
+                    || m_verbosity == Verbosity.titlePlusFulltext)
             {
                 String strInfo = metadata.get(IncrementalCrawlingHistory.dataEntityExistsID);
                 if(strInfo == null) strInfo = metadata.get(DublinCore.SOURCE);
@@ -273,7 +273,7 @@ public class PrintlnContentHandler extends DataSinkContentHandler
             }
 
 
-            if(m_granularity == Granularity.all || m_granularity == Granularity.metadata || m_granularity == Granularity.titlePlusMetadata)
+            if(m_verbosity == Verbosity.all || m_verbosity == Verbosity.metadata || m_verbosity == Verbosity.titlePlusMetadata)
             {
                 strbMessage.append("## metadata:\n");
                 for (String strFieldName : metadata.names())
@@ -284,17 +284,17 @@ public class PrintlnContentHandler extends DataSinkContentHandler
             }
 
 
-            if(m_granularity == Granularity.all || m_granularity == Granularity.fulltext || m_granularity == Granularity.titlePlusFulltext)
+            if(m_verbosity == Verbosity.all || m_verbosity == Verbosity.fulltext || m_verbosity == Verbosity.titlePlusFulltext)
             {
                 strFulltext = strFulltext.replaceAll("[\\n\\s]+", " ");
                 strFulltext = strFulltext.substring(0, Math.min(strFulltext.length(), 2345));
                 strbMessage.append("## fulltext (without newlines, reduced whitespace, fixed length): \n" + strFulltext).append("\n");
             }
 
-            if(m_granularity != Granularity.nothing) strbMessage.append("\n");
+            if(m_verbosity != Verbosity.nothing) strbMessage.append("\n");
 
 
-            if(m_granularity != Granularity.nothing) Logger.getLogger(PrintlnContentHandler.class.getName()).info(strbMessage.toString());
+            if(m_verbosity != Verbosity.nothing) Logger.getLogger(PrintlnContentHandler.class.getName()).info(strbMessage.toString());
 
         }
 
@@ -311,10 +311,10 @@ public class PrintlnContentHandler extends DataSinkContentHandler
 
             StringBuilder strbMessage = new StringBuilder();
 
-            if(m_granularity != Granularity.nothing) strbMessage.append("## PrintlnContentHandler REMOVED data ##########################\n");
+            if(m_verbosity != Verbosity.nothing) strbMessage.append("## PrintlnContentHandler REMOVED data ##########################\n");
 
-            if(m_granularity == Granularity.all || m_granularity == Granularity.title || m_granularity == Granularity.titlePlusMetadata
-                    || m_granularity == Granularity.titlePlusFulltext)
+            if(m_verbosity == Verbosity.all || m_verbosity == Verbosity.title || m_verbosity == Verbosity.titlePlusMetadata
+                    || m_verbosity == Verbosity.titlePlusFulltext)
             {
                 String strInfo = metadata.get(IncrementalCrawlingHistory.dataEntityExistsID);
                 if(strInfo == null) strInfo = metadata.get(DublinCore.SOURCE);
@@ -324,7 +324,7 @@ public class PrintlnContentHandler extends DataSinkContentHandler
             }
 
 
-            if(m_granularity == Granularity.all || m_granularity == Granularity.metadata || m_granularity == Granularity.titlePlusMetadata)
+            if(m_verbosity == Verbosity.all || m_verbosity == Verbosity.metadata || m_verbosity == Verbosity.titlePlusMetadata)
             {
                 strbMessage.append("## metadata:\n");
                 for (String strFieldName : metadata.names())
@@ -336,10 +336,10 @@ public class PrintlnContentHandler extends DataSinkContentHandler
 
 
 
-            if(m_granularity != Granularity.nothing) strbMessage.append("\n");
+            if(m_verbosity != Verbosity.nothing) strbMessage.append("\n");
 
 
-            if(m_granularity != Granularity.nothing) Logger.getLogger(PrintlnContentHandler.class.getName()).info(strbMessage.toString());
+            if(m_verbosity != Verbosity.nothing) Logger.getLogger(PrintlnContentHandler.class.getName()).info(strbMessage.toString());
 
         }
 
@@ -348,9 +348,9 @@ public class PrintlnContentHandler extends DataSinkContentHandler
 
 
 
-    public PrintlnContentHandler setGranularity(Granularity granularity)
+    public PrintlnContentHandler setGranularity(Verbosity granularity)
     {
-        m_granularity = granularity;
+        m_verbosity = granularity;
         
         return this;
     }
