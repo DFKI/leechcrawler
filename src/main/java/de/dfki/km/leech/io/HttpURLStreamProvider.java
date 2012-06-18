@@ -1,23 +1,18 @@
 /*
-    Leech - crawling capabilities for Apache Tika
-    
-    Copyright (C) 2012 DFKI GmbH, Author: Christian Reuschling
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-    Contact us by mail: christian.reuschling@dfki.de
-*/
+ * Leech - crawling capabilities for Apache Tika
+ * 
+ * Copyright (C) 2012 DFKI GmbH, Author: Christian Reuschling
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * Contact us by mail: christian.reuschling@dfki.de
+ */
 
 package de.dfki.km.leech.io;
 
@@ -275,12 +270,12 @@ public class HttpURLStreamProvider extends URLStreamProvider
 
 
     @Override
-    public ShiftInitInputStream getStream(URLName url2getStream, Metadata metadata, ParseContext parseContext) throws Exception
+    public TikaInputStream getStream(URLName url2getStream, Metadata metadata, ParseContext parseContext) throws Exception
     {
         final URL asUrl = new URL(url2getStream.toString());
 
 
-        return new ShiftInitInputStream()
+        return TikaInputStream.get(new ShiftInitInputStream()
         {
             @Override
             protected InputStream initBeforeFirstStreamDataAccess() throws Exception
@@ -290,7 +285,7 @@ public class HttpURLStreamProvider extends URLStreamProvider
                 connection.setConnectTimeout(connectTimeout);
                 connection.setReadTimeout(readTimeout);
                 connection.setRequestProperty("Accept-Encoding", "gzip");
-                
+
                 InputStream ourStream = connection.getInputStream();
 
                 String strContentEncoding = connection.getHeaderField("Content-Encoding");
@@ -301,10 +296,10 @@ public class HttpURLStreamProvider extends URLStreamProvider
                     ourStream = new BufferedInputStream(new GZIPInputStream(ourStream));
                 else
                     ourStream = new BufferedInputStream(ourStream);
-                
-                return TikaInputStream.get(ourStream);
+
+                return ourStream;
             }
-        }; 
+        });
     }
 
 

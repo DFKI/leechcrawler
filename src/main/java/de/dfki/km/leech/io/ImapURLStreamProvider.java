@@ -1,23 +1,18 @@
 /*
-    Leech - crawling capabilities for Apache Tika
-    
-    Copyright (C) 2012 DFKI GmbH, Author: Christian Reuschling
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-    Contact us by mail: christian.reuschling@dfki.de
-*/
+ * Leech - crawling capabilities for Apache Tika
+ * 
+ * Copyright (C) 2012 DFKI GmbH, Author: Christian Reuschling
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * Contact us by mail: christian.reuschling@dfki.de
+ */
 
 package de.dfki.km.leech.io;
 
@@ -200,13 +195,13 @@ public class ImapURLStreamProvider extends URLStreamProvider
 
 
     @Override
-    public ShiftInitInputStream getStream(final URLName url2getStream, final Metadata metadata, final ParseContext parseContext) throws Exception
+    public TikaInputStream getStream(final URLName url2getStream, final Metadata metadata, final ParseContext parseContext) throws Exception
     {
 
-        return new ShiftInitInputStream()
+        return TikaInputStream.get(new ShiftInitInputStream()
         {
             IMAPFolder m_folderOfMessage;
-            
+
             boolean m_bCloseStore = false;
 
 
@@ -246,7 +241,7 @@ public class ImapURLStreamProvider extends URLStreamProvider
 
                         final IMAPMessage message = (IMAPMessage) m_folderOfMessage.getMessageByUID(Long.valueOf(strUID));
 
-                        return TikaInputStream.get(message.getMimeStream());
+                        return message.getMimeStream();
                     }
 
                     return null;
@@ -272,11 +267,11 @@ public class ImapURLStreamProvider extends URLStreamProvider
                 {
 
                     super.close();
-                    
+
                     if(m_folderOfMessage != null && m_folderOfMessage.isOpen()) m_folderOfMessage.close(false);
 
                     Store mailStore = m_hsHost2Store.get(url2getStream.getHost() + " usr: " + url2getStream.getUsername());
-                    
+
                     if(mailStore != null && mailStore.isConnected() && m_bCloseStore)
                     {
                         mailStore.close();
@@ -289,7 +284,7 @@ public class ImapURLStreamProvider extends URLStreamProvider
                     Logger.getLogger(ImapURLStreamProvider.class.getName()).log(Level.SEVERE, "Error", e);
                 }
             }
-        };
+        });
 
 
 

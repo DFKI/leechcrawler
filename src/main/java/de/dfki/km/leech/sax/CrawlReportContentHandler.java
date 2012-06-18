@@ -1,23 +1,18 @@
 /*
-    Leech - crawling capabilities for Apache Tika
-    
-    Copyright (C) 2012 DFKI GmbH, Author: Christian Reuschling
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-    Contact us by mail: christian.reuschling@dfki.de
-*/
+ * Leech - crawling capabilities for Apache Tika
+ * 
+ * Copyright (C) 2012 DFKI GmbH, Author: Christian Reuschling
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * Contact us by mail: christian.reuschling@dfki.de
+ */
 
 package de.dfki.km.leech.sax;
 
@@ -27,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.TreeSet;
+import java.util.logging.Logger;
 
 import org.apache.tika.metadata.Metadata;
 
@@ -91,9 +87,26 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
             if(lfirstEntityStartTime != -1)
                 strbReport.append("First handled data entity at ").append(new SimpleDateFormat().format(new Date(lfirstEntityStartTime)))
                         .append(", ");
-            strbReport.append(iModifiedEntities + iNewEntities + iRemovedEntities + iErrorEntities).append(" processed entities");
+            int iEntities = iModifiedEntities + iNewEntities + iRemovedEntities + iErrorEntities;
+            strbReport.append(iEntities).append(" processed entities");
             if(lfirstEntityStartTime != -1)
-                strbReport.append(", duration ").append(StopWatch.formatTimeDistance(lLastEntityEndTime - lfirstEntityStartTime));
+            {
+                long lDuration = lLastEntityEndTime - lfirstEntityStartTime;
+                strbReport.append(", duration ").append(StopWatch.formatTimeDistance(lDuration));
+
+                if(lDuration > 0)
+                {
+                    double dEntitiesPerMilliSecond = (double)iEntities / (double)lDuration;
+                    strbReport.append(", ").append(Math.round(dEntitiesPerMilliSecond * 1000)).append("/s");
+                    strbReport.append(", ").append(Math.round(dEntitiesPerMilliSecond * 1000 * 60)).append("/m");
+                    strbReport.append(", ").append(Math.round(dEntitiesPerMilliSecond * 1000 * 60 * 60)).append("/h");
+                    strbReport.append(", ").append(Math.round(dEntitiesPerMilliSecond * 1000 * 60 * 60 * 24)).append("/d");
+                }
+
+            }
+
+
+
             strbReport.append("\n");
 
 
@@ -151,11 +164,49 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
 
 
 
+    protected long m_lCyclicReportMilliseconds = -1;
+
+    protected long m_lastReportTime = 0;
+
+
 
     public CrawlReportContentHandler(DataSinkContentHandler wrappedDataSinkContentHandler)
     {
         m_wrappedDataSinkContentHandler = wrappedDataSinkContentHandler;
     }
+
+
+
+    /**
+     * Sets whether or not a time-based cyclic report will be generated. The time is not a hard criteria, the method will print the report when new
+     * content arrives and the last report was longer ago than everMilliseconds
+     * 
+     * @param everyMilliseconds in the case this value is <0, cyclic report printing will be disabled. Otherwise, every <everyMilliseconds>
+     *            milliseconds a report will be println'd
+     * 
+     * @return this
+     */
+    public CrawlReportContentHandler setCyclicReportPrintln(long everyMilliseconds)
+    {
+        m_lCyclicReportMilliseconds = everyMilliseconds;
+
+        return this;
+    }
+
+
+
+    protected void printReportIfItsTime()
+    {
+        if(m_lCyclicReportMilliseconds < 0) return;
+
+        if(System.currentTimeMillis() >= m_lastReportTime + m_lCyclicReportMilliseconds)
+        {
+            Logger.getLogger(CrawlReportContentHandler.class.getName()).info(m_crawlReport.toString());
+
+            m_lastReportTime = System.currentTimeMillis();
+        }
+    }
+
 
 
 
@@ -186,7 +237,7 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
 
         String strType = metadata.get("Content-Type");
         if(strType == null) strType = "unknown";
-        
+
         int iIndex = strType.indexOf(";");
         if(iIndex != -1) strType = strType.substring(0, iIndex);
         Integer iCount4Type = m_crawlReport.hsErrorType2EntityCount.get(strType);
@@ -200,6 +251,8 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
 
 
         m_crawlReport.lLastEntityEndTime = System.currentTimeMillis();
+
+        printReportIfItsTime();
     }
 
 
@@ -232,6 +285,8 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
         long lDuration = System.currentTimeMillis() - lStart;
         m_crawlReport.lModifiedEntitiesProcessingTime += lDuration;
         m_crawlReport.lLastEntityEndTime = System.currentTimeMillis();
+
+        printReportIfItsTime();
     }
 
 
@@ -263,6 +318,8 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
         long lDuration = System.currentTimeMillis() - lStart;
         m_crawlReport.lNewEntitiesProcessingTime += lDuration;
         m_crawlReport.lLastEntityEndTime = System.currentTimeMillis();
+
+        printReportIfItsTime();
     }
 
 
@@ -285,6 +342,8 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
         long lDuration = System.currentTimeMillis() - lStart;
         m_crawlReport.lRemovedEntitiesProcessingTime += lDuration;
         m_crawlReport.lLastEntityEndTime = System.currentTimeMillis();
+
+        printReportIfItsTime();
     }
 
 

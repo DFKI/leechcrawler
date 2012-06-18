@@ -8,6 +8,11 @@
 			namespaceURI="http://www.mediawiki.org/xml/export-0.4/" />
 		<root-XML localName="mediawiki"
 			namespaceURI="http://www.mediawiki.org/xml/export-0.5/" />
+		<root-XML localName="mediawiki"
+			namespaceURI="http://www.mediawiki.org/xml/export-0.6/" />
 		<glob pattern="*.xml" />
+		<magic priority="50">
+			<match value="mediawiki xmlns=" type="string" offset="1" />
+		</magic>
 	</mime-type>
 </mime-info>

@@ -25,7 +25,6 @@ package de.dfki.km.leech.io;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Set;
@@ -99,18 +98,12 @@ public class FileURLStreamProvider extends URLStreamProvider
 
 
     @Override
-    public ShiftInitInputStream getStream(URLName url2getStream, Metadata metadata, ParseContext parseContext) throws Exception
+    public TikaInputStream getStream(URLName url2getStream, Metadata metadata, ParseContext parseContext) throws Exception
     {
-        final URL asUrl = new URL(url2getStream.toString());
+        URL asUrl = new URL(url2getStream.toString());
 
-        return new ShiftInitInputStream()
-        {
-            @Override
-            protected InputStream initBeforeFirstStreamDataAccess() throws Exception
-            {
-                return TikaInputStream.get(asUrl.openStream());
-            }
-        }; 
+        
+        return TikaInputStream.get(new File(asUrl.toURI()));
     }
 
 

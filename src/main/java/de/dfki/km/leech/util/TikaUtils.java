@@ -75,6 +75,20 @@ public class TikaUtils
 
         return metadataCopy;
     }
+    
+    
+    /**
+     * Copies all data from one metadata object to another
+     * 
+     * @param metadata2copyFrom source
+     * @param metadata2copyTo target
+     */
+    public static void copyMetadataFromTo(Metadata metadata2copyFrom, Metadata metadata2copyTo)
+    {
+        for (String strKey : metadata2copyFrom.names())
+            for (String strVal : metadata2copyFrom.getValues(strKey))
+                metadata2copyTo.add(strKey, strVal);
+    }
 
 
 

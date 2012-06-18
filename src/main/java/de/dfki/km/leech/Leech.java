@@ -357,9 +357,6 @@ public class Leech extends Tika
 
 
 
-   
-
-
     /**
      * Parse a directory or a file with a callback-contenthandler. We recommend to use an own implementation of DataSinkContentHandler. In the case
      * you want to use another ContentHandler, be aware that this Object is re-used at every recursive invocation. So make sure that this is possible,
@@ -379,6 +376,28 @@ public class Leech extends Tika
     public void parse(String strSourceString, ContentHandler handler) throws IOException, SAXException, TikaException
     {
         parse(UrlUtil.sourceString2URL(strSourceString), handler);
+    }
+
+
+
+
+
+
+    /**
+     * This overridden method don't use only the name but tries to generate a URL out of the given name and uses the underlying data if possible
+     */
+    @Override
+    public String detect(String name)
+    {
+        try
+        {
+            return detect(UrlUtil.sourceString2URL(name));
+        }
+        catch (Exception e)
+        {
+            Logger.getLogger(Leech.class.getName()).log(Level.SEVERE, "Error", e);
+            return null;
+        }
     }
 
 
@@ -662,7 +681,7 @@ public class Leech extends Tika
 
 
 
-    
+
 
 
 
