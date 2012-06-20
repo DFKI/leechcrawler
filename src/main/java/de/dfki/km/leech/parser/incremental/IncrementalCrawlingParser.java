@@ -248,11 +248,11 @@ public class IncrementalCrawlingParser extends ParserDecorator
      * @param crawlingHistory the crawling history. Can be null, in this case the data entity will be flagged as NEW in any case
      * @param metadata the metadata of the data entity. The method will put the data entity modification state into
      * 
-     * @return true: process the data entity, false otherwise (it was still processed during this call)
+     * @return true: process the data entity (it was not processed formerly in this crawl), false otherwise (it was processed during this call, we have a circle)
      * 
      * @throws Exception
      */
-    protected boolean performHistoryStuff(IncrementalCrawlingHistory crawlingHistory, Metadata metadata) throws Exception
+    public static boolean performHistoryStuff(IncrementalCrawlingHistory crawlingHistory, Metadata metadata) throws Exception
     {
 
         if(crawlingHistory == null)

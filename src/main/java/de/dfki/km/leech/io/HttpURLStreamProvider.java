@@ -248,7 +248,8 @@ public class HttpURLStreamProvider extends URLStreamProvider
 
 
         String type = connection.getContentType();
-        if(type != null) metadata2fill.set(Metadata.CONTENT_TYPE, type);
+        //text/xml is far too general to select the right parser
+        if(type != null && !type.contains("text/xml")) metadata2fill.set(Metadata.CONTENT_TYPE, type);
 
 
         String encoding = connection.getContentEncoding();

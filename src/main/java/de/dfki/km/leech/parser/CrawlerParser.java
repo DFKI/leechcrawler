@@ -63,10 +63,11 @@ public abstract class CrawlerParser implements Parser
 
 
 
-    static public final String CURRENT_CRAWLING_DEPTH = "currentCrawlingDepth";
+    
 
     private static final long serialVersionUID = -6707880965147815349L;
 
+    static public final String CURRENT_CRAWLING_DEPTH = "currentCrawlingDepth";
     static public final String SOURCEID = "sourceId";
 
 

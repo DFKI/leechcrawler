@@ -1,3 +1,4 @@
 # specify own custom parsers here. Tika will find them.
 
 de.dfki.km.leech.parser.wikipedia.WikipediaDumpParser
+de.dfki.km.leech.parser.rss.FeedParser2
