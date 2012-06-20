@@ -18,6 +18,7 @@ package de.dfki.km.leech.lucene;
 
 
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -80,7 +81,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
 
 
-    MultiValueHashMap<String, String> m_hsStaticAttValuePairs = new MultiValueHashMap<String, String>();
+    protected MultiValueHashMap<String, String> m_hsStaticAttValuePairs = new MultiValueHashMap<String, String>();
 
 
 
@@ -94,12 +95,16 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
 
 
+    protected MultiValueHashMap<String, String> m_hsTarget2SourcesFieldnames = new MultiValueHashMap<String, String>();
+
+
+
     public ToLuceneContentHandler(FieldConfig fieldConfig, IndexWriter luceneWriter) throws Exception
     {
         super();
         setFieldConfiguration(fieldConfig);
         m_luceneWriter = luceneWriter;
-        
+
         init();
     }
 
@@ -111,7 +116,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
         super(writeLimit);
         setFieldConfiguration(fieldConfig);
         m_luceneWriter = luceneWriter;
-        
+
         init();
     }
 
@@ -122,7 +127,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
         super(metadata);
         setFieldConfiguration(fieldConfig);
         m_luceneWriter = luceneWriter;
-        
+
         init();
     }
 
@@ -133,16 +138,18 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
         super(metadata, writeLimit);
         setFieldConfiguration(fieldConfig);
         m_luceneWriter = luceneWriter;
-        
+
         init();
     }
 
-    
+
+
     @Override
     protected void init()
     {
         Logger.getLogger(ToLuceneContentHandler.class.getName()).info("Will write crawled data into " + m_luceneWriter.getDirectory().toString());
     }
+
 
 
     public boolean getBlockIndexing()
@@ -153,14 +160,14 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
 
     /**
-     * Gets the fieldname mappings. This means that the content of every metadata key that is specified as key inside hsSource2TargetFieldnames will
+     * Gets the field copy mappings. This means that the content of every metadata key that is specified as key inside hsSource2TargetFieldnames will
      * be copied into several other fields. The field names of these fields are specified as corresponding value inside hsSource2TargetFieldnames. In
      * the case you want to rename attribute names, specify a field mapping and ignore the source field name with
      * {@link #setFieldNames2Ignore(HashSet)}
      * 
      * @return the current field mappings
      */
-    public MultiValueHashMap<String, String> getFieldNameMappings()
+    public MultiValueHashMap<String, String> getFieldCopyMap()
     {
         return m_hsSource2TargetFieldnames;
     }
@@ -311,7 +318,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
         if(!getFields2Ignore().contains(LeechMetadata.body)) doc.add(FieldFactory.createField(LeechMetadata.body, strFulltext, m_fieldConfig));
         // die kopien
-        for (String strFieldCopy : getFieldNameMappings().get(LeechMetadata.body))
+        for (String strFieldCopy : getFieldCopyMap().get(LeechMetadata.body))
             if(!getFields2Ignore().contains(strFieldCopy)) doc.add(FieldFactory.createField(strFieldCopy, strFulltext, m_fieldConfig));
 
 
@@ -325,7 +332,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
             }
 
             // die kopien
-            for (String strFieldCopy : getFieldNameMappings().get(strFieldName))
+            for (String strFieldCopy : getFieldCopyMap().get(strFieldName))
                 if(!getFields2Ignore().contains(strFieldCopy))
                 {
                     for (String strValue : metadata.getValues(strFieldName))
@@ -335,6 +342,30 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
         // die statischen Attribut-Value-Paare
         addStaticAttValuePairs(doc);
+
+        // und jetzt aggregieren wir noch
+        for (String strTargetAtt : getFieldAggregationMap().keySet())
+        {
+            // wenn es das TargetAtt schon im doc gibt, dann aggregieren wir nix
+            if(doc.get(strTargetAtt) != null) continue;
+
+            Collection<String> colSourceAtts = getFieldAggregationMap().get(strTargetAtt);
+
+            for (String strSourceAtt : colSourceAtts)
+            {
+                String strNewValue = metadata.get(strSourceAtt);
+                if(strNewValue == null) strNewValue = getStaticAttributeValuePairs().getFirst(strSourceAtt);
+
+                if(strNewValue != null)
+                {
+                    doc.add(FieldFactory.createField(strTargetAtt, strNewValue, m_fieldConfig));
+
+                    break;
+                }
+            }
+        }
+
+
 
 
         return doc;
@@ -409,7 +440,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
 
     /**
-     * Sets the fieldname mappings. This means that the content of every metadata key that is specified as key inside hsSource2TargetFieldnames will
+     * Sets the field copy mappings. This means that the content of every metadata key that is specified as key inside hsSource2TargetFieldnames will
      * be copied into several other fields. The field names of these fields are specified as corresponding value inside hsSource2TargetFieldnames. In
      * the case you want to rename attribute names, specify a field mapping and ignore the source field name with
      * {@link #setFieldNames2Ignore(HashSet)}
@@ -417,20 +448,45 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
      * @param hsSource2TargetFieldnames keys: source field names, given as metadata keys. values: target field names - the content will also appear
      *            under these fields inside a lucene document
      */
-    public void setFieldNameMappings(MultiValueHashMap<String, String> hsSource2TargetFieldnames)
+    public void setFieldCopyMap(MultiValueHashMap<String, String> hsSource2TargetFieldnames)
     {
         m_hsSource2TargetFieldnames = hsSource2TargetFieldnames;
     }
 
 
 
+    /**
+     * Sets the field aggregation map. This means that you want to generate a field entry, whereby its value should be copied from another, existing
+     * metadata entry. You can specify a list of these source-attributes, the first who have an entry wins and appears as new attribute, so the source
+     * field name list is in fact a priorized list.
+     * 
+     * @param hsTarget2SourcesFieldnames the field aggregation map
+     */
+    public void setFieldAggregationMap(MultiValueHashMap<String, String> hsTarget2SourcesFieldnames)
+    {
+        m_hsTarget2SourcesFieldnames = hsTarget2SourcesFieldnames;
+    }
+
+
+
+    /**
+     * Gets the field aggregation map. This means that you want to generate a field entry, whereby its value should be copied from another, existing
+     * metadata entry. You can specify a list of these source-attributes, the first who have an entry wins and appears as new attribute, so the source
+     * field name list is in fact a priorized list.
+     * 
+     * @return the current field aggregation map
+     */
+    public MultiValueHashMap<String, String> getFieldAggregationMap()
+    {
+        return m_hsTarget2SourcesFieldnames;
+    }
 
 
 
 
     /**
      * Sets the set of field names / metadata key values that will NOT be stored into the lucene index. Nevertheless, you can consider these in
-     * {@link #setFieldNameMappings(MultiValueHashMap)}. In this case you have 'moved' the attribute value into another attribute (or several ones).
+     * {@link #setFieldCopyMap(MultiValueHashMap)}. In this case you have 'moved' the attribute value into another attribute (or several ones).
      * 
      * @param hsAttNamesNot2Store the set of attribute/field names that will not stored into the lucene index
      */
