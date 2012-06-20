@@ -1,4 +1,4 @@
-# Ignore everything in this directory
+# Ignore in this directory
 .classpath
 .project
 .settings/
@@ -6,6 +6,7 @@ history/
 praeampel.txt
 resource/
 target/
+luceneIndex_wikipedia/
 
 # Except this file
 #!.gitignore
