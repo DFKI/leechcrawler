@@ -31,10 +31,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
-import java.util.Scanner;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -91,7 +91,7 @@ public class WikipediaDumpParser implements Parser
     public static final String internalLink = "internalLink";
 
 
-    static final WikiModel m_wikiModel = new WikiModel("http://www.mywiki.com/wiki/${image}", "http://www.mywiki.com/wiki/${title}");
+    static protected final WikiModel m_wikiModel = new WikiModel("http://www.mywiki.com/wiki/${image}", "http://www.mywiki.com/wiki/${title}");
 
 
 
@@ -109,9 +109,12 @@ public class WikipediaDumpParser implements Parser
     {
         FieldConfig fieldConfig = new FieldConfig();
 
-        fieldConfig.defaultFieldMapping.index = Index.ANALYZED_NO_NORMS;
-        fieldConfig.defaultFieldMapping.store = Store.YES;
-        fieldConfig.defaultFieldMapping.termVector = TermVector.NO;
+        fieldConfig.defaultFieldMapping = new FieldMapping("org.apache.lucene.analysis.KeywordAnalyzer", Store.YES,
+                Index.NOT_ANALYZED, TermVector.NO, FieldType.STRING);
+        
+        
+        
+        
 
         fieldConfig.hsFieldName2FieldMapping.put("creator", new FieldMapping("de.dfki.km.leech.lucene.LeechSimpleAnalyzer", Store.YES,
                 Index.ANALYZED, TermVector.WITH_POSITIONS_OFFSETS, FieldType.STRING));
@@ -131,19 +134,40 @@ public class WikipediaDumpParser implements Parser
         fieldConfig.hsFieldName2FieldMapping.put("infobox", new FieldMapping("de.dfki.km.leech.lucene.LeechSimpleAnalyzer", Store.YES,
                 Index.ANALYZED, TermVector.WITH_POSITIONS_OFFSETS, FieldType.STRING));
 
+        fieldConfig.hsFieldName2FieldMapping.put("Gründera", new FieldMapping("de.dfki.km.leech.lucene.LeechSimpleAnalyzer", Store.YES,
+                Index.ANALYZED, TermVector.WITH_POSITIONS_OFFSETS, FieldType.STRING));
+        fieldConfig.hsFieldName2FieldMapping.put("Besetzunga", new FieldMapping("de.dfki.km.leech.lucene.LeechSimpleAnalyzer", Store.YES,
+                Index.ANALYZED, TermVector.WITH_POSITIONS_OFFSETS, FieldType.STRING));
+        fieldConfig.hsFieldName2FieldMapping.put("Ehemaligea", new FieldMapping("de.dfki.km.leech.lucene.LeechSimpleAnalyzer", Store.YES,
+                Index.ANALYZED, TermVector.WITH_POSITIONS_OFFSETS, FieldType.STRING));
+        fieldConfig.hsFieldName2FieldMapping.put("Genre", new FieldMapping("de.dfki.km.leech.lucene.LeechSimpleAnalyzer", Store.YES, Index.ANALYZED,
+                TermVector.WITH_POSITIONS_OFFSETS, FieldType.STRING));
+        fieldConfig.hsFieldName2FieldMapping.put("current_members", new FieldMapping("de.dfki.km.leech.lucene.LeechSimpleAnalyzer", Store.YES,
+                Index.ANALYZED, TermVector.WITH_POSITIONS_OFFSETS, FieldType.STRING));
+        fieldConfig.hsFieldName2FieldMapping.put("genre", new FieldMapping("de.dfki.km.leech.lucene.LeechSimpleAnalyzer", Store.YES, Index.ANALYZED,
+                TermVector.WITH_POSITIONS_OFFSETS, FieldType.STRING));
+        fieldConfig.hsFieldName2FieldMapping.put("past_members", new FieldMapping("de.dfki.km.leech.lucene.LeechSimpleAnalyzer", Store.YES,
+                Index.ANALYZED, TermVector.WITH_POSITIONS_OFFSETS, FieldType.STRING));
+        fieldConfig.hsFieldName2FieldMapping.put("associated_acts", new FieldMapping("de.dfki.km.leech.lucene.LeechSimpleAnalyzer", Store.YES,
+                Index.ANALYZED, TermVector.WITH_POSITIONS_OFFSETS, FieldType.STRING));
+        fieldConfig.hsFieldName2FieldMapping.put("caption", new FieldMapping("de.dfki.km.leech.lucene.LeechSimpleAnalyzer", Store.YES,
+                Index.ANALYZED, TermVector.WITH_POSITIONS_OFFSETS, FieldType.STRING));
+
+
+
 
 
 
         fieldConfig.hsFieldName2FieldMapping.put("modified", new FieldMapping("org.apache.lucene.analysis.KeywordAnalyzer", Store.YES,
                 Index.ANALYZED, TermVector.NO, FieldType.DATE));
 
-
-
         fieldConfig.hsFieldName2FieldMapping.put("longitude", new FieldMapping("org.apache.lucene.analysis.KeywordAnalyzer", Store.YES,
                 Index.ANALYZED, TermVector.NO, FieldType.DOUBLE));
 
         fieldConfig.hsFieldName2FieldMapping.put("latitude", new FieldMapping("org.apache.lucene.analysis.KeywordAnalyzer", Store.YES,
                 Index.ANALYZED, TermVector.NO, FieldType.DOUBLE));
+        
+
 
 
 
@@ -190,7 +214,10 @@ public class WikipediaDumpParser implements Parser
     {
         if(strAttValue == null) strAttValue = "";
 
-        strAttValue = strAttValue.replaceAll("\\(.*?\\)", "").trim();
+        // Angaben in Klammern kommen weg
+        strAttValue = strAttValue.replaceAll("\\(.*?\\)", "");
+        // Angaben in geschweiften Klammern kommen weg
+        strAttValue = strAttValue.replaceAll("\\{\\{.*?\\}\\}", "").trim();
 
         if("longitude".equals(strAttName) || "latitude".equals(strAttName))
         {
@@ -350,9 +377,13 @@ public class WikipediaDumpParser implements Parser
 
 
             TikaInputStream tikaStream = TikaInputStream.get(stream);
+
+
             File fWikipediaDumpFile4Stream = tikaStream.getFile();
+
             MultiValueHashMap<String, String> hsPageTitle2Redirects = getPageTitle2Redirects(new FileInputStream(fWikipediaDumpFile4Stream));
             // MultiValueHashMap<String, String> hsPageTitle2Redirects = new MultiValueHashMap<String, String>();
+
             HashSet<String> hsRedirectPageTitles = new HashSet<String>(hsPageTitle2Redirects.values());
 
             String strCleanedText = "";
@@ -578,6 +609,8 @@ public class WikipediaDumpParser implements Parser
 
 
 
+
+
     protected void parseInfoBox(String strText, Metadata metadata, ContentHandler handler) throws SAXException
     {
 
@@ -591,147 +624,161 @@ public class WikipediaDumpParser implements Parser
 
 
         // als erstes schneiden wir mal die Infobox raus. (?m) ist multiline und (?s) ist dotall ('.' matcht auch line breaks)
-        Matcher matcher = Pattern.compile("(?s)\\{\\{Infobox (.*?)\\}\\}").matcher(strText);
-        while (matcher.find())
+        int iStartInfoBox = -1;
+        int iEndInfoBox = -1;
+        MatchResult infoMatch = StringUtils.findFirst("\\{\\{\\s*Infobox", strText);
+        if(infoMatch != null)
         {
-            String strCleanedInfoBox = m_wikiModel.render(new PlainTextConverter(), matcher.group(1).replaceAll("<br />", "&lt;br /&gt;"));
+            iStartInfoBox = infoMatch.start();
+            iEndInfoBox = StringUtils.findMatchingBracket(iStartInfoBox, strText) + 1;
+        }
+        else
+            return;
 
-            // da wir hier eigentlich relationierte Datensätze haben, machen wir auch einzelne, separierte Dokumente draus
 
-            // System.out.println(strCleanedInfoBox);
-            // System.out.println(strCleanedInfoBox.substring(0, strCleanedInfoBox.indexOf("\n")).trim());
+        if(strText.length() < 3 || strText.length() < iEndInfoBox || iEndInfoBox <= 0 || (iStartInfoBox + 2) > iEndInfoBox) return;
 
-            // erste Zeile bezeichnet die InfoBox
-            int iIndex = strCleanedInfoBox.indexOf("\n");
-            if(iIndex == -1) iIndex = strCleanedInfoBox.indexOf("|");
-            if(iIndex == -1) return;
-            String strInfoBoxName = strCleanedInfoBox.substring(0, iIndex).trim();
-            metadata.add(infobox, strInfoBoxName);
+        String strInfoBox = "";
 
-            Scanner attValuePairScanner = new Scanner(strCleanedInfoBox);
-            attValuePairScanner.useDelimiter("\\s*\\|\\s*");
+        strInfoBox = strText.substring(iStartInfoBox + 2, iEndInfoBox);
+        if(strInfoBox.length() < 5) return;
 
-            HashMap<String, MultiValueHashMap<String, String>> hsSubDocId2AttValuePairsOfSubDoc =
-                    new HashMap<String, MultiValueHashMap<String, String>>();
 
-            while (attValuePairScanner.hasNext())
+        String strCleanedInfoBox = m_wikiModel.render(new PlainTextConverter(), strInfoBox.replaceAll("<br />", "&lt;br /&gt;"));
+
+        // da wir hier eigentlich relationierte Datensätze haben, machen wir auch einzelne, separierte Dokumente draus
+
+        // System.out.println(strCleanedInfoBox);
+        // System.out.println(strCleanedInfoBox.substring(0, strCleanedInfoBox.indexOf("\n")).trim());
+
+        // erste Zeile bezeichnet die InfoBox
+        int iIndex = strCleanedInfoBox.indexOf("|");
+        if(iIndex == -1) iIndex = strCleanedInfoBox.indexOf("\n");
+        if(iIndex == -1) return;
+        String strInfoBoxName = strCleanedInfoBox.substring(7, iIndex).trim();
+        metadata.add(infobox, strInfoBoxName);
+
+
+        String[] straCleanedInfoBoxSplit = strCleanedInfoBox.split("\\s*\\|\\s*");
+
+        HashMap<String, MultiValueHashMap<String, String>> hsSubDocId2AttValuePairsOfSubDoc =
+                new HashMap<String, MultiValueHashMap<String, String>>();
+
+        for (String strAttValuePair : straCleanedInfoBoxSplit)
+        {
+
+            // System.out.println("\nattValPair unsplittet " + strAttValuePair);
+            // die Dinger sind mit einem '=' getrennt
+            String[] straAtt2Value = strAttValuePair.split("=");
+
+            if(straAtt2Value.length == 0 || straAtt2Value[0] == null) continue;
+            if(straAtt2Value.length < 2 || straAtt2Value[1] == null) continue;
+
+            String strAttName = straAtt2Value[0].trim();
+            String strAttValues = straAtt2Value[1];
+            if(StringUtils.nullOrWhitespace(strAttValues)) continue;
+            // Innerhalb eines values gibt es auch Zeilenumbrüche (mit '<br />' bzw. '&lt;br /&gt;') - dies gilt als Aufzählung
+            String[] straAttValues = strAttValues.split(Pattern.quote("&lt;br /&gt;"));
+            // XXX wir werfen zusatzangaben in Klammern erst mal weg - man könnte sie auch als attnameAddInfo in einem extra Attribut speichern -
+            // allerdings muß man dann wieder aufpassen, ob nicht ein subDocument entstehen muß (Bsp. mehrere Genre-entries mit jeweiliger
+            // Jahreszahl)
+
+
+            // der Attributname entscheidet nun, ob ein Dokument ausgelagert werden soll oder nicht. Ist darin eine Zahl enthalten, dann entfernen
+            // wir diese und gruppieren alle att-value-paare mit dieser Zahl in einen extra Datensatz (MultiValueHashMap)
+            Matcher numberMatcher = Pattern.compile("([\\D]*)(\\d+)([\\D]*)").matcher(strAttName);
+
+            if(!numberMatcher.find())
             {
-                String strAttValuePair = attValuePairScanner.next();
-
-                // System.out.println("\nattValPair unsplittet " + strAttValuePair);
-                // die Dinger sind mit einem '=' getrennt
-                String[] straAtt2Value = strAttValuePair.split("=");
-
-                if(straAtt2Value.length == 0 || straAtt2Value[0] == null) continue;
-                if(straAtt2Value.length < 2 || straAtt2Value[1] == null) continue;
-
-                String strAttName = straAtt2Value[0].trim();
-                String strAttValues = straAtt2Value[1];
-                if(StringUtils.nullOrWhitespace(strAttValues)) continue;
-                // Innerhalb eines values gibt es auch Zeilenumbrüche (mit '<br />' bzw. '&lt;br /&gt;') - dies gilt als Aufzählung
-                String[] straAttValues = strAttValues.split(Pattern.quote("&lt;br /&gt;"));
-                // XXX wir werfen zusatzangaben in Klammern erst mal weg - man könnte sie auch als attnameAddInfo in einem extra Attribut speichern -
-                // allerdings muß man dann wieder aufpassen, ob nicht ein subDocument entstehen muß (Bsp. mehrere Genre-entries mit jeweiliger
-                // Jahreszahl)
-
-
-                // der Attributname entscheidet nun, ob ein Dokument ausgelagert werden soll oder nicht. Ist darin eine Zahl enthalten, dann entfernen
-                // wir diese und gruppieren alle att-value-paare mit dieser Zahl in einen extra Datensatz (MultiValueHashMap)
-                Matcher numberMatcher = Pattern.compile("([\\D]*)(\\d+)([\\D]*)").matcher(strAttName);
-
-                if(!numberMatcher.find())
+                // wir haben keine Zahl im AttNamen - wir tragen diesen Wert einfach in die Metadaten ein.
+                for (String strAttValue : straAttValues)
                 {
-                    // wir haben keine Zahl im AttNamen - wir tragen diesen Wert einfach in die Metadaten ein.
-                    for (String strAttValue : straAttValues)
-                    {
-                        String strCleanedAttValue = cleanAttValue(strAttName, strAttValue);
-                        if(strCleanedAttValue != null) metadata.add(strAttName, strCleanedAttValue);
-                    }
-                }
-                else
-                {
-                    // wir haben eine Zahl im Namen - wir tragen den Wert in einem SubDocument unter der Id <zahl> ein
-                    String strPrefix = numberMatcher.group(1);
-                    String strNumber = numberMatcher.group(2);
-                    String strSuffix = numberMatcher.group(3);
-
-                    String strDataSetId = strPrefix + strNumber;
-                    String strFinalAttName = strPrefix + strSuffix;
-
-                    // wenn wir noch mehr Zahlen haben, dann haben wir geloost - und tragen es einfach ein
-                    if(numberMatcher.find())
-                    {
-                        for (String strAttValue : straAttValues)
-                        {
-                            String strCleanedAttValue = cleanAttValue(strFinalAttName, strAttValue);
-                            if(strCleanedAttValue != null) metadata.add(strFinalAttName, strCleanedAttValue);
-                        }
-                    }
-
-                    // System.out.println("prefix " + strPrefix);
-                    // System.out.println("num " + strDataSetId);
-                    // System.out.println("suffix " + strSuffix);
-                    MultiValueHashMap<String, String> hsAttname2ValueOfSubDoc = hsSubDocId2AttValuePairsOfSubDoc.get(strDataSetId);
-                    if(hsAttname2ValueOfSubDoc == null)
-                    {
-                        hsAttname2ValueOfSubDoc = new MultiValueHashMap<String, String>();
-                        hsSubDocId2AttValuePairsOfSubDoc.put(strDataSetId, hsAttname2ValueOfSubDoc);
-                    }
-
-
-                    for (String strAttValue : straAttValues)
-                        hsAttname2ValueOfSubDoc.add(strFinalAttName, strAttValue.replaceAll("\\(.*?\\)", "").trim());
-
-                }
-            }
-            attValuePairScanner.close();
-
-
-            String strPageId = new UID().toString();
-            metadata.add(LeechMetadata.id, strPageId);
-
-
-            // we have to use the same metadata Object
-            Metadata metadataBackup4ParentPage = TikaUtils.copyMetadata(metadata);
-
-            for (MultiValueHashMap<String, String> hsAttValuePairsOfSubDoc : hsSubDocId2AttValuePairsOfSubDoc.values())
-            {
-
-                TikaUtils.clearMetadata(metadata);
-
-
-                // die Referenz zu meinem parent
-                metadata.add(LeechMetadata.parentId, strPageId);
-                metadata.add(infobox, strInfoBoxName);
-                String strChildId = new UID().toString();
-                metadata.add(LeechMetadata.id, strChildId);
-                // zum rückreferenzieren geben wir dem parent auch noch unsere id
-                metadataBackup4ParentPage.add(LeechMetadata.childId, strChildId);
-
-
-                for (Entry<String, String> attName2Value4SubDoc : hsAttValuePairsOfSubDoc.entryList())
-                {
-                    String strAttName = attName2Value4SubDoc.getKey();
-                    String strAttValue = attName2Value4SubDoc.getValue();
-
                     String strCleanedAttValue = cleanAttValue(strAttName, strAttValue);
                     if(strCleanedAttValue != null) metadata.add(strAttName, strCleanedAttValue);
                 }
+            }
+            else
+            {
+                // wir haben eine Zahl im Namen - wir tragen den Wert in einem SubDocument unter der Id <zahl> ein
+                String strPrefix = numberMatcher.group(1);
+                String strNumber = numberMatcher.group(2);
+                String strSuffix = numberMatcher.group(3);
+
+                String strDataSetId = strPrefix + strNumber;
+                String strFinalAttName = strPrefix + strSuffix;
+
+                // wenn wir noch mehr Zahlen haben, dann haben wir geloost - und tragen es einfach ein
+                if(numberMatcher.find())
+                {
+                    for (String strAttValue : straAttValues)
+                    {
+                        String strCleanedAttValue = cleanAttValue(strFinalAttName, strAttValue);
+                        if(strCleanedAttValue != null) metadata.add(strFinalAttName, strCleanedAttValue);
+                    }
+                }
+
+                // System.out.println("prefix " + strPrefix);
+                // System.out.println("num " + strDataSetId);
+                // System.out.println("suffix " + strSuffix);
+                MultiValueHashMap<String, String> hsAttname2ValueOfSubDoc = hsSubDocId2AttValuePairsOfSubDoc.get(strDataSetId);
+                if(hsAttname2ValueOfSubDoc == null)
+                {
+                    hsAttname2ValueOfSubDoc = new MultiValueHashMap<String, String>();
+                    hsSubDocId2AttValuePairsOfSubDoc.put(strDataSetId, hsAttname2ValueOfSubDoc);
+                }
 
 
-                metadata.add(Metadata.CONTENT_TYPE, "application/wikipedia-meta+xml");
-
-                // so erreichen wir, daß im übergeordneten ContentHandler mehrere Docs ankommen :)
-                XHTMLContentHandler xhtml = new XHTMLContentHandler(handler, metadata);
-                xhtml.startDocument();
-                xhtml.endDocument();
+                for (String strAttValue : straAttValues)
+                    hsAttname2ValueOfSubDoc.add(strFinalAttName, strAttValue.replaceAll("\\(.*?\\)", "").trim());
 
             }
+        }
+
+
+        String strPageId = new UID().toString();
+        metadata.add(LeechMetadata.id, strPageId);
+
+
+        // we have to use the same metadata Object
+        Metadata metadataBackup4ParentPage = TikaUtils.copyMetadata(metadata);
+
+        for (MultiValueHashMap<String, String> hsAttValuePairsOfSubDoc : hsSubDocId2AttValuePairsOfSubDoc.values())
+        {
 
             TikaUtils.clearMetadata(metadata);
-            TikaUtils.copyMetadataFromTo(metadataBackup4ParentPage, metadata);
+
+
+            // die Referenz zu meinem parent
+            metadata.add(LeechMetadata.parentId, strPageId);
+            metadata.add(infobox, strInfoBoxName);
+            String strChildId = new UID().toString();
+            metadata.add(LeechMetadata.id, strChildId);
+            // zum rückreferenzieren geben wir dem parent auch noch unsere id
+            metadataBackup4ParentPage.add(LeechMetadata.childId, strChildId);
+
+
+            for (Entry<String, String> attName2Value4SubDoc : hsAttValuePairsOfSubDoc.entryList())
+            {
+                String strAttName = attName2Value4SubDoc.getKey();
+                String strAttValue = attName2Value4SubDoc.getValue();
+
+                String strCleanedAttValue = cleanAttValue(strAttName, strAttValue);
+                if(strCleanedAttValue != null) metadata.add(strAttName, strCleanedAttValue);
+            }
+
+
+            metadata.add(Metadata.CONTENT_TYPE, "application/wikipedia-meta+xml");
+
+            // so erreichen wir, daß im übergeordneten ContentHandler mehrere Docs ankommen :)
+            XHTMLContentHandler xhtml = new XHTMLContentHandler(handler, metadata);
+            xhtml.startDocument();
+            xhtml.endDocument();
 
         }
+
+        TikaUtils.clearMetadata(metadata);
+        TikaUtils.copyMetadataFromTo(metadataBackup4ParentPage, metadata);
+
 
 
 

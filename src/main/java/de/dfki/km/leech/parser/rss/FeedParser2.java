@@ -140,7 +140,7 @@ public class FeedParser2 extends AbstractParser
 
 
 
-    private static String stripTags(String value)
+    protected static String stripTags(String value)
     {
         if(value == null) return "";
 

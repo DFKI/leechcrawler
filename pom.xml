@@ -3,7 +3,7 @@
 	<groupId>de.dfki.km</groupId>
 	<artifactId>leech</artifactId>
 	<packaging>jar</packaging>
-	<version>0.9</version>
+	<version>0.9.1-SNAPSHOT</version>
 	<name>leech</name>
 	<url>http://leechcrawler.github.com/leech/</url>
 	
@@ -46,11 +46,11 @@
 	<distributionManagement>
 		<repository>
 			<id>artifactory2-libs-releases-local</id>
-			<url>http://www.dfki.uni-kl.de/artifactory2/libs-releases-local</url>
+			<url>http://www.dfki.uni-kl.de/artifactory/libs-releases-local</url>
 		</repository>
 		<snapshotRepository>
 			<id>artifactory2-libs-snapshots-local</id>
-			<url>http://www.dfki.uni-kl.de/artifactory2/libs-snapshots-local</url>
+			<url>http://www.dfki.uni-kl.de/artifactory/libs-snapshots-local</url>
 			<uniqueVersion>false</uniqueVersion>
 		</snapshotRepository>
 	</distributionManagement>

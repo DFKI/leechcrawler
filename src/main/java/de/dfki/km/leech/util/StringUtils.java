@@ -1,23 +1,18 @@
 /*
-    Leech - crawling capabilities for Apache Tika
-    
-    Copyright (C) 2012 DFKI GmbH, Author: Christian Reuschling
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-    Contact us by mail: christian.reuschling@dfki.de
-*/
+ * Leech - crawling capabilities for Apache Tika
+ * 
+ * Copyright (C) 2012 DFKI GmbH, Author: Christian Reuschling
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * Contact us by mail: christian.reuschling@dfki.de
+ */
 
 package de.dfki.km.leech.util;
 
@@ -33,6 +28,65 @@ import java.util.regex.Pattern;
 
 public class StringUtils
 {
+
+
+
+    /**
+     * Starts at a given index, looking for a opening bracket. Goes further and returns the index of the corresponding closing bracket. The method
+     * supports "()", "{}", and "[]". The method will ignore opening brackets that are excaped with '\'.
+     * 
+     * @param iStartIndex the index to start from
+     * @param strInput the input String
+     * 
+     * @return the index of the closing bracket corresponding to the first opening bracket after the given start index, -1 in the case there were no
+     *         brackets found or there is no matching bracket
+     */
+    public static int findMatchingBracket(int iStartIndex, String strInput)
+    {
+
+        char cOpeningBracket = '-';
+        char cClosingBracket = '-';
+        char lastChar = '-';
+
+        int iInnerBrackets = 0;
+
+        for (int i = iStartIndex; i < strInput.length(); i++)
+        {
+            char charAtI = strInput.charAt(i);
+
+            if(cOpeningBracket == '-')
+            {
+                if(charAtI == '(')
+                {
+                    cOpeningBracket = '(';
+                    cClosingBracket = ')';
+                }
+                else if(charAtI == '{')
+                {
+                    cOpeningBracket = '{';
+                    cClosingBracket = '}';
+                }
+                else if(charAtI == '[')
+                {
+                    cOpeningBracket = '[';
+                    cClosingBracket = ']';
+                }
+            }
+            else
+            {
+                if(charAtI == cOpeningBracket && lastChar != '\\') iInnerBrackets++;
+
+                if(charAtI == cClosingBracket && iInnerBrackets == 0) return i;
+
+                if(charAtI == cClosingBracket) iInnerBrackets--;
+            }
+            
+            
+            lastChar = charAtI;
+        }
+
+        return -1;
+    }
 
 
 

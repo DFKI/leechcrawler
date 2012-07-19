@@ -243,6 +243,8 @@ public class Leech extends Tika
         }
         finally
         {
+            if(handler instanceof DataSinkContentHandler) ((DataSinkContentHandler) handler).crawlFinished();
+            
             if(stream != null) stream.close();
         }
     }
@@ -299,6 +301,8 @@ public class Leech extends Tika
         }
         finally
         {
+            if(handler instanceof DataSinkContentHandler) ((DataSinkContentHandler) handler).crawlFinished();
+            
             if(stream != null) stream.close();
         }
     }
@@ -347,6 +351,8 @@ public class Leech extends Tika
         }
         finally
         {
+            if(handler instanceof DataSinkContentHandler) ((DataSinkContentHandler) handler).crawlFinished();
+            
             if(stream != null) stream.close();
         }
     }
@@ -528,6 +534,8 @@ public class Leech extends Tika
         }
         finally
         {
+            if(handler instanceof DataSinkContentHandler) ((DataSinkContentHandler) handler).crawlFinished();
+            
             if(stream != null) stream.close();
         }
 
@@ -586,6 +594,8 @@ public class Leech extends Tika
         }
         finally
         {
+            if(handler instanceof DataSinkContentHandler) ((DataSinkContentHandler) handler).crawlFinished();
+            
             if(stream != null) stream.close();
         }
 
@@ -633,6 +643,8 @@ public class Leech extends Tika
         }
         finally
         {
+            if(handler instanceof DataSinkContentHandler) ((DataSinkContentHandler) handler).crawlFinished();
+            
             if(stream != null) stream.close();
         }
 

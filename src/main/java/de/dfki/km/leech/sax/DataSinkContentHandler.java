@@ -115,6 +115,14 @@ public abstract class DataSinkContentHandler extends ContentHandlerDecorator
 
 
 
+    /**
+     * This method will be invoked by the leech class at the end of the parse method. You can perform some shutdown stuff after the crawl if you
+     * implement this method.
+     */
+    public abstract void crawlFinished();
+
+
+
     @Override
     public void endDocument() throws SAXException
     {

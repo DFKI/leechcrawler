@@ -50,6 +50,8 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
 
     public static class CrawlReport
     {
+        boolean bSomeHandled = false;
+
         public HashMap<String, Integer> hsErrorType2EntityCount = new HashMap<String, Integer>();
 
         public HashMap<String, Integer> hsModifiedType2EntityCount = new HashMap<String, Integer>();
@@ -64,17 +66,21 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
 
         public int iRemovedEntities = 0;
 
+        public long lastModifiedEntityProcessingTime;
+
+        public long lastNewEntityProcessingTime;
+
+        public long lastRemovedEntityProcessingTime;
+
+        public long lfirstEntityStartTime = -1;
+
+        public long lLastEntityEndTime = -1;
+
         public long lModifiedEntitiesProcessingTime = 0;
 
         public long lNewEntitiesProcessingTime = 0;
 
         public long lRemovedEntitiesProcessingTime = 0;
-
-        public long lLastEntityEndTime = -1;
-
-        public long lfirstEntityStartTime = -1;
-
-        boolean bSomeHandled = false;
 
 
 
@@ -96,7 +102,10 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
 
                 if(lDuration > 0)
                 {
-                    double dEntitiesPerMilliSecond = (double)iEntities / (double)lDuration;
+                    long lMilliSecondsPerEntity = Math.round((double) lDuration / (double) iEntities);
+                    strbReport.append(", ").append(StopWatch.formatTimeDistance(lMilliSecondsPerEntity)).append("/entity");
+
+                    double dEntitiesPerMilliSecond = (double) iEntities / (double) lDuration;
                     strbReport.append(", ").append(Math.round(dEntitiesPerMilliSecond * 1000)).append("/s");
                     strbReport.append(", ").append(Math.round(dEntitiesPerMilliSecond * 1000 * 60)).append("/m");
                     strbReport.append(", ").append(Math.round(dEntitiesPerMilliSecond * 1000 * 60 * 60)).append("/h");
@@ -113,7 +122,7 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
             strbReport.append("New data entities: ").append(iNewEntities);
             if(iNewEntities > 0)
                 strbReport.append(" (in average ").append(StopWatch.formatTimeDistance(lNewEntitiesProcessingTime / iNewEntities))
-                        .append(" to handle)");
+                        .append(" to handle. Last entity took " + StopWatch.formatTimeDistance(lastNewEntityProcessingTime) + ")");
             strbReport.append("\n");
             TreeSet<String> sortedTypes = new TreeSet<String>(hsNewType2EntityCount.keySet());
             StringBuilder strbTmp = new StringBuilder();
@@ -126,7 +135,7 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
             strbReport.append("Modified data entities: ").append(iModifiedEntities);
             if(iModifiedEntities > 0)
                 strbReport.append(" (in average ").append(StopWatch.formatTimeDistance(lModifiedEntitiesProcessingTime / iModifiedEntities))
-                        .append(" to handle)");
+                        .append(" to handle. Last entity took " + StopWatch.formatTimeDistance(lastModifiedEntityProcessingTime) + ")");
             strbReport.append("\n");
             sortedTypes = new TreeSet<String>(hsModifiedType2EntityCount.keySet());
             strbTmp = new StringBuilder();
@@ -139,7 +148,7 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
             strbReport.append("Removed data entities: ").append(iRemovedEntities);
             if(iRemovedEntities > 0)
                 strbReport.append(" (in average ").append(StopWatch.formatTimeDistance(lRemovedEntitiesProcessingTime / iRemovedEntities))
-                        .append(" to handle)");
+                        .append(" to handle. Last entity took " + StopWatch.formatTimeDistance(lastRemovedEntityProcessingTime) + ")");
             strbReport.append("\n");
 
             strbReport.append("Error data entities: ").append(iErrorEntities).append("\n");
@@ -160,13 +169,13 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
 
 
 
-    protected final DataSinkContentHandler m_wrappedDataSinkContentHandler;
+    protected long m_lastReportTime = 0;
 
 
 
     protected long m_lCyclicReportMilliseconds = -1;
 
-    protected long m_lastReportTime = 0;
+    protected final DataSinkContentHandler m_wrappedDataSinkContentHandler;
 
 
 
@@ -177,20 +186,27 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
 
 
 
-    /**
-     * Sets whether or not a time-based cyclic report will be generated. The time is not a hard criteria, the method will print the report when new
-     * content arrives and the last report was longer ago than everMilliseconds
-     * 
-     * @param everyMilliseconds in the case this value is <0, cyclic report printing will be disabled. Otherwise, every <everyMilliseconds>
-     *            milliseconds a report will be println'd
-     * 
-     * @return this
-     */
-    public CrawlReportContentHandler setCyclicReportPrintln(long everyMilliseconds)
+    @Override
+    public void crawlFinished()
     {
-        m_lCyclicReportMilliseconds = everyMilliseconds;
+        m_wrappedDataSinkContentHandler.crawlFinished();
 
-        return this;
+        Logger.getLogger(CrawlReportContentHandler.class.getName()).info("Crawl finished:\n" + getReport().toString());
+    }
+
+
+
+    public CrawlReport getReport()
+    {
+        return m_crawlReport;
+    }
+
+
+
+
+    public DataSinkContentHandler getWrappedDataSinkContentHandler()
+    {
+        return m_wrappedDataSinkContentHandler;
     }
 
 
@@ -205,21 +221,6 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
 
             m_lastReportTime = System.currentTimeMillis();
         }
-    }
-
-
-
-
-    public CrawlReport getReport()
-    {
-        return m_crawlReport;
-    }
-
-
-
-    public DataSinkContentHandler getWrappedDataSinkContentHandler()
-    {
-        return m_wrappedDataSinkContentHandler;
     }
 
 
@@ -284,6 +285,7 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
 
         long lDuration = System.currentTimeMillis() - lStart;
         m_crawlReport.lModifiedEntitiesProcessingTime += lDuration;
+        m_crawlReport.lastModifiedEntityProcessingTime = lDuration;
         m_crawlReport.lLastEntityEndTime = System.currentTimeMillis();
 
         printReportIfItsTime();
@@ -317,6 +319,7 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
 
         long lDuration = System.currentTimeMillis() - lStart;
         m_crawlReport.lNewEntitiesProcessingTime += lDuration;
+        m_crawlReport.lastNewEntityProcessingTime = lDuration;
         m_crawlReport.lLastEntityEndTime = System.currentTimeMillis();
 
         printReportIfItsTime();
@@ -341,6 +344,7 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
 
         long lDuration = System.currentTimeMillis() - lStart;
         m_crawlReport.lRemovedEntitiesProcessingTime += lDuration;
+        m_crawlReport.lastRemovedEntityProcessingTime = lDuration;
         m_crawlReport.lLastEntityEndTime = System.currentTimeMillis();
 
         printReportIfItsTime();
@@ -354,6 +358,24 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
     public void reset()
     {
         m_crawlReport = new CrawlReport();
+    }
+
+
+
+    /**
+     * Sets whether or not a time-based cyclic report will be generated. The time is not a hard criteria, the method will print the report when new
+     * content arrives and the last report was longer ago than everMilliseconds
+     * 
+     * @param everyMilliseconds in the case this value is <0, cyclic report printing will be disabled. Otherwise, every <everyMilliseconds>
+     *            milliseconds a report will be println'd
+     * 
+     * @return this
+     */
+    public CrawlReportContentHandler setCyclicReportPrintln(long everyMilliseconds)
+    {
+        m_lCyclicReportMilliseconds = everyMilliseconds;
+
+        return this;
     }
 
 
