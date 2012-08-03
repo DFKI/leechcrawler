@@ -81,7 +81,7 @@ public class ImapURLStreamProvider extends URLStreamProvider
 
 
         // wenn das Teil schon gefüllt ist, dann machen wir gar nix
-        if(!(metadata2fill.get(DublinCore.SOURCE) == null || metadata2fill.get(IncrementalCrawlingHistory.dataEntityExistsID) == null
+        if(!(metadata2fill.get(Metadata.SOURCE) == null || metadata2fill.get(IncrementalCrawlingHistory.dataEntityExistsID) == null
                 || metadata2fill.get(IncrementalCrawlingHistory.dataEntityContentFingerprint) == null
                 || metadata2fill.get(Metadata.RESOURCE_NAME_KEY) == null || metadata2fill.get("Content-Type") == null))
         {
@@ -98,7 +98,7 @@ public class ImapURLStreamProvider extends URLStreamProvider
 
 
         // Für Leech
-        metadata2fill.set(DublinCore.SOURCE, url2getMetadata.toString());
+        metadata2fill.set(Metadata.SOURCE, url2getMetadata.toString());
 
 
         // Für das inkrementelle indexieren

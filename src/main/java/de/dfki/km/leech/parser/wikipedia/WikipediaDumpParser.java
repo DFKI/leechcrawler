@@ -278,6 +278,7 @@ public class WikipediaDumpParser implements Parser
 
 
 
+    //TODO: hier wäre langfristig etwas platzsparenderes als die MultiValueHashMap interessant - hat Lucene vielleicht eine Map als Automaton? 
     public MultiValueHashMap<String, String> getPageTitle2Redirects(InputStream sWikipediaDump) throws FileNotFoundException, XMLStreamException
     {
         // <text xml:space="preserve">#REDIRECT [[Autopoiesis]]</text>
@@ -472,11 +473,11 @@ public class WikipediaDumpParser implements Parser
                         }
                     }
 
-                    metadata.add(DublinCore.TITLE, strCurrentTitle);
-                    metadata.add(DublinCore.SOURCE, strBaseURL + strCurrentTitle);
+                    metadata.add(Metadata.TITLE, strCurrentTitle);
+                    metadata.add(Metadata.SOURCE, strBaseURL + strCurrentTitle);
 
                     for (String strRedirect : hsPageTitle2Redirects.get(strCurrentTitle))
-                        metadata.add(DublinCore.TITLE, strRedirect);
+                        metadata.add(Metadata.TITLE, strRedirect);
 
 
                     continue;
@@ -514,7 +515,7 @@ public class WikipediaDumpParser implements Parser
                 {
                     String strTimestamp = readNextCharEventsText(xmlEventReader);
 
-                    metadata.add(DublinCore.MODIFIED, strTimestamp);
+                    metadata.add(Metadata.MODIFIED, strTimestamp);
 
                     continue;
                 }
@@ -526,7 +527,7 @@ public class WikipediaDumpParser implements Parser
                 {
                     String strUsername = readNextCharEventsText(xmlEventReader);
 
-                    metadata.add(DublinCore.CREATOR, strUsername);
+                    metadata.add(Metadata.CREATOR, strUsername);
 
                     continue;
                 }

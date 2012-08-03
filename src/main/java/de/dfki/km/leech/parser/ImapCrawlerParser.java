@@ -71,7 +71,7 @@ import de.dfki.km.leech.util.certificates.CertificateIgnoringSocketFactory;
 
 
 /**
- * CrawlerParser implementation for crawling imap servers. The class deals with Dublincore.source url of the following form:<br>
+ * CrawlerParser implementation for crawling imap servers. The class deals with Metadata.source url of the following form:<br>
  * <br>
  * imap[s]://username:password@hostname:port/folder2crawl<br>
  * <br>
@@ -247,7 +247,7 @@ public class ImapCrawlerParser extends CrawlerParser
         CrawlerContext crawlerContext = context.get(CrawlerContext.class, new CrawlerContext());
 
 
-        String strContainerURL = metadata.get(DublinCore.SOURCE);
+        String strContainerURL = metadata.get(Metadata.SOURCE);
 
         URLName containerURLName = new URLName(strContainerURL);
 
@@ -410,7 +410,7 @@ public class ImapCrawlerParser extends CrawlerParser
         }
         catch (MessagingException e)
         {
-            String strSourceID = metadata.get(DublinCore.SOURCE);
+            String strSourceID = metadata.get(Metadata.SOURCE);
 
             ExceptionUtils.handleException(e, strSourceID, metadata, context.get(CrawlerContext.class, new CrawlerContext()), context,
                     iCurrentCrawlingDepth, handler);
@@ -441,7 +441,7 @@ public class ImapCrawlerParser extends CrawlerParser
 
         // wir setzten die hier schon mal - die Daten haben wir in einem prefetching-Schritt schon effizient geladen. Wenn diese hier schon im
         // Metadata-Objekt stehen, werden sie von der addFirstMetadata nicht nochmal geladen
-        metadata.set(DublinCore.SOURCE, urlNameWithPassword.toString());
+        metadata.set(Metadata.SOURCE, urlNameWithPassword.toString());
         metadata.set(IncrementalCrawlingHistory.dataEntityExistsID, strEntityExistsId);
         metadata.set(IncrementalCrawlingHistory.dataEntityContentFingerprint,
                 ImapURLStreamProvider.getDataEntityContentFingerprint(strEntityExistsId));

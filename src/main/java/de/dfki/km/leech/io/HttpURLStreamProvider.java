@@ -81,12 +81,12 @@ public class HttpURLStreamProvider extends URLStreamProvider
      * Adds first metadata and metadata relevant for incremental indexing to the given metadata object
      * 
      * @param url2getMetadata the url for which metadata should be extracte
-     * @param metadata2fill the metadata object. The method will put several entries, as DublinCore.SOURCE, Metadata.RESOURCE_NAME_KEY,
+     * @param metadata2fill the metadata object. The method will put several entries, as Metadata.SOURCE, Metadata.RESOURCE_NAME_KEY,
      *            Metadata.CONTENT_ENCODING, Metadata.CONTENT_TYPE, Metadata.CONTENT_LOCATION and, last but not least, the
      *            {@link IncrementalCrawlingHistory#dataEntityExistsID} and {@link IncrementalCrawlingHistory#dataEntityContentFingerprint} to
-     *            determine whether the content behind the url was modified since the last crawl or not. The URL path entry for DublinCore.SOURCE is
+     *            determine whether the content behind the url was modified since the last crawl or not. The URL path entry for Metadata.SOURCE is
      *            the last URL behind potential previous redirects (in the case its an http connection). The origin URL will be written into an
-     *            attribute "originalsource" in the case it differs from the one into DublinCore.SOURCE. To determine whether an url was modified or
+     *            attribute "originalsource" in the case it differs from the one into Metadata.SOURCE. To determine whether an url was modified or
      *            not, the method needs a configured crawling history.
      * @param parseContext the parsing context to specify a crawling history. Can be null, in this case no history will be used (of course ;) )
      * 
@@ -101,7 +101,7 @@ public class HttpURLStreamProvider extends URLStreamProvider
 
 
         // wenn das Teil schon gefüllt ist, dann machen wir gar nix
-        if(!(metadata2fill.get(DublinCore.SOURCE) == null || metadata2fill.get(Metadata.RESOURCE_NAME_KEY) == null
+        if(!(metadata2fill.get(Metadata.SOURCE) == null || metadata2fill.get(Metadata.RESOURCE_NAME_KEY) == null
                 || metadata2fill.get(Metadata.CONTENT_ENCODING) == null || metadata2fill.get(Metadata.CONTENT_TYPE) == null
                 || metadata2fill.get(Metadata.CONTENT_LOCATION) == null
                 || metadata2fill.get(IncrementalCrawlingHistory.dataEntityContentFingerprint) == null || metadata2fill
@@ -127,7 +127,7 @@ public class HttpURLStreamProvider extends URLStreamProvider
 
         // keep a backup of the originally passed url
         String strOriginalUrlString = url2getMetadata.toString();
-        metadata2fill.set(DublinCore.SOURCE, strOriginalUrlString);
+        metadata2fill.set(Metadata.SOURCE, strOriginalUrlString);
 
         URLConnection connection = null;
         int nrRedirections = 0;
@@ -240,7 +240,7 @@ public class HttpURLStreamProvider extends URLStreamProvider
 
         metadata2fill.set(Metadata.RESOURCE_NAME_KEY, strCurrentUrl);
 
-        metadata2fill.set(DublinCore.SOURCE, strCurrentUrl);
+        metadata2fill.set(Metadata.SOURCE, strCurrentUrl);
         metadata2fill.set(IncrementalCrawlingHistory.dataEntityExistsID, strCurrentUrl);
 
         if(strOriginalUrlString.indexOf(strCurrentUrl) == -1) metadata2fill.set("originalsource", strOriginalUrlString);

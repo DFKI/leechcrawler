@@ -102,7 +102,7 @@ public class ExceptionUtils
      * better the {@link DataSinkContentHandler} interface, which is recommended.
      * 
      * @param e thhe exception occured during the crawl
-     * @param strSourceId some referencing ID - in the case it is null, the method will get DublinCore.SOURCE from the metadata or, in the case this
+     * @param strSourceId some referencing ID - in the case it is null, the method will get Metadata.SOURCE from the metadata or, in the case this
      *            is also null, Metadata.RESOURCE_NAME_KEY
      * @param metadata the metadata object for the data entity. Will be enhanced with the error message and given to the EmptyParser invocation
      * @param crawlerContext the original crawler configuration object
@@ -123,7 +123,7 @@ public class ExceptionUtils
 
         String strUrlOrSource4SubEntity = strSourceId;
 
-        if(strUrlOrSource4SubEntity == null) strUrlOrSource4SubEntity = metadata.get(DublinCore.SOURCE);
+        if(strUrlOrSource4SubEntity == null) strUrlOrSource4SubEntity = metadata.get(Metadata.SOURCE);
         if(strUrlOrSource4SubEntity == null) strUrlOrSource4SubEntity = metadata.get(Metadata.RESOURCE_NAME_KEY);
         if(strUrlOrSource4SubEntity == null)
             strUrlOrSource4SubEntity =

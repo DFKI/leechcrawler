@@ -31,7 +31,6 @@ import java.util.Iterator;
 import java.util.UUID;
 
 import org.apache.tika.exception.TikaException;
-import org.apache.tika.metadata.DublinCore;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MediaType;
 import org.apache.tika.parser.CompositeParser;
@@ -208,7 +207,7 @@ public class IncrementalCrawlingParser extends ParserDecorator
         }
         catch (Exception e)
         {
-            String strUrlOrSource = metadata.get(DublinCore.SOURCE);
+            String strUrlOrSource = metadata.get(Metadata.SOURCE);
             if(strUrlOrSource == null) strUrlOrSource = metadata.get(Metadata.RESOURCE_NAME_KEY);
             if(strUrlOrSource == null) strUrlOrSource = metadata.get(IncrementalCrawlingHistory.dataEntityExistsID);
             if(strUrlOrSource == null) strUrlOrSource = "no entity id known in metadata";
@@ -266,6 +265,7 @@ public class IncrementalCrawlingParser extends ParserDecorator
             // wir wollen inkrementelles indexieren - war das Teil schon mal da?
 
             String strDataEntityExistsID = metadata.get(IncrementalCrawlingHistory.dataEntityExistsID);
+            String strMasterDataEntityExistsID = metadata.get(IncrementalCrawlingHistory.masterDataEntityExistsID);
 
 
             Exist exist = crawlingHistory.exists(strDataEntityExistsID);
@@ -284,7 +284,7 @@ public class IncrementalCrawlingParser extends ParserDecorator
             {
                 metadata.set(DATA_ENTITY_MODIFICATION_STATE, NEW);
 
-                crawlingHistory.addDataEntity(strDataEntityExistsID, strDataEntityContentFingerprint);
+                crawlingHistory.addDataEntity(strDataEntityExistsID, strDataEntityContentFingerprint, strMasterDataEntityExistsID);
 
                 return true;
             }
@@ -306,7 +306,7 @@ public class IncrementalCrawlingParser extends ParserDecorator
             // verändert
             metadata.set(DATA_ENTITY_MODIFICATION_STATE, MODIFIED);
 
-            crawlingHistory.updateDataEntity(strDataEntityExistsID, strDataEntityContentFingerprint);
+            crawlingHistory.updateDataEntity(strDataEntityExistsID, strDataEntityContentFingerprint, strMasterDataEntityExistsID);
 
             return true;
         }

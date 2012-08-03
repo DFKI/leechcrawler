@@ -129,7 +129,7 @@ public class PrintlnContentHandler extends DataSinkContentHandler
     @Override
     public void crawlFinished()
     {
-        m_wrappedDataSinkContentHandler.crawlFinished();
+        if(m_wrappedDataSinkContentHandler != null) m_wrappedDataSinkContentHandler.crawlFinished();
     }
 
 
@@ -166,7 +166,7 @@ public class PrintlnContentHandler extends DataSinkContentHandler
                 || m_verbosity == Verbosity.titlePlusFulltext)
         {
             String strInfo = metadata.get(IncrementalCrawlingHistory.dataEntityExistsID);
-            if(strInfo == null) strInfo = metadata.get(DublinCore.SOURCE);
+            if(strInfo == null) strInfo = metadata.get(Metadata.SOURCE);
             if(strInfo == null) strInfo = metadata.get(Metadata.RESOURCE_NAME_KEY);
 
             strbMessage.append(strInfo).append("\n");
@@ -217,7 +217,7 @@ public class PrintlnContentHandler extends DataSinkContentHandler
                     || m_verbosity == Verbosity.titlePlusFulltext)
             {
                 String strInfo = metadata.get(IncrementalCrawlingHistory.dataEntityExistsID);
-                if(strInfo == null) strInfo = metadata.get(DublinCore.SOURCE);
+                if(strInfo == null) strInfo = metadata.get(Metadata.SOURCE);
                 if(strInfo == null) strInfo = metadata.get(Metadata.RESOURCE_NAME_KEY);
 
                 strbMessage.append(strInfo).append("\n");
@@ -269,7 +269,7 @@ public class PrintlnContentHandler extends DataSinkContentHandler
                     || m_verbosity == Verbosity.titlePlusFulltext)
             {
                 String strInfo = metadata.get(IncrementalCrawlingHistory.dataEntityExistsID);
-                if(strInfo == null) strInfo = metadata.get(DublinCore.SOURCE);
+                if(strInfo == null) strInfo = metadata.get(Metadata.SOURCE);
                 if(strInfo == null) strInfo = metadata.get(Metadata.RESOURCE_NAME_KEY);
 
                 strbMessage.append(strInfo).append("\n");
@@ -320,7 +320,7 @@ public class PrintlnContentHandler extends DataSinkContentHandler
                     || m_verbosity == Verbosity.titlePlusFulltext)
             {
                 String strInfo = metadata.get(IncrementalCrawlingHistory.dataEntityExistsID);
-                if(strInfo == null) strInfo = metadata.get(DublinCore.SOURCE);
+                if(strInfo == null) strInfo = metadata.get(Metadata.SOURCE);
                 if(strInfo == null) strInfo = metadata.get(Metadata.RESOURCE_NAME_KEY);
 
                 strbMessage.append(strInfo).append("\n");

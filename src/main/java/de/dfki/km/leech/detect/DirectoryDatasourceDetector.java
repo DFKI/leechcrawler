@@ -54,7 +54,7 @@ public class DirectoryDatasourceDetector implements Detector
         try
         {
 
-            String strName = metadata.get(DublinCore.SOURCE);
+            String strName = metadata.get(Metadata.SOURCE);
             if(strName == null) strName = metadata.get(Metadata.RESOURCE_NAME_KEY);
 
             // octet stream wird zurück gegeben, wenn wir nix erkennen konnten

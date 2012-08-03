@@ -231,7 +231,7 @@ public class DirectoryCrawlerParser extends CrawlerParser
     {
 
         // was crawlen wir hier eigentlich?
-        String strDirName = metadata.get(DublinCore.SOURCE);
+        String strDirName = metadata.get(Metadata.SOURCE);
         // und wie?
         final CrawlerContext crawlerContext = context.get(CrawlerContext.class, new CrawlerContext());
         final DirectoryCrawlerContext directoryCrawlerContext = context.get(DirectoryCrawlerContext.class, new DirectoryCrawlerContext());

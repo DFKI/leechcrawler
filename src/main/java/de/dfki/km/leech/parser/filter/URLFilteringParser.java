@@ -64,13 +64,14 @@ public class URLFilteringParser extends ParserDecorator
 
 
     /**
-     * Creates an URLFilteringParser according to the DublinCore.SOURCE metadata entries
+     * Creates an URLFilteringParser according to the Metadata.SOURCE metadata entries
      * 
      * @param parser the parser to decorate
      */
     public URLFilteringParser(Parser parser)
     {
-        this(parser, DublinCore.SOURCE);
+        this(parser, Metadata.SOURCE);
+//        this(parser, Metadata.SOURCE);
     }
 
 
@@ -98,7 +99,7 @@ public class URLFilteringParser extends ParserDecorator
         CrawlerContext crawlerContext = context.get(CrawlerContext.class);
         if(crawlerContext == null) crawlerContext = new CrawlerContext();
 
-        String strSource = metadata.get(DublinCore.SOURCE);
+        String strSource = metadata.get(Metadata.SOURCE);
         if(strSource == null) strSource = metadata.get(Metadata.RESOURCE_NAME_KEY);
 
         // ## URLFilter - wenn unsere zu parsende entity ausserhalb der Domäne steht, dann ignorieren wir sie auch

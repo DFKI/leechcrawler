@@ -140,7 +140,7 @@ public class HtmlCrawlerParser extends CrawlerParser
         CrawlerContext crawlerContext = context.get(CrawlerContext.class);
         HtmlCrawlerContext htmlCrawlerContext = context.get(HtmlCrawlerContext.class, new HtmlCrawlerContext());
 
-        String strContainerURL = metadata.get(DublinCore.SOURCE);
+        String strContainerURL = metadata.get(Metadata.SOURCE);
 
 
         // ## die Linkz - wir werden hier mal unsere links mit Tika auslesen - das ist konsequent und wird von anderen weiterentwickelt ;)
@@ -206,7 +206,7 @@ public class HtmlCrawlerParser extends CrawlerParser
     {
         // wenn wir nicht genug metadatan haben, dann fallen wir auf den Standard-Tika-htmlparser zurück. Das ist der Fall, wenn wir ein eingebettetes
         // html-file haben, z.b. ein html-file in einem zip. Die werden dann nicht gecrawlt, der Inhalt wird ganz einfach extrahiert.
-        String strSource = metadata.get(DublinCore.SOURCE);
+        String strSource = metadata.get(Metadata.SOURCE);
 
         if(StringUtils.nullOrWhitespace(strSource))
         {

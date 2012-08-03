@@ -1,23 +1,18 @@
 /*
-    Leech - crawling capabilities for Apache Tika
-    
-    Copyright (C) 2012 DFKI GmbH, Author: Christian Reuschling
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-    Contact us by mail: christian.reuschling@dfki.de
-*/
+ * Leech - crawling capabilities for Apache Tika
+ * 
+ * Copyright (C) 2012 DFKI GmbH, Author: Christian Reuschling
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * Contact us by mail: christian.reuschling@dfki.de
+ */
 
 package de.dfki.km.leech.parser.incremental;
 
@@ -59,6 +54,7 @@ import org.apache.lucene.store.SimpleFSDirectory;
 import org.apache.lucene.util.Version;
 
 import de.dfki.km.leech.config.CrawlerContext;
+import de.dfki.km.leech.util.StringUtils;
 
 
 
@@ -244,6 +240,8 @@ public class IncrementalCrawlingHistory
 
     static public final String dataEntityExistsID = "dataEntityExistsID";
 
+    static public final String masterDataEntityExistsID = "masterDataEntityExistsID";
+
     static public final String lastCrawledTime = "lastCrawledTime";
 
     protected IndexReader m_indexReader = null;
@@ -286,7 +284,6 @@ public class IncrementalCrawlingHistory
 
 
 
-
     /**
      * Remarks a new data entity, together with the current time as 'last crawled/checked time'.
      * 
@@ -300,12 +297,39 @@ public class IncrementalCrawlingHistory
      */
     public void addDataEntity(String strDataEntityExistsID, String strDataEntityContentFingerprint) throws CorruptIndexException, IOException
     {
+        addDataEntity(strDataEntityExistsID, strDataEntityContentFingerprint, null);
+    }
+
+
+
+    /**
+     * Remarks a new data entity, together with the current time as 'last crawled/checked time'.
+     * 
+     * @param strDataEntityExistsID an identifier for a data entity that is independent from the content of this entity. It is only for identifying
+     *            the occurence, not to check whether it has changed (e.g. a filename)
+     * @param strDataEntityContentFingerprint some fingerprint/identifier that gives the hint whether the content of the data entity has changed, e.g.
+     *            the modifed date of a file
+     * @param strMasterDataEntityExistsID optional: an EntityExistsID of another data entity that is our 'master' which means that when the master is
+     *            updated with {@link #updateDataEntityLastCrawledTime(String)}, all associated slaves will be also updated. This is e.g. for the case
+     *            when you are in a second run for RSS-File indexing, and leech recognizes that this file didn't changed. Now we don't want to go
+     *            unnecessarily into the fil and mark each entry on it's own. We know no subentry has changed, and can immediately mark them as
+     *            processed with {@link #updateDataEntityLastCrawledTime(String)} on the master dataEntityExistsID, which is the one from the RSS
+     *            file. Leave it null or empty in the case you don't need to use it.
+     * 
+     * @throws IOException
+     * @throws CorruptIndexException
+     */
+    public void addDataEntity(String strDataEntityExistsID, String strDataEntityContentFingerprint, String strMasterDataEntityExistsID)
+            throws CorruptIndexException, IOException
+    {
 
         Document doc = new Document();
 
         doc.add(new Field(dataEntityExistsID, strDataEntityExistsID, Store.YES, Index.ANALYZED, TermVector.NO));
         doc.add(new Field(dataEntityContentFingerprint, strDataEntityContentFingerprint, Store.YES, Index.ANALYZED_NO_NORMS, TermVector.NO));
         doc.add(new NumericField(lastCrawledTime, Store.YES, true).setLongValue(System.currentTimeMillis()));
+        if(!StringUtils.nullOrWhitespace(strMasterDataEntityExistsID))
+            doc.add(new Field(masterDataEntityExistsID, strMasterDataEntityExistsID, Store.YES, Index.ANALYZED, TermVector.NO));
 
         m_indexWriter.addDocument(doc);
 
@@ -596,8 +620,6 @@ public class IncrementalCrawlingHistory
 
 
 
-
-
     /**
      * Updates a whole data entity - same as addDataEntity, but removes a former entry before storing the new one
      * 
@@ -611,6 +633,31 @@ public class IncrementalCrawlingHistory
      */
     public void updateDataEntity(String strDataEntityExistsID, String strDataEntityContentFingerprint) throws CorruptIndexException, IOException
     {
+        updateDataEntity(strDataEntityExistsID, strDataEntityContentFingerprint, null);
+    }
+
+
+
+    /**
+     * Updates a whole data entity - same as addDataEntity, but removes a former entry before storing the new one
+     * 
+     * @param strDataEntityExistsID an identifier for a data entity that is independent from the content of this entity. It is only for identifying
+     *            the occurence, not to check whether it has changed (e.g. a filename)
+     * @param strDataEntityContentFingerprint some fingerprint/identifier that gives the hint whether the content of the data entity has changed, e.g.
+     *            the modifed date of a file
+     * @param strMasterDataEntityExistsID optional: an EntityExistsID of another data entity that is our 'master' which means that when the master is
+     *            updated with {@link #updateDataEntityLastCrawledTime(String)}, all associated slaves will be also updated. This is e.g. for the case
+     *            when you are in a second run for RSS-File indexing, and leech recognizes that this file didn't changed. Now we don't want to go
+     *            unnecessarily into the fil and mark each entry on it's own. We know no subentry has changed, and can immediately mark them as
+     *            processed with {@link #updateDataEntityLastCrawledTime(String)} on the master dataEntityExistsID, which is the one from the RSS
+     *            file. Leave it null or empty in the case you don't need to use it.
+     * 
+     * @throws IOException
+     * @throws CorruptIndexException
+     */
+    public void updateDataEntity(String strDataEntityExistsID, String strDataEntityContentFingerprint, String strMasterDataEntityExistsID)
+            throws CorruptIndexException, IOException
+    {
 
         Term termId = new Term(dataEntityExistsID, strDataEntityExistsID);
 
@@ -620,6 +667,8 @@ public class IncrementalCrawlingHistory
         doc.add(new Field(dataEntityExistsID, strDataEntityExistsID, Store.YES, Index.ANALYZED_NO_NORMS, TermVector.NO));
         doc.add(new Field(dataEntityContentFingerprint, strDataEntityContentFingerprint, Store.YES, Index.ANALYZED_NO_NORMS, TermVector.NO));
         doc.add(new NumericField(lastCrawledTime, Store.YES, true).setLongValue(System.currentTimeMillis()));
+        if(!StringUtils.nullOrWhitespace(strMasterDataEntityExistsID))
+            doc.add(new Field(masterDataEntityExistsID, strMasterDataEntityExistsID, Store.YES, Index.ANALYZED, TermVector.NO));
 
 
         m_indexWriter.updateDocument(termId, doc);
@@ -629,7 +678,9 @@ public class IncrementalCrawlingHistory
 
 
     /**
-     * Sets a data entities 'last crawled/checked time' entry to the current time.
+     * Sets a data entities 'last crawled/checked time' entry to the current time. In the case this data entity is a master entity, all slave
+     * documents will be updated also. You can set an entity as a master entity with {@link #addDataEntity(String, String, String)} or
+     * {@link #updateDataEntity(String, String, String)}
      * 
      * @param strDataEntityExistsID the data entity which is finally checked/crawled
      * 
@@ -647,15 +698,37 @@ public class IncrementalCrawlingHistory
         if(!termDocs.next())
             throw new IllegalStateException("there has to be an data entry with Id " + strDataEntityExistsID + " for updating. Nothing was found.");
 
+
+        long lCurrentTime = System.currentTimeMillis();
+
         Document doc = m_indexReader.document(termDocs.doc());
 
         doc.removeFields(lastCrawledTime);
-        doc.add(new NumericField(lastCrawledTime, Store.YES, true).setLongValue(System.currentTimeMillis()));
+        doc.add(new NumericField(lastCrawledTime, Store.YES, true).setLongValue(lCurrentTime));
 
         m_indexWriter.updateDocument(termId, doc);
 
-    }
+        
+        
 
+        // wenn das Teil eine MasterDataEntity ist, dann müssen alle assoziierten Sklaven auch noch aktualisiert werden
+
+        termId = new Term(masterDataEntityExistsID, strDataEntityExistsID);
+
+        termDocs = m_indexReader.termDocs(termId);
+
+        while (termDocs.next())
+        {
+
+            Document slaveDoc = m_indexReader.document(termDocs.doc());
+
+            slaveDoc.removeFields(lastCrawledTime);
+            slaveDoc.add(new NumericField(lastCrawledTime, Store.YES, true).setLongValue(lCurrentTime));
+
+            m_indexWriter.updateDocument(termId, doc);
+        }
+
+    }
 
 
 

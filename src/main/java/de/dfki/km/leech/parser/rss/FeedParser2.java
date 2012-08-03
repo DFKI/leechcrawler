@@ -64,7 +64,14 @@ public class FeedParser2 extends AbstractParser
             CrawlerContext crawlerContext = context.get(CrawlerContext.class);
             if(crawlerContext == null) crawlerContext = new CrawlerContext();
 
+            // TODO: der trägt das hier zwar in die CrawlingHistory ein, aber beim zweiten Lauf bemerkt er, daß die RSS-Datei sich nicht geändert hat,
+            // und ignoriert sie. Dann werden die subEinträge während des crawlens aber auch nicht mehr durchlaufen, sie werden nicht somit nicht als
+            // 'bearbeitet' markiert, und gelten am Ende des Laufs als gelöscht. Des isch en häßlicher Bug...und es ist eine gute Frage, wie man damit
+            // umgeht...vielleicht sollte man bei einem 'unverändert' auch assoziierte Kinder markieren....oder man trägt hier für jedes Kind die
+            // selbe ID ein? des Vaters? das könnt was sein...wenn es sich dann verändert, dann...hm..krieg ich keine id mehr für die DB, daß etwas
+            // gelöscht werden soll :(
             IncrementalCrawlingHistory crawlingHistory = crawlerContext.getIncrementalCrawlingHistory();
+            String strMasterDataEntityExistsID = metadata.get(IncrementalCrawlingHistory.dataEntityExistsID);
 
 
             SyndFeed feed = new SyndFeedInput().build(new InputSource(new CloseShieldInputStream(stream)));
@@ -104,6 +111,7 @@ public class FeedParser2 extends AbstractParser
                     // hier wollen wir mit unseren dataexistsID und contentFingerprint prüfen, ob dieser Entry schon mal indexiert wurde
                     metadata.add(IncrementalCrawlingHistory.dataEntityExistsID, strLink);
                     metadata.add(IncrementalCrawlingHistory.dataEntityContentFingerprint, entry.getPublishedDate().toString());
+                    metadata.add(IncrementalCrawlingHistory.masterDataEntityExistsID, strMasterDataEntityExistsID);
 
                     IncrementalCrawlingParser.performHistoryStuff(crawlingHistory, metadata);
 
@@ -111,12 +119,12 @@ public class FeedParser2 extends AbstractParser
 
 
                     metadata.add(Metadata.CONTENT_TYPE, strContentType);
-                    metadata.add(DublinCore.SOURCE, strLink);
-                    metadata.add(DublinCore.TITLE, stripTags(entry.getTitle()));
-                    metadata.add(DublinCore.CREATOR, entry.getAuthor());
-                    metadata.add(DublinCore.MODIFIED, entry.getPublishedDate().toString());
+                    metadata.add(Metadata.SOURCE, strLink);
+                    metadata.add(Metadata.TITLE, stripTags(entry.getTitle()));
+                    metadata.add(Metadata.CREATOR, entry.getAuthor());
+                    metadata.add(Metadata.MODIFIED, entry.getPublishedDate().toString());
 
-                    
+
                     xhtmlSubDoc.startElement("p");
                     String strCleanedText = stripTags(entry.getDescription().getValue());
                     xhtmlSubDoc.characters(strCleanedText.toCharArray(), 0, strCleanedText.length());
