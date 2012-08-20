@@ -35,6 +35,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.document.AbstractField;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.index.CorruptIndexException;
@@ -222,7 +223,14 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
     protected void addStaticAttValuePairs(Document doc) throws Exception
     {
         for (Entry<String, String> fieldName2Value : getStaticAttributeValuePairs().entryList())
-            doc.add(FieldFactory.createField(fieldName2Value.getKey(), fieldName2Value.getValue(), m_fieldConfig));
+        {
+            AbstractField field = FieldFactory.createField(fieldName2Value.getKey(), fieldName2Value.getValue(), m_fieldConfig);
+            if(field != null)
+                doc.add(field);
+            else
+                Logger.getLogger(ToLuceneContentHandler.class.getName()).warning(
+                        "Could not create lucene field for " + fieldName2Value.getKey() + ":" + fieldName2Value.getValue() + ". Will ignore it.");
+        }
     }
 
 
@@ -243,8 +251,8 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
             if(getSplitAndMergeIndex() <= 0) return;
 
             // hier mergen wir nun alle temporären indices in den originalen
-            
-            //der letzte temporäre konnte noch nicht geschlossen werden - das machen wir jetzt
+
+            // der letzte temporäre konnte noch nicht geschlossen werden - das machen wir jetzt
             if(m_luceneWriter != m_initialLuceneWriter) m_luceneWriter.close();
 
             LinkedList<Directory> llIndicesDirs2Merge = new LinkedList<Directory>();
@@ -257,7 +265,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
             Logger.getLogger(ToLuceneContentHandler.class.getName()).info(
                     "Will merge " + llIndicesDirs2Merge.size() + " temporary indices to the final one.");
 
-            
+
             m_initialLuceneWriter.addIndexes(llIndicesDirs2Merge.toArray(new Directory[0]));
 
             m_initialLuceneWriter.commit();
@@ -317,8 +325,9 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
         // Das man kein Field aus einem reader machen kann ist der Grund, warum processNewMetaData den Fulltext als String und nicht als reader
         // übergibt
 
-        //eine eindeutige ID muß da sein
-        if(metadata.getValues(LeechMetadata.id).length == 0) doc.add(FieldFactory.createField(LeechMetadata.id, new UID().toString(), m_fieldConfig));
+        // eine eindeutige ID muß da sein
+        if(metadata.getValues(LeechMetadata.id).length == 0)
+            doc.add(FieldFactory.createField(LeechMetadata.id, new UID().toString(), m_fieldConfig));
         if(!getFields2Ignore().contains(LeechMetadata.body)) doc.add(FieldFactory.createField(LeechMetadata.body, strFulltext, m_fieldConfig));
         // die kopien
         for (String strFieldCopy : getFieldCopyMap().get(LeechMetadata.body))
@@ -331,7 +340,15 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
             if(!getFields2Ignore().contains(strFieldName))
             {
                 for (String strValue : metadata.getValues(strFieldName))
-                    doc.add(FieldFactory.createField(strFieldName, strValue, m_fieldConfig));
+                {
+                    AbstractField field = FieldFactory.createField(strFieldName, strValue, m_fieldConfig);
+                    if(field != null)
+                        doc.add(field);
+                    else
+                        Logger.getLogger(ToLuceneContentHandler.class.getName()).warning(
+                                "Could not create lucene field for " + strFieldName + ":" + strValue + ". Will ignore it.");
+                }
+
             }
 
             // die kopien
@@ -339,7 +356,14 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
                 if(!getFields2Ignore().contains(strFieldCopy))
                 {
                     for (String strValue : metadata.getValues(strFieldName))
-                        doc.add(FieldFactory.createField(strFieldCopy, strValue, m_fieldConfig));
+                    {
+                        AbstractField field = FieldFactory.createField(strFieldCopy, strValue, m_fieldConfig);
+                        if(field != null)
+                            doc.add(field);
+                        else
+                            Logger.getLogger(ToLuceneContentHandler.class.getName()).warning(
+                                    "Could not create lucene field for " + strFieldCopy + ":" + strValue + ". Will ignore it.");
+                    }
                 }
         }
 
@@ -361,7 +385,12 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
                 if(strNewValue != null)
                 {
-                    doc.add(FieldFactory.createField(strTargetAtt, strNewValue, m_fieldConfig));
+                    AbstractField field = FieldFactory.createField(strTargetAtt, strNewValue, m_fieldConfig);
+                    if(field != null)
+                        doc.add(field);
+                    else
+                        Logger.getLogger(ToLuceneContentHandler.class.getName()).warning(
+                                "Could not create lucene field for " + strTargetAtt + ":" + strNewValue + ". Will ignore it.");
 
                     break;
                 }

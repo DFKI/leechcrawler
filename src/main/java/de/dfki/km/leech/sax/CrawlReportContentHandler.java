@@ -169,7 +169,7 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
 
 
 
-    protected long m_lastReportTime = 0;
+    protected long m_lastReportTime = -1;
 
 
 
@@ -214,6 +214,12 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
     protected void printReportIfItsTime()
     {
         if(m_lCyclicReportMilliseconds < 0) return;
+
+        if(m_lastReportTime < 0)
+        {
+            m_lastReportTime = System.currentTimeMillis();
+            return;
+        }
 
         if(System.currentTimeMillis() >= m_lastReportTime + m_lCyclicReportMilliseconds)
         {

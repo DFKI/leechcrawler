@@ -22,13 +22,14 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Set;
 
 import javax.mail.URLName;
 
 import org.apache.tika.io.TikaInputStream;
-import org.apache.tika.metadata.DublinCore;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
 
@@ -66,7 +67,8 @@ public class FileURLStreamProvider extends URLStreamProvider
         // Für Leech
         metadata2fill.set(Metadata.SOURCE, file.toURI().toURL().toString());
         // Optional
-        metadata2fill.set(Metadata.MODIFIED, String.valueOf(file.lastModified()));
+        metadata2fill.set(Metadata.MODIFIED,
+                new SimpleDateFormat("yyyy.MM.dd HH:mm:ss:SSS").format(new Date(file.lastModified())));
 
         // Für das inkrementelle indexieren
         String strEntityExistsId;

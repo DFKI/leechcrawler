@@ -4,6 +4,7 @@ package de.dfki.km.leech.parser.rss;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -11,7 +12,6 @@ import java.util.Set;
 
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.io.CloseShieldInputStream;
-import org.apache.tika.metadata.DublinCore;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MediaType;
 import org.apache.tika.parser.AbstractParser;
@@ -64,12 +64,7 @@ public class FeedParser2 extends AbstractParser
             CrawlerContext crawlerContext = context.get(CrawlerContext.class);
             if(crawlerContext == null) crawlerContext = new CrawlerContext();
 
-            // TODO: der trägt das hier zwar in die CrawlingHistory ein, aber beim zweiten Lauf bemerkt er, daß die RSS-Datei sich nicht geändert hat,
-            // und ignoriert sie. Dann werden die subEinträge während des crawlens aber auch nicht mehr durchlaufen, sie werden nicht somit nicht als
-            // 'bearbeitet' markiert, und gelten am Ende des Laufs als gelöscht. Des isch en häßlicher Bug...und es ist eine gute Frage, wie man damit
-            // umgeht...vielleicht sollte man bei einem 'unverändert' auch assoziierte Kinder markieren....oder man trägt hier für jedes Kind die
-            // selbe ID ein? des Vaters? das könnt was sein...wenn es sich dann verändert, dann...hm..krieg ich keine id mehr für die DB, daß etwas
-            // gelöscht werden soll :(
+            
             IncrementalCrawlingHistory crawlingHistory = crawlerContext.getIncrementalCrawlingHistory();
             String strMasterDataEntityExistsID = metadata.get(IncrementalCrawlingHistory.dataEntityExistsID);
 
@@ -122,7 +117,7 @@ public class FeedParser2 extends AbstractParser
                     metadata.add(Metadata.SOURCE, strLink);
                     metadata.add(Metadata.TITLE, stripTags(entry.getTitle()));
                     metadata.add(Metadata.CREATOR, entry.getAuthor());
-                    metadata.add(Metadata.MODIFIED, entry.getPublishedDate().toString());
+                    metadata.add(Metadata.MODIFIED, new SimpleDateFormat("yyyy.MM.dd HH:mm:ss:SSS").format(entry.getPublishedDate()) );
 
 
                     xhtmlSubDoc.startElement("p");

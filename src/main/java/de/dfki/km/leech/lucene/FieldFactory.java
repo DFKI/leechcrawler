@@ -29,6 +29,21 @@ public class FieldFactory
 {
 
 
+    protected static LinkedList<FieldType> m_llNumberTypes = new LinkedList<FieldType>();
+    
+    
+    
+    static
+    {
+
+        m_llNumberTypes.add(FieldType.INTEGER);
+        m_llNumberTypes.add(FieldType.LONG);
+        m_llNumberTypes.add(FieldType.FLOAT);
+        m_llNumberTypes.add(FieldType.DOUBLE);
+    }
+
+
+
     /**
      * Create Field instances, according to the attribute configurations inside the fieldConfig parameter
      * 
@@ -37,11 +52,9 @@ public class FieldFactory
      * @param fieldConfig the field configuration. Here you can specify whether a specific field should be analyzed, etc. You can also set default
      *            values.
      * 
-     * @return the field, with Store, Index and TermVector configuration as given in fieldConfig
-     * 
-     * @throws Exception
+     * @return the field, with Store, Index and TermVector configuration as given in fieldConfig. Null in the case the field could'nt generated
      */
-    static public AbstractField createField(String strAttName, String strAttValue, FieldConfig fieldConfig) throws Exception
+    static public AbstractField createField(String strAttName, String strAttValue, FieldConfig fieldConfig)
     {
 
         // Der Store
@@ -49,7 +62,7 @@ public class FieldFactory
         Store store = fieldConfig.defaultFieldMapping.store;
 
         FieldMapping fieldMapping4Att = fieldConfig.hsFieldName2FieldMapping.get(strAttName);
-        
+
 
         Index index = fieldMapping4Att != null ? fieldMapping4Att.index : null;
 
@@ -60,11 +73,6 @@ public class FieldFactory
         if(termVector == null) termVector = fieldConfig.defaultFieldMapping.termVector;
 
 
-        LinkedList<FieldType> llNumberTypes = new LinkedList<FieldType>();
-        llNumberTypes.add(FieldType.INTEGER);
-        llNumberTypes.add(FieldType.LONG);
-        llNumberTypes.add(FieldType.FLOAT);
-        llNumberTypes.add(FieldType.DOUBLE);
 
         // welches Field erzeugt wird, steht ebenfalls in der config
         FieldType fieldType = fieldMapping4Att != null ? fieldMapping4Att.fieldType : null;
@@ -88,7 +96,7 @@ public class FieldFactory
             // Probleme beim Sortieren nach diesem numerischen Field
             newField = new Field(strAttName, strAttValue, store, Index.NO, TermVector.NO);
         }
-        else if(llNumberTypes.contains(fieldType))
+        else if(m_llNumberTypes.contains(fieldType))
         {
             boolean bIndex = false;
             if(index == Index.ANALYZED || index == Index.ANALYZED_NO_NORMS) bIndex = true;
@@ -109,7 +117,10 @@ public class FieldFactory
             newField = new NumericField(strAttName, store, bIndex);
 
             Date parsedDate = DateParser.parseDateString(strAttValue);
-            if(parsedDate == null) throw new Exception("Date String '" + strAttValue + "'" + " couldn't be parsed");
+            if(parsedDate == null)
+            {
+                return null;
+            }
             ((NumericField) newField).setLongValue(DateUtils.date2Number(parsedDate));
         }
         else if(FieldType.TIME.equals(fieldType))

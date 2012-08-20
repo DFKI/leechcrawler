@@ -244,7 +244,7 @@ public class Leech extends Tika
         finally
         {
             if(handler instanceof DataSinkContentHandler) ((DataSinkContentHandler) handler).crawlFinished();
-            
+
             if(stream != null) stream.close();
         }
     }
@@ -302,7 +302,7 @@ public class Leech extends Tika
         finally
         {
             if(handler instanceof DataSinkContentHandler) ((DataSinkContentHandler) handler).crawlFinished();
-            
+
             if(stream != null) stream.close();
         }
     }
@@ -352,7 +352,7 @@ public class Leech extends Tika
         finally
         {
             if(handler instanceof DataSinkContentHandler) ((DataSinkContentHandler) handler).crawlFinished();
-            
+
             if(stream != null) stream.close();
         }
     }
@@ -373,7 +373,8 @@ public class Leech extends Tika
      * 
      * @param strSourceString the URL string you want to crawl/extract content from. This can ether be a file://, http:// or - in future - other urls
      *            (e.g. for databases, imap, webDAV, etc...). In the case the string is no correct url string, the method will use the string as file
-     *            path and then generates an according URL
+     *            path and then generates an according URL. Examples: 'file://myDataDir', 'file://bla.pdf', 'http://reuschling.github.com/leech/',
+     *            'imap://usr:pswd@myImapServer.de:993/inbox', 'imaps://usr:pswd@myImapServer.de:993/inbox;uid=22'
      * @param handler the handler that should handle the extracted data
      * @throws IOException
      * @throws SAXException
@@ -416,9 +417,11 @@ public class Leech extends Tika
      * you have a critical handler with a default constructor, you can also set the class name inside the CrawlerContext object inside ParseContext.
      * In this case, a new handler object will be created at every recursive call..
      * 
-     * @param strSourceString the URL string you want to crawl/extract content from. This can ether be a file://, http:// or - in future - other urls
-     *            (e.g. for databases, imap, webDAV, etc...). In the case the string is no correct url string, the method will use the string as file
-     *            path and then generates an according URL
+     * @param strSourceString the URL string you want to crawl/extract content from. This can ether be a file://, http://, imap:// or - in future -
+     *            other urls (e.g. for databases, webDAV, etc...). In the case the string is no correct url string, the method will use the string as
+     *            file path and then generates an according URL. Examples: 'file://myDataDir', 'file://bla.pdf',
+     *            'http://reuschling.github.com/leech/', 'imap://usr:pswd@myImapServer.de:993/inbox',
+     *            'imaps://usr:pswd@myImapServer.de:993/inbox;uid=22'
      * @param handler the handler that should handle the extracted data
      * @param context the parsing context to use. An entry with the configured parser will be added by the method. You can pass in an CrawlerContext
      *            instance to e.g. set the contentHandler for recursive crawls or enable incremental crawling.
@@ -440,7 +443,8 @@ public class Leech extends Tika
      * 
      * @param strSourceString the URL string you want to crawl/extract content from. This can ether be a file://, http:// or - in future - other urls
      *            (e.g. for databases, imap, webDAV, etc...). In the case the string is no correct url string, the method will use the string as file
-     *            path and then generates an according URL
+     *            path and then generates an according URL. Examples: 'file://myDataDir', 'file://bla.pdf', 'http://reuschling.github.com/leech/',
+     *            'imap://usr:pswd@myImapServer.de:993/inbox', 'imaps://usr:pswd@myImapServer.de:993/inbox;uid=22'
      * @param context the parsing context to use. An entry with the configured parser will be added by the method. You can pass in an CrawlerContext
      *            instance to e.g. set the contentHandler for recursive crawls or enable incremental crawling.
      * 
@@ -535,7 +539,7 @@ public class Leech extends Tika
         finally
         {
             if(handler instanceof DataSinkContentHandler) ((DataSinkContentHandler) handler).crawlFinished();
-            
+
             if(stream != null) stream.close();
         }
 
@@ -595,7 +599,7 @@ public class Leech extends Tika
         finally
         {
             if(handler instanceof DataSinkContentHandler) ((DataSinkContentHandler) handler).crawlFinished();
-            
+
             if(stream != null) stream.close();
         }
 
@@ -644,7 +648,7 @@ public class Leech extends Tika
         finally
         {
             if(handler instanceof DataSinkContentHandler) ((DataSinkContentHandler) handler).crawlFinished();
-            
+
             if(stream != null) stream.close();
         }
 

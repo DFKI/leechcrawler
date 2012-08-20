@@ -29,7 +29,9 @@ import org.apache.tika.sax.WriteOutContentHandler;
 import org.xml.sax.SAXException;
 
 import de.dfki.km.leech.parser.CrawlerParser;
+import de.dfki.km.leech.parser.incremental.IncrementalCrawlingHistory;
 import de.dfki.km.leech.parser.incremental.IncrementalCrawlingParser;
+import de.dfki.km.leech.util.UrlUtil;
 
 
 
@@ -130,8 +132,31 @@ public abstract class DataSinkContentHandler extends ContentHandlerDecorator
 
 
         String strDataEntitiyModState = m_metadata.get(IncrementalCrawlingParser.DATA_ENTITY_MODIFICATION_STATE);
+
+        // wir entfernen die Dinge, die wir gar nicht drin haben wollen
         m_metadata.remove(IncrementalCrawlingParser.DATA_ENTITY_MODIFICATION_STATE);
         m_metadata.remove(CrawlerParser.CURRENT_CRAWLING_DEPTH);
+
+        // und passen auf, daß nicht noch Passwörter in einer URL stehen
+        String strBadAttName = IncrementalCrawlingHistory.dataEntityExistsID;
+        String[] straUrlsWithPwd = m_metadata.getValues(strBadAttName);
+        m_metadata.remove(strBadAttName);
+        for (String strPossiblePwdUrlString : straUrlsWithPwd)
+            m_metadata.add(strBadAttName, UrlUtil.urlNameWithoutPassword(strPossiblePwdUrlString));
+
+        strBadAttName = Metadata.SOURCE;
+        straUrlsWithPwd = m_metadata.getValues(strBadAttName);
+        m_metadata.remove(strBadAttName);
+        for (String strPossiblePwdUrlString : straUrlsWithPwd)
+            m_metadata.add(strBadAttName, UrlUtil.urlNameWithoutPassword(strPossiblePwdUrlString));
+
+        strBadAttName = Metadata.RESOURCE_NAME_KEY;
+        straUrlsWithPwd = m_metadata.getValues(strBadAttName);
+        m_metadata.remove(strBadAttName);
+        for (String strPossiblePwdUrlString : straUrlsWithPwd)
+            m_metadata.add(strBadAttName, UrlUtil.urlNameWithoutPassword(strPossiblePwdUrlString));
+
+
 
 
         if(IncrementalCrawlingParser.MODIFIED.equals(strDataEntitiyModState))

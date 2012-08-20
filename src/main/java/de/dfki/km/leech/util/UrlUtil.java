@@ -64,6 +64,44 @@ public class UrlUtil
 
 
 
+    public static URLName urlNameWithoutPassword(URLName urlNameWithPassword)
+    {
+        URLName urlNameWithoutPassword =
+                new URLName(urlNameWithPassword.getProtocol(), urlNameWithPassword.getHost(), urlNameWithPassword.getPort(),
+                        urlNameWithPassword.getFile(), urlNameWithPassword.getUsername(), "");
+
+
+        return urlNameWithoutPassword;
+    }
+
+
+
+    /**
+     * If the given String can be parsed as an URL, the method will return another URL String without a possible password. In the case the String can
+     * not be parsed as URL, the method will return the given original String.
+     * 
+     * @param strPossibleUrlNameWithPassword a String that possibly is an URL String with password
+     * 
+     * @return the original String in the case it could not be parsed as an Url, an Url String with removed password otherwise.
+     */
+    public static String urlNameWithoutPassword(String strPossibleUrlNameWithPassword)
+    {
+        try
+        {
+
+            URLName urlNameWithPassword = new URLName(strPossibleUrlNameWithPassword);
+
+            return urlNameWithoutPassword(urlNameWithPassword).toString();
+
+        }
+        catch (Exception e)
+        {
+            return strPossibleUrlNameWithPassword;
+        }
+    }
+
+
+
     /**
      * Remove relative references and "mistakes" like double slashes from the path.
      * 
@@ -246,7 +284,17 @@ public class UrlUtil
             url = new URLName(strSourceString);
 
             // wenn kein Protokoll angegeben ist, kucken wir mal, ob es ein File ist
-            if(url.getProtocol() == null) url = new URLName(new File(strSourceString).toURI().toURL());
+            boolean bNoProtocol = false;
+            String strProtocol = url.getProtocol();
+            if(strProtocol == null)
+                bNoProtocol = true;
+            else
+            {
+                String strOs = System.getProperty("os.name").toLowerCase();
+                if(strOs.toLowerCase().contains("win") && strProtocol.length() == 1) bNoProtocol = true;
+            }
+
+            if(bNoProtocol) url = new URLName(new File(strSourceString).toURI().toURL());
 
         }
         catch (Exception e)

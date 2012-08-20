@@ -167,9 +167,8 @@ public class ImapURLStreamProvider extends URLStreamProvider
 
             // Für Tika
 
-            URLName urlNameWithoutPassword =
-                    new URLName(urlNameWithPassword.getProtocol(), urlNameWithPassword.getHost(), urlNameWithPassword.getPort(),
-                            urlNameWithPassword.getFile(), urlNameWithPassword.getUsername(), "");
+            URLName urlNameWithoutPassword = UrlUtil.urlNameWithoutPassword(urlNameWithPassword);
+                    
             metadata2fill.set(Metadata.RESOURCE_NAME_KEY, urlNameWithoutPassword.toString());
 
 

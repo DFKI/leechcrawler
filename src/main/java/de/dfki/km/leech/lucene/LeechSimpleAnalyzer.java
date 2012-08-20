@@ -30,6 +30,6 @@ public class LeechSimpleAnalyzer extends ReusableAnalyzerBase
     @Override
     protected TokenStreamComponents createComponents(final String fieldName, final Reader reader)
     {
-        return new TokenStreamComponents(new LetterOrDigitLowerCaseTokenizer(Version.LUCENE_36, reader));
+        return new TokenStreamComponents(new LetterOrDigitLowerCaseTokenizer(Version.LUCENE_CURRENT, reader));
     }
 }
