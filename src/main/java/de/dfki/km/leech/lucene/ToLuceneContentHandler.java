@@ -452,7 +452,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
         else
         {
             // wir brauchen was temporäres
-            File parentDir = File.createTempFile("Hitzli", "Putzli").getParentFile();
+            File parentDir = new File( System.getProperty("java.io.tmpdir"));
             fOurTmpDir = new File(parentDir.getAbsolutePath() + "/leechTmp/" + UUID.randomUUID().toString().replaceAll("\\W", "_"));
         }
 

@@ -129,7 +129,8 @@ public class IncrementalCrawlingParser extends ParserDecorator
             if(crawlingHistory == null && crawlerContext.getDetectCycles() && iCurrentCrawlingDepth == 0)
             {
                 // wir erstellen eine temporäre crawlerhistory, die am Schluß des Crawls auch wieder gelöscht wird
-                File parentDir = File.createTempFile("Hitzli", "Putzli").getParentFile();
+                File parentDir = new File( System.getProperty("java.io.tmpdir"));
+                
                 File fTmpHistory = new File(parentDir.getAbsolutePath() + "/leechTmp/" + UUID.randomUUID().toString().replaceAll("\\W", "_"));
                 fTmpHistory.mkdirs();
 
