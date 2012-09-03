@@ -3,7 +3,7 @@
 	<groupId>de.dfki.km</groupId>
 	<artifactId>leech</artifactId>
 	<packaging>jar</packaging>
-	<version>0.9.1-SNAPSHOT</version>
+	<version>0.9.2</version>
 	<name>leech</name>
 	<url>http://leechcrawler.github.com/leech/</url>
 	
