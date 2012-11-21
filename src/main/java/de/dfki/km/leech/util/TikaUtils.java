@@ -1,23 +1,18 @@
 /*
-    Leech - crawling capabilities for Apache Tika
-    
-    Copyright (C) 2012 DFKI GmbH, Author: Christian Reuschling
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-    Contact us by mail: christian.reuschling@dfki.de
-*/
+ * Leech - crawling capabilities for Apache Tika
+ * 
+ * Copyright (C) 2012 DFKI GmbH, Author: Christian Reuschling
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * Contact us by mail: christian.reuschling@dfki.de
+ */
 
 package de.dfki.km.leech.util;
 
@@ -75,8 +70,9 @@ public class TikaUtils
 
         return metadataCopy;
     }
-    
-    
+
+
+
     /**
      * Copies all data from one metadata object to another
      * 
@@ -141,13 +137,18 @@ public class TikaUtils
      * 
      * @param compoParser the CompositeParser that offers several parser implementaions for several types
      * @param type the type we want to have the according parser for
-     * @param context the parseContext object
+     * @param context the parseContext object. Can be null for context-insensitive processing
      * 
      * @return the parser for the given type
      */
     public static Parser getParser4Type(CompositeParser compoParser, MediaType type, ParseContext context)
     {
-        Map<MediaType, Parser> map = compoParser.getParsers(context);
+        Map<MediaType, Parser> map;
+
+        if(context != null)
+            map = compoParser.getParsers(context);
+        else
+            map = compoParser.getParsers();
 
         // We always work on the normalised, canonical form
         if(type != null) type = compoParser.getMediaTypeRegistry().normalize(type);
@@ -170,6 +171,7 @@ public class TikaUtils
 
         return compoParser.getFallback();
     }
+
 
 
 

@@ -82,7 +82,7 @@ public class LeechDefaultConfig extends TikaConfig
 
 
 
-    protected Parser m_parser;
+    protected CompositeParser m_parser;
 
 
 
@@ -151,7 +151,7 @@ public class LeechDefaultConfig extends TikaConfig
 
 
         m_parser = new CompositeParser(this.getMediaTypeRegistry(), llParsers);
-        m_detector = new LeechDefaultDetector();
+        m_detector = new LeechDefaultDetector(m_parser);
 
         // das sind fields, da die Einstellung wohl nur so lange gültig ist, wie es noch eine gültige Referenz zu diesen Objekten gibt
         m_pdfBoxLogger4PDFStreamEngine = Logger.getLogger("org.apache.pdfbox.util.PDFStreamEngine");

@@ -49,7 +49,6 @@ import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.io.TikaInputStream;
-import org.apache.tika.metadata.DublinCore;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MediaType;
 import org.apache.tika.parser.ParseContext;
@@ -62,6 +61,7 @@ import de.dfki.km.leech.lucene.FieldConfig;
 import de.dfki.km.leech.lucene.FieldConfig.FieldMapping;
 import de.dfki.km.leech.lucene.FieldConfig.FieldType;
 import de.dfki.km.leech.metadata.LeechMetadata;
+import de.dfki.km.leech.util.MultiValueBalancedTreeMap;
 import de.dfki.km.leech.util.MultiValueHashMap;
 import de.dfki.km.leech.util.StringUtils;
 import de.dfki.km.leech.util.TikaUtils;
@@ -69,14 +69,16 @@ import de.dfki.km.leech.util.TikaUtils;
 
 
 /**
- * A parser implementation that can deal with mediawiki xml dump files. Downloadable e.g. under:<br>
+ * A parser implementation that can deal with mediawiki xml dump files, downloadable e.g. under:<br>
  * <br>
  * German wikipedia <br>
  * http://dumps.wikimedia.org/dewiki/<br>
  * http://dumps.wikimedia.org/dewiki/latest/dewiki-latest-pages-articles.xml.bz2<br>
  * English wikipedia:<br>
  * http://dumps.wikimedia.org/enwiki/<br>
- * http://dumps.wikimedia.org/enwiki/latest/enwiki-latest-pages-articles.xml.bz2
+ * http://dumps.wikimedia.org/enwiki/latest/enwiki-latest-pages-articles.xml.bz2 <br>
+ * <br>
+ * Configure this parser inside the ParseContext: ParseContext.set(WikipediaDumpParserConfig.class, wikipediaDumpParserConfig);
  * 
  * 
  * @author Christian Reuschling, Dipl.Ing.(BA)
@@ -84,11 +86,95 @@ import de.dfki.km.leech.util.TikaUtils;
 public class WikipediaDumpParser implements Parser
 {
 
+    public static class WikipediaDumpParserConfig
+    {
+        protected boolean determinePageRedirects = true;
+
+
+
+        protected boolean parseGeoCoordinates = true;
+
+
+
+        protected boolean parseInfoBoxes = true;
+
+
+
+        protected boolean parseLinksAndCategories = true;
+
+
+
+        public boolean getDeterminePageRedirects()
+        {
+            return determinePageRedirects;
+        }
+
+
+
+        public boolean getParseGeoCoordinates()
+        {
+            return parseGeoCoordinates;
+        }
+
+
+
+        public boolean getParseInfoBoxes()
+        {
+            return parseInfoBoxes;
+        }
+
+
+
+        public boolean getParseLinksAndCategories()
+        {
+            return parseLinksAndCategories;
+        }
+
+
+
+        public WikipediaDumpParserConfig setDeterminePageRedirects(boolean determinePageRedirects)
+        {
+            this.determinePageRedirects = determinePageRedirects;
+
+            return this;
+        }
+
+
+
+        public WikipediaDumpParserConfig setParseGeoCoordinates(boolean parseGeoCoordinates)
+        {
+            this.parseGeoCoordinates = parseGeoCoordinates;
+
+            return this;
+        }
+
+
+
+        public WikipediaDumpParserConfig setParseInfoBoxes(boolean parseInfoBoxes)
+        {
+            this.parseInfoBoxes = parseInfoBoxes;
+
+            return this;
+        }
+
+
+
+        public WikipediaDumpParserConfig setParseLinksAndCategories(boolean parseLinksAndCategories)
+        {
+            this.parseLinksAndCategories = parseLinksAndCategories;
+
+            return this;
+        }
+    }
+
+
     public static final String externalLink = "externalLink";
 
     public static final String infobox = "infobox";
 
+
     public static final String internalLink = "internalLink";
+
 
 
     static protected final WikiModel m_wikiModel = new WikiModel("http://www.mywiki.com/wiki/${image}", "http://www.mywiki.com/wiki/${title}");
@@ -109,12 +195,12 @@ public class WikipediaDumpParser implements Parser
     {
         FieldConfig fieldConfig = new FieldConfig();
 
-        fieldConfig.defaultFieldMapping = new FieldMapping("org.apache.lucene.analysis.KeywordAnalyzer", Store.YES,
-                Index.NOT_ANALYZED, TermVector.NO, FieldType.STRING);
-        
-        
-        
-        
+        fieldConfig.defaultFieldMapping =
+                new FieldMapping("org.apache.lucene.analysis.KeywordAnalyzer", Store.YES, Index.NOT_ANALYZED, TermVector.NO, FieldType.STRING);
+
+
+
+
 
         fieldConfig.hsFieldName2FieldMapping.put("creator", new FieldMapping("de.dfki.km.leech.lucene.LeechSimpleAnalyzer", Store.YES,
                 Index.ANALYZED, TermVector.WITH_POSITIONS_OFFSETS, FieldType.STRING));
@@ -166,7 +252,7 @@ public class WikipediaDumpParser implements Parser
 
         fieldConfig.hsFieldName2FieldMapping.put("latitude", new FieldMapping("org.apache.lucene.analysis.KeywordAnalyzer", Store.YES,
                 Index.ANALYZED, TermVector.NO, FieldType.DOUBLE));
-        
+
 
 
 
@@ -278,7 +364,6 @@ public class WikipediaDumpParser implements Parser
 
 
 
-    //TODO: hier wäre langfristig etwas platzsparenderes als die MultiValueHashMap interessant - hat Lucene vielleicht eine Map als Automaton? 
     public MultiValueHashMap<String, String> getPageTitle2Redirects(InputStream sWikipediaDump) throws FileNotFoundException, XMLStreamException
     {
         // <text xml:space="preserve">#REDIRECT [[Autopoiesis]]</text>
@@ -291,9 +376,8 @@ public class WikipediaDumpParser implements Parser
 
         Logger.getLogger(WikipediaDumpParser.class.getName()).info("will collect redirects from wikipedia dump...");
 
-        MultiValueHashMap<String, String> hsPageTitle2Redirects = new MultiValueHashMap<String, String>();
-        HashSet<String> hsRedirectPageTitles = new HashSet<String>();
-
+        MultiValueHashMap<String, String> hsPageTitle2Redirects = new MultiValueBalancedTreeMap<String, String>();
+        
         String strCurrentTitle = "";
         XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
 
@@ -339,7 +423,6 @@ public class WikipediaDumpParser implements Parser
 
             String strRedirectTarget = strCharEventData.substring(iStart + 2, iEnd).trim();
             hsPageTitle2Redirects.add(strRedirectTarget, strCurrentTitle);
-            hsRedirectPageTitles.add(strCurrentTitle);
 
             // System.out.println("redirect found: (" + hsRedirectPageTitles.size() + ") " + strCurrentTitle + " => '" + strRedirectTarget + "'");
         }
@@ -353,6 +436,7 @@ public class WikipediaDumpParser implements Parser
         return hsPageTitle2Redirects;
 
     }
+
 
 
 
@@ -376,14 +460,19 @@ public class WikipediaDumpParser implements Parser
             // wir noch bereinigen. dazu nehmen wir eine Vorverarbeitung mit bliki - dazu müssen wir aber selbst nochmal den String vorbereiten und
             // nachbereinigen. Leider.
 
+            WikipediaDumpParserConfig wikipediaDumpParserConfig = context.get(WikipediaDumpParserConfig.class);
+
+
 
             TikaInputStream tikaStream = TikaInputStream.get(stream);
 
 
             File fWikipediaDumpFile4Stream = tikaStream.getFile();
 
-            MultiValueHashMap<String, String> hsPageTitle2Redirects = getPageTitle2Redirects(new FileInputStream(fWikipediaDumpFile4Stream));
-            // MultiValueHashMap<String, String> hsPageTitle2Redirects = new MultiValueHashMap<String, String>();
+            MultiValueHashMap<String, String> hsPageTitle2Redirects = new MultiValueHashMap<String, String>();
+            if(wikipediaDumpParserConfig.determinePageRedirects)
+                hsPageTitle2Redirects = getPageTitle2Redirects(new FileInputStream(fWikipediaDumpFile4Stream));
+
 
             HashSet<String> hsRedirectPageTitles = new HashSet<String>(hsPageTitle2Redirects.values());
 
@@ -491,7 +580,9 @@ public class WikipediaDumpParser implements Parser
                 {
                     String strText = readNextCharEventsText(xmlEventReader);
 
-                    parseMetadataOfText(strText, strBaseURL, metadata, handler);
+                    if(wikipediaDumpParserConfig.parseLinksAndCategories) parseLinksAndCategories(strText, strBaseURL, metadata, handler);
+                    if(wikipediaDumpParserConfig.parseInfoBoxes) parseInfoBox(strText, metadata, handler);
+                    if(wikipediaDumpParserConfig.parseGeoCoordinates) parseGeoCoordinates(strText, metadata);
 
                     // aufgrund einiger Defizite in dem verwendeten cleaner müssen wir hier leider noch zu-und nacharbeiten
                     strText = strText.replaceAll("==\n", "==\n\n");
@@ -788,7 +879,7 @@ public class WikipediaDumpParser implements Parser
 
 
 
-    protected void parseMetadataOfText(String strText, String strBaseURL, Metadata metadata, ContentHandler handler) throws SAXException
+    protected void parseLinksAndCategories(String strText, String strBaseURL, Metadata metadata, ContentHandler handler) throws SAXException
     {
         // wir parsen jetzt auch noch die Infoboxen, und tragen auch die Kategorien mit in die Metadaten ein. Kinga fände auch noch die
         // Links aus dem Text ganz hübsch
@@ -867,10 +958,6 @@ public class WikipediaDumpParser implements Parser
         for (String strExternalLink : hsExternalLinks)
             metadata.add(externalLink, strExternalLink);
 
-
-        parseInfoBox(strText, metadata, handler);
-
-        parseGeoCoordinates(strText, metadata);
 
     }
 

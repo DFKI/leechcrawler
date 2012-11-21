@@ -50,11 +50,11 @@ import org.apache.lucene.store.SimpleFSDirectory;
 import org.apache.lucene.util.Version;
 import org.apache.tika.metadata.Metadata;
 
-import de.dfki.km.leech.FileUtils;
 import de.dfki.km.leech.Leech;
 import de.dfki.km.leech.metadata.LeechMetadata;
 import de.dfki.km.leech.parser.incremental.IncrementalCrawlingHistory;
 import de.dfki.km.leech.sax.DataSinkContentHandler;
+import de.dfki.km.leech.util.FileUtils;
 import de.dfki.km.leech.util.MultiValueHashMap;
 
 
@@ -89,15 +89,16 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
                     List<Document> llDocs = m_addDocsQueue.take();
 
 
+                    // wir müssen das hier noch gegen das m_luceneWriter.close abriegeln
+
                     if(llDocs.size() == 1)
                     {
-                        m_luceneWriter.addDocument(llDocs.get(0));
+                        getCurrentWriter().addDocument(llDocs.get(0));
                     }
                     else if(llDocs.size() > 1)
                     {
-                        m_luceneWriter.addDocuments(llDocs);
+                        getCurrentWriter().addDocuments(llDocs);
                     }
-
 
                 }
             }
@@ -429,8 +430,10 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
 
 
-    protected IndexWriter getCurrentWriter() throws CorruptIndexException, LockObtainFailedException, IOException
+    synchronized protected IndexWriter getCurrentWriter() throws CorruptIndexException, LockObtainFailedException, IOException
     {
+
+
         if(getSplitAndMergeIndex() <= 0) return m_initialLuceneWriter;
 
         if(m_luceneWriter.maxDoc() < getSplitAndMergeIndex()) return m_luceneWriter;
@@ -441,6 +444,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
         File fOurTmpDir = null;
         if(directory instanceof FSDirectory)
         {
+            // XXX der darf erst zu machen, wenn alle docConsumer-Threads mit diesem writer.Object fertig sind^^
             if(m_luceneWriter != m_initialLuceneWriter) m_luceneWriter.close();
 
             String strTmpPath = ((FSDirectory) directory).getDirectory().getAbsolutePath();
@@ -452,7 +456,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
         else
         {
             // wir brauchen was temporäres
-            File parentDir = new File( System.getProperty("java.io.tmpdir"));
+            File parentDir = new File(System.getProperty("java.io.tmpdir"));
             fOurTmpDir = new File(parentDir.getAbsolutePath() + "/leechTmp/" + UUID.randomUUID().toString().replaceAll("\\W", "_"));
         }
 
@@ -465,7 +469,6 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
         m_luceneWriter = new IndexWriter(new SimpleFSDirectory(fOurTmpDir), config);
         m_hsTmpLuceneWriterPaths2Merge.add(fOurTmpDir.getAbsolutePath());
-
 
         return m_luceneWriter;
     }
@@ -560,6 +563,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
         int iCoreCount = Runtime.getRuntime().availableProcessors();
         long iThreadCount = Math.round(iCoreCount / 2d);
+        iThreadCount = Math.max(iThreadCount, 1);
 
         for (int i = 0; i < iThreadCount; i++)
         {

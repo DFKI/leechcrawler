@@ -47,7 +47,7 @@ public class HtmlCrawlerContext
 {
 
 
-    boolean m_followRemoteLinksIfLocalFileCrawl = false;
+    protected boolean m_followRemoteLinksIfLocalFileCrawl = false;
 
 
 
