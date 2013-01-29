@@ -5,6 +5,7 @@ package de.dfki.km.leech.util;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.lucene.index.IndexWriter;
@@ -145,7 +146,7 @@ public class LuceneIndexCreator
 
         Leech leech = new Leech();
 
-        long lStart = StopWatch.stopAndPrintTime();
+        long startTime = StopWatch.startAndLogTime(Level.INFO);
 
 
         CrawlReportContentHandler reportContentHandler;
@@ -200,13 +201,14 @@ public class LuceneIndexCreator
 
         if(indexWriter != null)
         {
+            Logger.getLogger(LuceneIndexCreator.class.getName()).info("Will commit and merge");
             indexWriter.commit();
             indexWriter.forceMerge(1, true);
             indexWriter.close(true);
 
-            StopWatch.stopAndPrintDistance(lStart);
+            StopWatch.stopAndLogDistance(startTime, Level.INFO);
 
-            System.out.println("..finished crawling " + strFile2CrawlPath);
+            Logger.getLogger(LuceneIndexCreator.class.getName()).info("..finished crawling " + strFile2CrawlPath);
         }
 
 

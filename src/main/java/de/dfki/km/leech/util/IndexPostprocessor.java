@@ -174,7 +174,7 @@ public class IndexPostprocessor
 
             toLuceneContentHandler.processNewDocument(doc2modify);
 
-            if(i++ % 1000 == 0) Logger.getLogger(LuceneIndexCreator.class.getName()).info(i + " docs postprocessed");
+            if(i++ % 100000 == 0) Logger.getLogger(LuceneIndexCreator.class.getName()).info(i + " docs postprocessed");
 
         }
 

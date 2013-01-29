@@ -96,11 +96,11 @@ public class WikipediaDumpParser implements Parser
 
 
 
-        protected boolean parseInfoBoxes = true;
+        protected boolean parseInfoBoxes = false;
 
 
 
-        protected boolean parseLinksAndCategories = true;
+        protected boolean parseLinksAndCategories = false;
 
 
 
@@ -463,6 +463,11 @@ public class WikipediaDumpParser implements Parser
 
             WikipediaDumpParserConfig wikipediaDumpParserConfig = context.get(WikipediaDumpParserConfig.class);
 
+            if(wikipediaDumpParserConfig == null)
+                {
+                Logger.getLogger(WikipediaDumpParser.class.getName()).info("No wikipedia parser config found. Will take the default one.");
+                wikipediaDumpParserConfig = new WikipediaDumpParserConfig();
+                }
 
 
             TikaInputStream tikaStream = TikaInputStream.get(stream);

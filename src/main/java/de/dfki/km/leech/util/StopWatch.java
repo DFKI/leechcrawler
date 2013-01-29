@@ -1,30 +1,11 @@
-/*
-    Leech - crawling capabilities for Apache Tika
-    
-    Copyright (C) 2012 DFKI GmbH, Author: Christian Reuschling
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-    Contact us by mail: christian.reuschling@dfki.de
-*/
-
 package de.dfki.km.leech.util;
 
 
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 
@@ -37,7 +18,7 @@ public class StopWatch
 
     static final protected long lDayMs = (24 * 60 * 60 * 1000);
 
-    
+
     static final protected long lHourMs = (60 * 60 * 1000);
 
 
@@ -48,14 +29,13 @@ public class StopWatch
 
 
 
-
     static public String formatTimeDistance(long timeMillisDistance)
     {
         long distanceLeft = timeMillisDistance;
 
         long lDay = distanceLeft / lDayMs;
         distanceLeft = distanceLeft % lDayMs;
-                
+
         long lHour = distanceLeft / lHourMs;
         distanceLeft = distanceLeft % lHourMs;
 
@@ -66,7 +46,7 @@ public class StopWatch
         long lMillis = distanceLeft % lSecondMs;
 
         StringBuilder strbResult = new StringBuilder();
-        
+
         if(lDay != 0) strbResult.append(lDay).append('d');
         if(lHour != 0) strbResult.append(lHour).append('h');
         if(lMinute != 0) strbResult.append(lMinute).append('m');
@@ -79,22 +59,18 @@ public class StopWatch
 
 
 
-    /**
-     * @param args
-     * @throws InterruptedException
-     */
-    public static void main(String[] args) throws InterruptedException
+    static public void logTime(long timeMillis, Level logLevel)
     {
+        Date date = new Date(timeMillis);
 
-        long lStartTime = StopWatch.stopAndPrintTime();
-
-        Thread.sleep(2512);
-
-        lStartTime = StopWatch.stopAndPrintDistance(lStartTime);
+        Logger.getLogger(StopWatch.class.getName()).log(logLevel, dateFormat.format(date));
+    }
 
 
 
-
+    static public void logTimeDistance(long timeMillisDistance, Level logLevel)
+    {
+        Logger.getLogger(StopWatch.class.getName()).log(logLevel, formatTimeDistance(timeMillisDistance));
     }
 
 
@@ -115,6 +91,48 @@ public class StopWatch
 
 
 
+    static public long startAndLogTime(Level logLevel)
+    {
+        long currentTimeMillis = System.currentTimeMillis();
+
+        logTime(currentTimeMillis, logLevel);
+
+        // wir frischen die Zeit auf, damit wir nicht die Verarbeitungszeit für die Ausgabe mit reinrechnen
+        currentTimeMillis = System.currentTimeMillis();
+
+        return currentTimeMillis;
+    }
+
+
+
+    static public long startAndPrintTime()
+    {
+        long currentTimeMillis = System.currentTimeMillis();
+
+        printTime(currentTimeMillis);
+
+        // wir frischen die Zeit auf, damit wir nicht die Verarbeitungszeit für die Ausgabe mit reinrechnen
+        currentTimeMillis = System.currentTimeMillis();
+
+        return currentTimeMillis;
+    }
+
+
+
+    static public long stopAndLogDistance(long startTime, Level logLevel)
+    {
+        long currentTimeMillis = System.currentTimeMillis();
+
+        logTimeDistance(currentTimeMillis - startTime, logLevel);
+
+        // wir frischen die Zeit auf, damit wir nicht die Verarbeitungszeit für die Ausgabe mit reinrechnen
+        currentTimeMillis = System.currentTimeMillis();
+
+        return currentTimeMillis;
+    }
+
+
+
     static public long stopAndPrintDistance(long startTime)
     {
         long currentTimeMillis = System.currentTimeMillis();
@@ -128,17 +146,5 @@ public class StopWatch
     }
 
 
-
-    static public long stopAndPrintTime()
-    {
-        long currentTimeMillis = System.currentTimeMillis();
-
-        printTime(currentTimeMillis);
-
-        // wir frischen die Zeit auf, damit wir nicht die Verarbeitungszeit für die Ausgabe mit reinrechnen
-        currentTimeMillis = System.currentTimeMillis();
-
-        return currentTimeMillis;
-    }
 
 }
