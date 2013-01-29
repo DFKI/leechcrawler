@@ -1,3 +1,9 @@
+#Apache Tika
+
+The Apache Tika™ toolkit detects and extracts metadata and structured text content from various documents using existing parser libraries.[http://tika.apache.org/]
+
+Leech is build on top of Apache Tika - so THANKS to all people who made this outstanding library possible.
+
 #DFKI
 
 The German Research Center for Artificial Intelligence (DFKI GmbH), with facilities in Kaiserslautern, Saarbrücken and Bremen, is the country's leading research center in the area of innovative software technology for commercial application. In the international scientific community, DFKI is recognized as one of the most important „Centers of Excellence“ in the world for its proven ability to rapidly bring leading edge research to commercially relevant application solutions.
