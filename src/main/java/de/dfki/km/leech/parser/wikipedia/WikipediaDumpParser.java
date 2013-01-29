@@ -410,10 +410,14 @@ public class WikipediaDumpParser implements Parser
 
             String strCharEventData = readNextCharEventsText(xmlEventReader);
             if(strCharEventData == null) continue;
-            
+
             strCharEventData = strCharEventData.trim();
             if(strCharEventData.length() < 10 || !strCharEventData.substring(0, 9).equalsIgnoreCase("#redirect")) continue;
+            if(strCharEventData.length() < 9 || !(strCharEventData.substring(0, 8).equalsIgnoreCase("redirect") && !strCharEventData.contains("\n")))
+                continue;
             if(strCharEventData.length() < 15 || !strCharEventData.substring(0, 14).equalsIgnoreCase("#weiterleitung")) continue;
+            if(strCharEventData.length() < 14
+                    || !(strCharEventData.substring(0, 13).equalsIgnoreCase("weiterleitung") && !strCharEventData.contains("\n"))) continue;
 
             // wir haben einen redirect - der wird in unsere Datenstruktur eingetragen
             int iStart = strCharEventData.indexOf("[[");
@@ -464,10 +468,10 @@ public class WikipediaDumpParser implements Parser
             WikipediaDumpParserConfig wikipediaDumpParserConfig = context.get(WikipediaDumpParserConfig.class);
 
             if(wikipediaDumpParserConfig == null)
-                {
+            {
                 Logger.getLogger(WikipediaDumpParser.class.getName()).info("No wikipedia parser config found. Will take the default one.");
                 wikipediaDumpParserConfig = new WikipediaDumpParserConfig();
-                }
+            }
 
 
             TikaInputStream tikaStream = TikaInputStream.get(stream);
@@ -567,15 +571,17 @@ public class WikipediaDumpParser implements Parser
                             if(nextXmlEvent.isEndElement() && nextXmlEvent.asEndElement().getName().getLocalPart().equals("page")) break;
                         }
                     }
-
-                    metadata.add(Metadata.TITLE, strCurrentTitle);
-                    metadata.add(Metadata.SOURCE, strBaseURL + strCurrentTitle);
-
-                    for (String strRedirect : hsPageTitle2Redirects.get(strCurrentTitle))
+                    else
                     {
-                        // wir ignorieren Titel, die sich lediglich durch groß/kleinschreibung unterscheiden
-                        if(!StringUtils.containsIgnoreCase(strRedirect, metadata.getValues(Metadata.TITLE)))
-                            metadata.add(Metadata.TITLE, strRedirect);
+                        metadata.add(Metadata.TITLE, strCurrentTitle);
+                        metadata.add(Metadata.SOURCE, strBaseURL + strCurrentTitle);
+
+                        for (String strRedirect : hsPageTitle2Redirects.get(strCurrentTitle))
+                        {
+                            // wir ignorieren Titel, die sich lediglich durch groß/kleinschreibung unterscheiden
+                            if(!StringUtils.containsIgnoreCase(strRedirect, metadata.getValues(Metadata.TITLE)))
+                                metadata.add(Metadata.TITLE, strRedirect);
+                        }
                     }
 
 

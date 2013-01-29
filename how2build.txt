@@ -1,4 +1,3 @@
-mvn -Dmaven.test.skip=true clean package assembly:assembly
+build the distributable zip:
+   mvn -Dmaven.test.skip=true clean package appassembler:assemble assembly:single
 
-create a lucene index:
-java -Xmx2g -cp lib/*:leech-0.9.2-SNAPSHOT.jar de.dfki.km.leech.util.LuceneIndexCreator -staticAttName=staticAttValue -buzzwordAttName=<attname> -buzzwordCount=<number> -calculatePageCounts <link to something you want to crawl> <lucene index target directory>

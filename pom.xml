@@ -104,6 +104,45 @@
 
 
 	<build>
+
+		<plugins>
+
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>appassembler-maven-plugin</artifactId>
+				<version>1.2.2</version>
+				<configuration>
+					<assembleDirectory>${project.build.directory}/assembleDir</assembleDirectory>
+					<extraJvmArguments>-Xmx1G</extraJvmArguments>
+					<binFolder>bin</binFolder>
+					<repositoryName>lib</repositoryName>
+					<repositoryLayout>flat</repositoryLayout>
+					<useAsterikClassPath>true</useAsterikClassPath>
+					<projectArtifactFirstInClassPath>true</projectArtifactFirstInClassPath>
+
+
+					<binFileExtensions>
+						<unix>.sh</unix>
+					</binFileExtensions>
+					<programs>
+						<program>
+							<mainClass>de.dfki.km.leech.util.LuceneIndexCreator</mainClass>
+							<name>createLuceneIndex</name>
+						</program>
+						<program>
+							<mainClass>de.dfki.km.leech.Leech</mainClass>
+							<name>leech</name>
+						</program>
+
+					</programs>
+				</configuration>
+			</plugin>
+
+		</plugins>
+
+
+
 		<pluginManagement>
 			<!-- NOTE: plugins are not automatically added to lifecycle unless stated 
 				in an <plugin> element. -->

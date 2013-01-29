@@ -189,8 +189,7 @@ public class IndexPostprocessor
         File fBackup = new File(fLuceneIndex.getAbsolutePath() + "_bak");
         fLuceneIndex.renameTo(fBackup);
         fOurTmpDir.renameTo(fLuceneIndex);
-        // TODO einschalten wenn alles funzt
-        // FileUtils.deleteDirectory(fBackup);
+        FileUtils.deleteDirectory(fBackup);
 
 
 

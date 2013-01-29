@@ -43,8 +43,10 @@ import de.dfki.km.leech.io.URLStreamProvider;
 import de.dfki.km.leech.parser.DirectoryCrawlerParser;
 import de.dfki.km.leech.parser.filter.URLFilteringParser;
 import de.dfki.km.leech.parser.incremental.IncrementalCrawlingParser;
+import de.dfki.km.leech.sax.CrawlReportContentHandler;
 import de.dfki.km.leech.sax.DataSinkContentHandler;
 import de.dfki.km.leech.sax.PrintlnContentHandler;
+import de.dfki.km.leech.sax.PrintlnContentHandler.Verbosity;
 import de.dfki.km.leech.util.ExceptionUtils;
 import de.dfki.km.leech.util.StringUtils;
 import de.dfki.km.leech.util.UrlUtil;
@@ -90,6 +92,31 @@ import de.dfki.km.leech.util.UrlUtil;
 
 public class Leech extends Tika
 {
+
+
+    public static void main(String[] args) throws IOException, SAXException, TikaException
+    {
+        Logger.getLogger(Leech.class.getName())
+                .info("Usage: leech <source2crawl_1> <source2crawl_2> ... <source2crawl_N>\n\n"
+                        + "A source can be an URL for file://, http://, imap:// or -maybe in future- other urls (e.g. for databases, webDAV, etc...).\n"
+                        + "In the case the string is no correct url string, the method will use the string as file path and then generates an\n"
+                        + "according URL. Examples: 'file://myDataDir', 'file://bla.pdf', 'http://reuschling.github.com/leech/',\n"
+                        + "'imap://usr:pswd@myImapServer.de:993/inbox', 'imaps://usr:pswd@myImapServer.de:993/inbox;uid=22'\n\n"
+                        + "This executable crawls all data and simply shows the metadata on the screen. Because leech is designed to be used as a\n"
+                        + "java library, this exec is for quick testing purposes.\n\n");
+
+        Leech leech = new Leech();
+
+        CrawlerContext crawlerContext = new CrawlerContext();
+        CrawlReportContentHandler reportContentHandler =
+                new CrawlReportContentHandler(new PrintlnContentHandler(Verbosity.all)).setCyclicReportPrintln(7000);
+
+        for (String strSource2Crawl : args)
+        {
+            Logger.getLogger(Leech.class.getName()).info("Will start crawling " + strSource2Crawl+'\n');
+            leech.parse(strSource2Crawl, reportContentHandler, crawlerContext.createParseContext());
+        }
+    }
 
 
 
