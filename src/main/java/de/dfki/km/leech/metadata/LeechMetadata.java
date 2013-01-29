@@ -12,5 +12,7 @@ public interface LeechMetadata
     public static final String parentId = "leechParentId";
 
     public static final String body = "body";
+    
+    public static final String isHeuristicPageCount = "isHeuristicPageCount";
 
 }

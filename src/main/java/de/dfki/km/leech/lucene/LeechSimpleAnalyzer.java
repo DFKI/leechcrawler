@@ -15,6 +15,12 @@ import org.apache.lucene.util.Version;
 public class LeechSimpleAnalyzer extends ReusableAnalyzerBase
 {
 
+    static final protected LeechSimpleAnalyzer m_singelton = new LeechSimpleAnalyzer();
+    
+    static public LeechSimpleAnalyzer getSingleton()
+    {
+        return m_singelton;
+    }
 
 
     /**

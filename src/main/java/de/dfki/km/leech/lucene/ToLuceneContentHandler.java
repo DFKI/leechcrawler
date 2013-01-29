@@ -89,8 +89,6 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
                     List<Document> llDocs = m_addDocsQueue.take();
 
 
-                    // wir müssen das hier noch gegen das m_luceneWriter.close abriegeln
-
                     if(llDocs.size() == 1)
                     {
                         getCurrentWriter().addDocument(llDocs.get(0));
@@ -253,8 +251,13 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
             // hier mergen wir nun alle temporären indices in den originalen
 
-            // der letzte temporäre konnte noch nicht geschlossen werden - das machen wir jetzt
-            if(m_luceneWriter != m_initialLuceneWriter) m_luceneWriter.close();
+            // der temporären müssen noch geschlossen werden - das machen wir jetzt. Der letzte steht noch nicht in der Liste
+            if(m_luceneWriter != m_initialLuceneWriter)
+            {
+                for (IndexWriter writer2close : m_llIndexWriter2Close)
+                    writer2close.close();
+                m_luceneWriter.close();
+            }
 
             LinkedList<Directory> llIndicesDirs2Merge = new LinkedList<Directory>();
 
@@ -429,6 +432,9 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
     }
 
 
+    protected LinkedList<IndexWriter> m_llIndexWriter2Close = new LinkedList<IndexWriter>();
+
+
 
     synchronized protected IndexWriter getCurrentWriter() throws CorruptIndexException, LockObtainFailedException, IOException
     {
@@ -444,8 +450,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
         File fOurTmpDir = null;
         if(directory instanceof FSDirectory)
         {
-            // XXX der darf erst zu machen, wenn alle docConsumer-Threads mit diesem writer.Object fertig sind^^
-            if(m_luceneWriter != m_initialLuceneWriter) m_luceneWriter.close();
+            if(m_luceneWriter != m_initialLuceneWriter) m_llIndexWriter2Close.add(m_luceneWriter);
 
             String strTmpPath = ((FSDirectory) directory).getDirectory().getAbsolutePath();
             // if(strTmpPath.charAt(strTmpPath.length() - 1) == '/' || strTmpPath.charAt(strTmpPath.length() - 1) == '\\')
@@ -461,7 +466,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
         }
 
         Logger.getLogger(ToLuceneContentHandler.class.getName()).info(
-                "Current intex exceeds " + m_iSplitIndexDocumentCount + " documents. Will create another temporary one under " + fOurTmpDir);
+                "Current index exceeds " + m_iSplitIndexDocumentCount + " documents. Will create another temporary one under " + fOurTmpDir);
 
 
         IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_CURRENT, m_initialLuceneWriter.getConfig().getAnalyzer());
@@ -683,11 +688,75 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
     }
 
+    
+    public void processNewDocument(Document doc)
+    {
+
+        try
+        {
+            if(m_initialLuceneWriter == null) throw new IllegalStateException("Lucene writer was not specified");
+
+            m_luceneWriter = getCurrentWriter();
+
+
+            if(doc == null) return;
+
+
+
+            // wenn es ein parent oder childDoc ist, dann merken wir uns dieses erst mal, bis wir einen ganzen Block haben. Wenn wir auf ein childDoc
+            // stossen, dann schreiben wir beim nächsten parendDoc, und merken uns alle childs bis dahin
+            // - wenn wir auf ein Doc ohne parent-oder child-Id stossen, dann schreiben wir alle bisherigen Docs als Einzeldokumente raus - nicht im
+            // Block
+
+            if(ToLuceneContentHandler.this.getBlockIndexing())
+            {
+
+
+                if(doc.get(LeechMetadata.parentId) != null)
+                {
+                    // wir haben ein child-Doc (wir haben eine Referenz zu unserem parent). Das merken wir uns einfach
+                    m_llLastChildDocuments.add(doc);
+                }
+                else if(doc.get(LeechMetadata.childId) != null)
+                {
+                    // wir haben ein parentDoc (ein parent hat min eine childId) - wir schreiben zusammen mit den bisher gesammelten im block. Das
+                    // parentDoc ist das letzte
+                    m_llLastChildDocuments.add(doc);
+
+                    m_addDocsQueue.put(new LinkedList<Document>(m_llLastChildDocuments));
+
+                    m_llLastChildDocuments.clear();
+                }
+                else
+                {
+                    // wir haben weder child-noch parent ID - alle gemerkten childDocs werden als Einzeldocs rausgeschrieben
+                    for (Document orphanDoc : m_llLastChildDocuments)
+                        m_addDocsQueue.put(Collections.singletonList(orphanDoc));
+
+                    m_addDocsQueue.put(Collections.singletonList(doc));
+                }
+
+
+            }
+            else
+            {
+                m_addDocsQueue.put(Collections.singletonList(doc));
+            }
 
 
 
 
-    // protected LinkedList<Document> m_llAllocatedDocuments = new LinkedList<Document>();
+
+        }
+        catch (Exception e)
+        {
+            Logger.getLogger(ToLuceneContentHandler.class.getName()).log(Level.SEVERE, "Error", e);
+        }
+
+    }
+
+
+
 
 
 
@@ -820,10 +889,14 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
      * Sets some attribute value pairs that will be added to every crawled document.
      * 
      * @param hsStaticAttValuePairs a multi value map containing the additional attribute value pairs
+     * 
+     * @return this
      */
-    public void setStaticAttributeValuePairs(MultiValueHashMap<String, String> hsStaticAttValuePairs)
+    public ToLuceneContentHandler setStaticAttributeValuePairs(MultiValueHashMap<String, String> hsStaticAttValuePairs)
     {
         m_hsStaticAttValuePairs = hsStaticAttValuePairs;
+
+        return this;
     }
 
 

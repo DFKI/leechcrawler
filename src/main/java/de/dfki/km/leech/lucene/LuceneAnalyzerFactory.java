@@ -98,6 +98,7 @@ public class LuceneAnalyzerFactory
                         wordList.add(stopWord);
                         stopWord = reader.readLine();
                     }
+                    reader.close();
                     String[] stopWords = wordList.toArray(new String[wordList.size()]);
 
 

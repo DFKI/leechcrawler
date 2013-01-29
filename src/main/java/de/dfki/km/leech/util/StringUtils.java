@@ -20,6 +20,8 @@ package de.dfki.km.leech.util;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,6 +30,17 @@ import java.util.regex.Pattern;
 
 public class StringUtils
 {
+
+
+    public static boolean containsIgnoreCase(String strString2search, String... strings4lookup)
+    {
+        
+        for(String strValue : strings4lookup)
+            if(strValue.equalsIgnoreCase(strString2search)) return true;
+
+
+        return false;
+    }
 
 
 
@@ -80,8 +93,8 @@ public class StringUtils
 
                 if(charAtI == cClosingBracket) iInnerBrackets--;
             }
-            
-            
+
+
             lastChar = charAtI;
         }
 

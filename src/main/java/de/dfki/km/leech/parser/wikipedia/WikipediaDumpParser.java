@@ -377,7 +377,7 @@ public class WikipediaDumpParser implements Parser
         Logger.getLogger(WikipediaDumpParser.class.getName()).info("will collect redirects from wikipedia dump...");
 
         MultiValueHashMap<String, String> hsPageTitle2Redirects = new MultiValueBalancedTreeMap<String, String>();
-        
+
         String strCurrentTitle = "";
         XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
 
@@ -395,7 +395,7 @@ public class WikipediaDumpParser implements Parser
                 strCurrentTitle = readNextCharEventsText(xmlEventReader);
 
                 iTitlesRead++;
-                if(iTitlesRead % 10000 == 0) Logger.getLogger(WikipediaDumpParser.class.getName()).info("read doc #" + iTitlesRead);
+                if(iTitlesRead % 200000 == 0) Logger.getLogger(WikipediaDumpParser.class.getName()).info("read doc #" + iTitlesRead);
 
                 continue;
             }
@@ -409,10 +409,11 @@ public class WikipediaDumpParser implements Parser
             if(!nextEvent.isCharacters()) continue;
 
             String strCharEventData = readNextCharEventsText(xmlEventReader);
-            if(strCharEventData == null
-                    || ((strCharEventData.trim().length() < 10 || !strCharEventData.trim().substring(0, 9).toLowerCase().startsWith("#redirect")) && (strCharEventData
-                            .trim().length() < 15 || !strCharEventData.trim().substring(0, 14).toLowerCase().startsWith("#weiterleitung"))))
-                continue;
+            if(strCharEventData == null) continue;
+            
+            strCharEventData = strCharEventData.trim();
+            if(strCharEventData.length() < 10 || !strCharEventData.substring(0, 9).equalsIgnoreCase("#redirect")) continue;
+            if(strCharEventData.length() < 15 || !strCharEventData.substring(0, 14).equalsIgnoreCase("#weiterleitung")) continue;
 
             // wir haben einen redirect - der wird in unsere Datenstruktur eingetragen
             int iStart = strCharEventData.indexOf("[[");
@@ -566,7 +567,11 @@ public class WikipediaDumpParser implements Parser
                     metadata.add(Metadata.SOURCE, strBaseURL + strCurrentTitle);
 
                     for (String strRedirect : hsPageTitle2Redirects.get(strCurrentTitle))
-                        metadata.add(Metadata.TITLE, strRedirect);
+                    {
+                        // wir ignorieren Titel, die sich lediglich durch groß/kleinschreibung unterscheiden
+                        if(!StringUtils.containsIgnoreCase(strRedirect, metadata.getValues(Metadata.TITLE)))
+                            metadata.add(Metadata.TITLE, strRedirect);
+                    }
 
 
                     continue;
