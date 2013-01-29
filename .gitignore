@@ -7,6 +7,9 @@ praeampel.txt
 resource/
 target/
 luceneIndex_wikipedia/
+testIndex/
+bla.txt
+
 
 # Except this file
 #!.gitignore
