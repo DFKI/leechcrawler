@@ -49,7 +49,7 @@ public class LuceneIndexCreator
 
             System.out.println("Usage: LuceneIndexCreator [-noPageRedirects] [-noParseGeoCoordinates] [-parseInfoBoxes] [-parseLinksAndCategories]\n"
                     + " [-<staticAttName>=<staticAttValue>] [-buzzwordAttName=<attName>] [-buzzwordCount=<count>] [-calculatePageCounts]\n"
-                    + " <fileOrDir2CrawlPath> <targetLuceneIndexPath>");
+                    + " <fileOrDir2CrawlPath> <targetLuceneIndexPath>\n\nComment: You can specify several static attribute value pairs.");
             System.out.println();
 
             return;
@@ -161,14 +161,9 @@ public class LuceneIndexCreator
             IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_31, fieldConfig4Wikipedia.createAnalyzer());
 
             config.setOpenMode(OpenMode.CREATE_OR_APPEND);
-            // config.setOpenMode(OpenMode.APPEND);
 
 
             indexWriter = new IndexWriter(directory, config);
-            // indexWriter = new IndexWriter(new NIOFSDirectory(new File(strLuceneIndexPath)), config);
-            // indexWriter =
-            // new IndexWriter(new SimpleFSDirectory(new File(strLuceneIndexPath)), fieldConfig4Wikipedia.createAnalyzer(), false,
-            // IndexWriter.MaxFieldLength.UNLIMITED);
 
 
 

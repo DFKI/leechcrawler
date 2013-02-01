@@ -9,7 +9,7 @@ The key intentions of Leech:
 * Low learning curve - Leech integrates seamlessly into the Tika world.
 * Extensibility - write your own crawlers, support new data source protocols and plug them in by simply adding your jar into the classpath.
 * All parsing capabilities from Apache Tika are supported, including your own parsers.
-* Incremental crawling, offered for existing and new crawlers.
+* Incremental crawling (second run crawls only the differences inside a data source, according to the last crawl). Offered for existing and new crawlers.
 
 ***
 [How to start](https://github.com/leechcrawler/leech/blob/master/how2start.md) | [Code snippets / Examples](https://github.com/leechcrawler/leech/blob/master/codeSnippets.md) | [Extending Leech](https://github.com/leechcrawler/leech/blob/master/extending.md) | [Mailing list](https://github.com/leechcrawler/leech/blob/master/mailinglist.md) | [People / Contact] (https://github.com/leechcrawler/leech/blob/master/people.md) | [Supporters](https://github.com/leechcrawler/leech/blob/master/supporters.md)

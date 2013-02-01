@@ -27,6 +27,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.rmi.server.UID;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -373,7 +374,6 @@ public class WikipediaDumpParser implements Parser
         // <page>
         // <title>Autopoiesis</title>
 
-
         Logger.getLogger(WikipediaDumpParser.class.getName()).info("will collect redirects from wikipedia dump...");
 
         MultiValueHashMap<String, String> hsPageTitle2Redirects = new MultiValueBalancedTreeMap<String, String>();
@@ -411,13 +411,20 @@ public class WikipediaDumpParser implements Parser
             String strCharEventData = readNextCharEventsText(xmlEventReader);
             if(strCharEventData == null) continue;
 
+
             strCharEventData = strCharEventData.trim();
-            if(strCharEventData.length() < 10 || !strCharEventData.substring(0, 9).equalsIgnoreCase("#redirect")) continue;
-            if(strCharEventData.length() < 9 || !(strCharEventData.substring(0, 8).equalsIgnoreCase("redirect") && !strCharEventData.contains("\n")))
-                continue;
-            if(strCharEventData.length() < 15 || !strCharEventData.substring(0, 14).equalsIgnoreCase("#weiterleitung")) continue;
-            if(strCharEventData.length() < 14
-                    || !(strCharEventData.substring(0, 13).equalsIgnoreCase("weiterleitung") && !strCharEventData.contains("\n"))) continue;
+
+            boolean bRedirect = false;
+
+            if(strCharEventData.length() >= 9 && strCharEventData.substring(0, 9).equalsIgnoreCase("#redirect")) bRedirect = true;
+            if(!bRedirect && strCharEventData.length() >= 8 && strCharEventData.substring(0, 8).equalsIgnoreCase("redirect")
+                    && !strCharEventData.contains("\n")) bRedirect = true;
+            if(!bRedirect && strCharEventData.length() >= 14 && strCharEventData.substring(0, 14).equalsIgnoreCase("#weiterleitung"))
+                bRedirect = true;
+            if(!bRedirect && strCharEventData.length() >= 13 && strCharEventData.substring(0, 13).equalsIgnoreCase("weiterleitung")
+                    && !strCharEventData.contains("\n")) bRedirect = true;
+
+            if(!bRedirect) continue;
 
             // wir haben einen redirect - der wird in unsere Datenstruktur eingetragen
             int iStart = strCharEventData.indexOf("[[");
@@ -426,8 +433,13 @@ public class WikipediaDumpParser implements Parser
             if(iEnd <= iStart) continue;
             if((iStart + 2) > strCharEventData.length() || iEnd > strCharEventData.length()) continue;
 
+
+
+
             String strRedirectTarget = strCharEventData.substring(iStart + 2, iEnd).trim();
             hsPageTitle2Redirects.add(strRedirectTarget, strCurrentTitle);
+
+
 
             // System.out.println("redirect found: (" + hsRedirectPageTitles.size() + ") " + strCurrentTitle + " => '" + strRedirectTarget + "'");
         }
@@ -555,6 +567,17 @@ public class WikipediaDumpParser implements Parser
                     // wir merken uns immer den aktuellen Titel
                     String strCurrentTitle = readNextCharEventsText(xmlEventReader);
 
+                    if(strCurrentTitle.equalsIgnoreCase("DuckDuckGo"))
+                    {
+                        int fasd = 8;
+                    }
+
+                    if(strCurrentTitle.toLowerCase().contains("duck") && strCurrentTitle.toLowerCase().contains("go"))
+                    {
+                        int is = 666;
+                    }
+
+
                     // wenn der Titel eine redirect-Page ist, dann tragen wir die ganze Page aus der EventQueue aus, springen an das endPage, und
                     // haben somit diese Seite ignoriert. Ferner ignorieren wir auch spezielle wikipedia-Seiten
                     String strSmallTitle = strCurrentTitle.trim().toLowerCase();
@@ -575,6 +598,7 @@ public class WikipediaDumpParser implements Parser
                     {
                         metadata.add(Metadata.TITLE, strCurrentTitle);
                         metadata.add(Metadata.SOURCE, strBaseURL + strCurrentTitle);
+
 
                         for (String strRedirect : hsPageTitle2Redirects.get(strCurrentTitle))
                         {
