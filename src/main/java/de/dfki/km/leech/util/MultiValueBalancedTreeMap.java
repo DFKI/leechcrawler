@@ -5,11 +5,9 @@ package de.dfki.km.leech.util;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.NavigableMap;
-import java.util.UUID;
 
-import org.mapdb.DB;
-import org.mapdb.DBMaker;
+import org.apache.jdbm.DB;
+import org.apache.jdbm.DBMaker;
 
 
 
@@ -50,6 +48,7 @@ public class MultiValueBalancedTreeMap<K, V> extends MultiValueHashMap<K, V>
 
 
 
+    private boolean bEnableHTreeBackend = false;
     protected DB m_jdbmDB;
 
 
@@ -192,26 +191,46 @@ public class MultiValueBalancedTreeMap<K, V> extends MultiValueHashMap<K, V>
     }
 
 
-
     @Override
     protected Map createInternalMap(int initialCapacity, float loadFactor, Map m)
     {
 
+        String strJdbmPath = FileUtils.getAppDirectory() + "/multiValueBalancedTree_" + FileUtils.getRandomUniqueFilename();
+
         // JDBM3
-        // m_jdbmDB =
-        // DBMaker.openFile("multiValueBalancedTree_" + UUID.randomUUID().toString().replaceAll("\\W", "_")).disableTransactions()
-        // .disableLocking().deleteFilesAfterClose().closeOnExit().make();
-        // NavigableMap<? extends Comparable, Collection<V>> map = m_jdbmDB.createTreeMap(UUID.randomUUID().toString().replaceAll("\\W", "_"));
+        m_jdbmDB = DBMaker.openFile(strJdbmPath).disableTransactions().disableLocking().deleteFilesAfterClose().closeOnExit().make();
 
-        m_jdbmDB = DBMaker.newTempFileDB().deleteFilesAfterClose().closeOnJvmShutdown().journalDisable().asyncWriteDisable().make();
+        Map<? extends Comparable, Collection<V>> map;
+        if(bEnableHTreeBackend)
+            map = m_jdbmDB.createHashMap("temp");
+        else
+            map = m_jdbmDB.createTreeMap("temp");
 
-        Map<? extends Comparable, Collection<V>> map = m_jdbmDB.getHashMap("temp");
 
+
+        // MapDB (JDBM4)
+        // m_jdbmDB = DBMaker.newFileDB(new
+        // File(strJdbmPath)).deleteFilesAfterClose().closeOnJvmShutdown().journalDisable().asyncWriteDisable().make();
+        //
+        // Map<? extends Comparable, Collection<V>> map;
+        // if(bEnableHTreeBackend)
+        // map = m_jdbmDB.getHashMap("temp");
+        // else
+        // map = m_jdbmDB.getTreeMap("temp");
 
         if(m != null) map.putAll(m);
 
 
         return map;
+    }
+
+
+
+    public MultiValueBalancedTreeMap<K,V> enableHTreeBackend4LongKeys(boolean bEnable)
+    {
+        this.bEnableHTreeBackend = bEnable;
+        
+        return this;
     }
 
 
