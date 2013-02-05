@@ -44,8 +44,8 @@
 
 **Print out the crawled data entities**  
 
-    new Leech().parse("sourceUrl", new PrintlnContentHandler(Granularity.title, new MyDataSinkContentHandler()), new ParseContext());
-    new Leech().parse("sourceUrl", new PrintlnContentHandler(Granularity.all).setShowOnlyErrors(true), new ParseContext());
+    new Leech().parse("sourceUrl", new PrintlnContentHandler(Verbosity.title, new MyDataSinkContentHandler()), new ParseContext());
+    new Leech().parse("sourceUrl", new PrintlnContentHandler(Verbosity.all).setShowOnlyErrors(true), new ParseContext());
 
 **Generate a crawl report**
   
