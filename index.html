@@ -1,35 +1,39 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
+
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Leech by leechcrawler</title>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Leech : Crawling capabilities for Apache Tika" />
 
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <script src="javascripts/scale.fix.js"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
+    <title>Leech</title>
   </head>
+
   <body>
-    <div class="wrapper">
-      <header>
-        <h1>Leech</h1>
-        <p>Crawling capabilities for Apache Tika</p>
-        <p class="view"><a href="https://github.com/leechcrawler/leech">View the Project on GitHub <small>leechcrawler/leech</small></a></p>
-        <ul>
-          <li><a href="https://github.com/leechcrawler/leech/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/leechcrawler/leech/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/leechcrawler/leech">View On <strong>GitHub</strong></a></li>
-        </ul>
-      </header>
-      <section>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/leechcrawler/leech">View on GitHub</a>
+
+          <h1 id="project_title">Leech</h1>
+          <h2 id="project_tagline">Crawling capabilities for Apache Tika</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/leechcrawler/leech/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/leechcrawler/leech/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
         <h1>Leech</h1>
 
-<p>Crawling capabilities for Apache Tika. Crawl content out of e.g. file systems, http(s) sources (webcrawling) or imap(s) servers. Leech offers additional Tika parsers providing crawling capabilities.<br>
+<p>Crawling capabilities for Apache Tika. Crawl content out of e.g. file systems, http(s) sources (webcrawling) or imap(s) servers. Leech offers additional Tika parsers providing these crawling capabilities.<br>
 It is the RDF free successor of Aperture from the DFKI GmbH Knowledge Management group and available unter the terms of the <a href="http://www.gnu.org/licenses/gpl.html">GPLv3</a>. In the case you need a different license or want to make a project with us, feel free to <a href="https://github.com/leechcrawler/leech/blob/master/people.md">contact us</a>!</p>
 
 <p>The key intentions of Leech:</p>
@@ -39,7 +43,7 @@ It is the RDF free successor of Aperture from the DFKI GmbH Knowledge Management
 <li>Low learning curve - Leech integrates seamlessly into the Tika world.</li>
 <li>Extensibility - write your own crawlers, support new data source protocols and plug them in by simply adding your jar into the classpath.</li>
 <li>All parsing capabilities from Apache Tika are supported, including your own parsers.</li>
-<li>Incremental crawling, offered for existing and new crawlers.</li>
+<li>Incremental crawling (second run crawls only the differences inside a data source, according to the last crawl). Offered for existing and new crawlers.</li>
 </ul><hr><p><a href="https://github.com/leechcrawler/leech/blob/master/how2start.md">How to start</a> | <a href="https://github.com/leechcrawler/leech/blob/master/codeSnippets.md">Code snippets / Examples</a> | <a href="https://github.com/leechcrawler/leech/blob/master/extending.md">Extending Leech</a> | <a href="https://github.com/leechcrawler/leech/blob/master/mailinglist.md">Mailing list</a> | <a href="https://github.com/leechcrawler/leech/blob/master/people.md">People / Contact</a> | <a href="https://github.com/leechcrawler/leech/blob/master/supporters.md">Supporters</a></p>
 
 <hr><p>Crawl something incrementally in 1 minute:</p>
@@ -68,11 +72,15 @@ leech.parse(strSourceUrl, new DataSinkContentHandlerAdapter()
 </code></pre>
       </section>
     </div>
-    <footer>
-      <p>Project maintained by <a href="https://github.com/leechcrawler">leechcrawler</a></p>
-      <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
-    </footer>
-    <!--[if !IE]><script>fixScale(document);</script><!--<![endif]-->
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Leech maintained by <a href="https://github.com/leechcrawler">leechcrawler</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
               <script type="text/javascript">
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
             document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
@@ -83,6 +91,7 @@ leech.parse(strSourceUrl, new DataSinkContentHandlerAdapter()
             pageTracker._trackPageview();
             } catch(err) {}
           </script>
+
 
   </body>
 </html>
