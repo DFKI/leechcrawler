@@ -1,7 +1,7 @@
 Leech
 =====
 
-Crawling capabilities for Apache Tika. Crawl content out of e.g. file systems, http(s) sources (webcrawling) or imap(s) servers. Leech offers additional Tika parsers providing crawling capabilities.  
+Crawling capabilities for Apache Tika. Crawl content out of e.g. file systems, http(s) sources (webcrawling) or imap(s) servers. Leech offers additional Tika parsers providing these crawling capabilities.  
 It is the RDF free successor of Aperture from the DFKI GmbH Knowledge Management group and available unter the terms of the [GPLv3](http://www.gnu.org/licenses/gpl.html). In the case you need a different license or want to make a project with us, feel free to [contact us](https://github.com/leechcrawler/leech/blob/master/people.md)!
 
 The key intentions of Leech:
