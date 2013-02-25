@@ -52,6 +52,25 @@
     CrawlReportContentHandler reportContentHandler = new CrawlReportContentHandler(new MyDataSinkContentHandler());
     new Leech().parse("sourceUrl", reportContentHandler, new ParseContext());
     System.out.println(reportContentHandler.getReport());
+    
+**Create a simple Lucene index**
+      
+    // we use a simple, preconfigured Field configuration here. Modify it for your own fields if necessary
+    FieldConfig fieldConfig4Wikipedia = WikipediaDumpParser.getFieldConfig4ParserAttributes();
+    // we create a lucene configuration for the index writer
+    IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_CURRENT, fieldConfig4Wikipedia.createAnalyzer());
+    config.setOpenMode(OpenMode.CREATE);
+    // the Lucene index writer
+    IndexWriter indexWriter = new IndexWriter(new SimpleFSDirectory(new File("./luceneIndex")), config);
+
+    CrawlReportContentHandler reportContentHandler = new CrawlReportContentHandler(
+            new PrintlnContentHandler(Verbosity.all, 
+            new ToLuceneContentHandler(fieldConfig4Wikipedia, indexWriter)).setShowOnlyErrors(true));
+
+    new Leech().parse("sourceUrl", reportContentHandler, new CrawlerContext().createParseContext());
+
+    indexWriter.close(true);
+    
 
 **Stop current crawl**
 
