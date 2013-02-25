@@ -53,7 +53,7 @@
     new Leech().parse("sourceUrl", reportContentHandler, new ParseContext());
     System.out.println(reportContentHandler.getReport());
     
-**Create a simple Lucene index**
+**Create a Lucene index**
       
     // we use a simple, preconfigured Field configuration here. Modify it for your own fields if necessary
     FieldConfig fieldConfig4Wikipedia = WikipediaDumpParser.getFieldConfig4ParserAttributes();
