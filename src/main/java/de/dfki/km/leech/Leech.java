@@ -160,7 +160,7 @@ public class Leech extends Tika
             return detect(stream, metadata);
 
         }
-        catch (Exception e)
+        catch (Throwable e)
         {
             Logger.getLogger(Leech.class.getName()).log(Level.SEVERE, "Error", e);
 
@@ -191,7 +191,7 @@ public class Leech extends Tika
             {
                 handler2use4recursiveCall = (ContentHandler) Class.forName(crawlerContext.getContentHandlerClassName()).newInstance();
             }
-            catch (Exception e)
+            catch (Throwable e)
             {
                 Logger.getLogger(DirectoryCrawlerParser.class.getName()).log(Level.SEVERE,
                         "Error during the instantiation of the configured content handler " + crawlerContext.getContentHandlerClassName(), e);
@@ -264,7 +264,7 @@ public class Leech extends Tika
             getParser().parse(stream, handler, metadata, context);
 
         }
-        catch (Exception e)
+        catch (Throwable e)
         {
             ExceptionUtils.handleException(e, null, metadata, context.get(CrawlerContext.class), context, 0, handler);
         }
@@ -322,7 +322,7 @@ public class Leech extends Tika
             getParser().parse(stream, handler, metadata, context);
 
         }
-        catch (Exception e)
+        catch (Throwable e)
         {
             ExceptionUtils.handleException(e, null, metadata, context.get(CrawlerContext.class), context, 0, handler);
         }
@@ -372,7 +372,7 @@ public class Leech extends Tika
             getParser().parse(stream, handler, metadata, context);
 
         }
-        catch (Exception e)
+        catch (Throwable e)
         {
             ExceptionUtils.handleException(e, null, metadata, new CrawlerContext(), context, 0, handler);
         }
@@ -427,7 +427,7 @@ public class Leech extends Tika
         {
             return detect(UrlUtil.sourceString2URL(name));
         }
-        catch (Exception e)
+        catch (Throwable e)
         {
             Logger.getLogger(Leech.class.getName()).log(Level.SEVERE, "Error", e);
             return null;
@@ -511,7 +511,7 @@ public class Leech extends Tika
             return parse(stream, metadata);
 
         }
-        catch (Exception e)
+        catch (Throwable e)
         {
             Logger.getLogger(Leech.class.getName()).log(Level.SEVERE, "Error", e);
 
@@ -559,7 +559,7 @@ public class Leech extends Tika
             getParser().parse(stream, handler, metadata, context);
 
         }
-        catch (Exception e)
+        catch (Throwable e)
         {
             ExceptionUtils.handleException(e, null, metadata, context.get(CrawlerContext.class), context, 0, handler);
         }
@@ -619,7 +619,7 @@ public class Leech extends Tika
             getParser().parse(stream, handler, metadata, context);
 
         }
-        catch (Exception e)
+        catch (Throwable e)
         {
             ExceptionUtils.handleException(e, null, metadata, context.get(CrawlerContext.class), context, 0, handler);
         }
@@ -668,7 +668,7 @@ public class Leech extends Tika
             getParser().parse(stream, handler, metadata, context);
 
         }
-        catch (Exception e)
+        catch (Throwable e)
         {
             ExceptionUtils.handleException(e, null, metadata, context.get(CrawlerContext.class), context, 0, handler);
         }
@@ -716,7 +716,7 @@ public class Leech extends Tika
 
             return parseToString(stream, metadata);
         }
-        catch (Exception e)
+        catch (Throwable e)
         {
             throw new TikaException("Error while parsing " + url.getFile(), e);
         }

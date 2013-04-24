@@ -75,8 +75,20 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 {
 
 
+    protected class InterruptThreadList extends LinkedList<Document>
+    {
+        private static final long serialVersionUID = 196832081918659203L;
+    }
+
+
+
+
     protected class DocConsumer implements Runnable
     {
+
+        protected boolean m_bInterrupted = false;
+
+
 
         @Override
         public void run()
@@ -85,10 +97,12 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
             {
                 while (true)
                 {
-
                     List<Document> llDocs = m_addDocsQueue.take();
 
+                    if(llDocs instanceof InterruptThreadList) break;
 
+                    
+                    
                     if(llDocs.size() == 1)
                     {
                         getCurrentWriter().addDocument(llDocs.get(0));
@@ -244,8 +258,8 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
         try
         {
 
-            for (Thread consumerThread : m_llConsumerThreads)
-                consumerThread.interrupt();
+            for (int i = 0; i < m_llConsumerThreads.size(); i++)
+                m_addDocsQueue.put(new InterruptThreadList());
 
             if(getSplitAndMergeIndex() <= 0) return;
 
@@ -688,7 +702,8 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
     }
 
-    
+
+
     public void processNewDocument(Document doc)
     {
 
