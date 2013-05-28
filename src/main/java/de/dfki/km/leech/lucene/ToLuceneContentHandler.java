@@ -30,6 +30,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -101,8 +103,8 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
                     if(llDocs instanceof InterruptThreadList) break;
 
-                    
-                    
+
+
                     if(llDocs.size() == 1)
                     {
                         getCurrentWriter().addDocument(llDocs.get(0));
@@ -121,6 +123,17 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
             catch (Exception e)
             {
                 Logger.getLogger(ToLuceneContentHandler.DocConsumer.class.getName()).log(Level.SEVERE, "Error", e);
+            }
+            finally
+            {
+                try
+                {
+                    m_cyclicBarrier4DocConsumerThreads.await();
+                }
+                catch (Exception e)
+                {
+                    Logger.getLogger(ToLuceneContentHandler.DocConsumer.class.getName()).log(Level.SEVERE, "Error", e);
+                }
             }
 
         }
@@ -169,6 +182,8 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
 
     protected LinkedList<Thread> m_llConsumerThreads = new LinkedList<Thread>();
+
+    protected CyclicBarrier m_cyclicBarrier4DocConsumerThreads;
 
 
 
@@ -260,6 +275,8 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
             for (int i = 0; i < m_llConsumerThreads.size(); i++)
                 m_addDocsQueue.put(new InterruptThreadList());
+
+            m_cyclicBarrier4DocConsumerThreads.await();
 
             if(getSplitAndMergeIndex() <= 0) return;
 
@@ -581,9 +598,10 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
         Logger.getLogger(ToLuceneContentHandler.class.getName()).info("Will write crawled data into " + m_luceneWriter.getDirectory().toString());
 
         int iCoreCount = Runtime.getRuntime().availableProcessors();
-        long iThreadCount = Math.round(iCoreCount / 2d);
+        int iThreadCount = (int) Math.round(iCoreCount / 2d);
         iThreadCount = Math.max(iThreadCount, 1);
 
+        m_cyclicBarrier4DocConsumerThreads = new CyclicBarrier(iThreadCount +1);
         for (int i = 0; i < iThreadCount; i++)
         {
             Thread consumerThread = new Thread(new DocConsumer(), "ToLuceneContentHandlerDocConsumer " + i);

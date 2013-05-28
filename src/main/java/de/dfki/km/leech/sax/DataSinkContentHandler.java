@@ -181,7 +181,7 @@ public abstract class DataSinkContentHandler extends ContentHandlerDecorator
 
         // da wir diesen handler über die rekursiven Aufrufe wiederverwenden möchten, setzen wir hier die members zurück. Das metadata-Object wird im
         // CrawlerParser zurückgesetzt
-        m_writer.getBuffer().delete(0, m_writer.getBuffer().length());
+        if(m_writer != null) m_writer.getBuffer().delete(0, m_writer.getBuffer().length());
 
     }
 
