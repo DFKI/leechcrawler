@@ -217,6 +217,12 @@ public class WikipediaDumpParser implements Parser
 
         fieldConfig.hsFieldName2FieldMapping.put(LeechMetadata.body, new FieldMapping("de.dfki.km.leech.lucene.LeechSimpleAnalyzer", Store.YES,
                 Index.ANALYZED, TermVector.WITH_POSITIONS_OFFSETS, FieldType.STRING));
+        
+        fieldConfig.hsFieldName2FieldMapping.put("buzzwords", new FieldMapping("de.dfki.km.leech.lucene.LeechSimpleAnalyzer", Store.YES,
+                Index.ANALYZED, TermVector.WITH_POSITIONS_OFFSETS, FieldType.STRING));
+        
+        fieldConfig.hsFieldName2FieldMapping.put("source", new FieldMapping("de.dfki.km.leech.lucene.LeechSimpleAnalyzer", Store.YES,
+                Index.ANALYZED, TermVector.WITH_POSITIONS_OFFSETS, FieldType.STRING));
 
         fieldConfig.hsFieldName2FieldMapping.put("infobox", new FieldMapping("de.dfki.km.leech.lucene.LeechSimpleAnalyzer", Store.YES,
                 Index.ANALYZED, TermVector.WITH_POSITIONS_OFFSETS, FieldType.STRING));
@@ -239,6 +245,7 @@ public class WikipediaDumpParser implements Parser
                 Index.ANALYZED, TermVector.WITH_POSITIONS_OFFSETS, FieldType.STRING));
         fieldConfig.hsFieldName2FieldMapping.put("caption", new FieldMapping("de.dfki.km.leech.lucene.LeechSimpleAnalyzer", Store.YES,
                 Index.ANALYZED, TermVector.WITH_POSITIONS_OFFSETS, FieldType.STRING));
+        
 
 
 

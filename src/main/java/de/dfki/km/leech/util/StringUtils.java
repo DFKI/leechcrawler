@@ -20,8 +20,6 @@ package de.dfki.km.leech.util;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -327,7 +325,7 @@ public class StringUtils
     {
         try
         {
-            return sha1Hash(string.getBytes());
+            return sha1Hash(string.getBytes("UTF-8"));
         }
         catch (Exception e)
         {

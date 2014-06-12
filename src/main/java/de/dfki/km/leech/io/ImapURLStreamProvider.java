@@ -224,7 +224,7 @@ public class ImapURLStreamProvider extends URLStreamProvider
                     if(folder2Check != null && folder2Check.exists())
                     {
                         // das Teil ist ein Folder
-                        return TikaInputStream.get("leech sucks - hopefully :)".getBytes());
+                        return TikaInputStream.get("leech sucks - hopefully :)".getBytes("UTF-8"));
                     }
                     else if(folder2Check != null)
                     {

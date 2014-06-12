@@ -41,8 +41,8 @@ public class FeedParser2 extends AbstractParser
 
     private static final long serialVersionUID = 1326997408920690592L;
 
-    private static final Set<MediaType> SUPPORTED_TYPES = Collections.unmodifiableSet(new HashSet<MediaType>(Arrays.asList(
-            MediaType.application("rss+xml"), MediaType.application("atom+xml"))));
+    private static final Set<MediaType> SUPPORTED_TYPES = Collections.unmodifiableSet(new HashSet<MediaType>(Arrays.asList(MediaType.application("rss+xml"),
+            MediaType.application("atom+xml"))));
 
 
 
@@ -55,8 +55,7 @@ public class FeedParser2 extends AbstractParser
 
 
     @Override
-    public void parse(InputStream stream, ContentHandler handler, Metadata metadata, ParseContext context) throws IOException, SAXException,
-            TikaException
+    public void parse(InputStream stream, ContentHandler handler, Metadata metadata, ParseContext context) throws IOException, SAXException, TikaException
     {
         // set the encoding?
         try
@@ -64,7 +63,7 @@ public class FeedParser2 extends AbstractParser
             CrawlerContext crawlerContext = context.get(CrawlerContext.class);
             if(crawlerContext == null) crawlerContext = new CrawlerContext();
 
-            
+
             IncrementalCrawlingHistory crawlingHistory = crawlerContext.getIncrementalCrawlingHistory();
             String strMasterDataEntityExistsID = metadata.get(IncrementalCrawlingHistory.dataEntityExistsID);
 
@@ -88,46 +87,49 @@ public class FeedParser2 extends AbstractParser
 
             String strContentType = metadata.get(Metadata.CONTENT_TYPE);
 
-            for (Object e : feed.getEntries())
+            if(crawlerContext.getCrawlingDepth() != 0)
             {
-                SyndEntry entry = (SyndEntry) e;
-
-
-
-                String strLink = entry.getLink();
-                if(strLink != null)
+                for (Object e : feed.getEntries())
                 {
-
-                    XHTMLContentHandler xhtmlSubDoc = new XHTMLContentHandler(handler, metadata);
-                    xhtmlSubDoc.startDocument();
-
-                    TikaUtils.clearMetadata(metadata);
-
-                    // hier wollen wir mit unseren dataexistsID und contentFingerprint prüfen, ob dieser Entry schon mal indexiert wurde
-                    metadata.add(IncrementalCrawlingHistory.dataEntityExistsID, strLink);
-                    metadata.add(IncrementalCrawlingHistory.dataEntityContentFingerprint, entry.getPublishedDate().toString());
-                    metadata.add(IncrementalCrawlingHistory.masterDataEntityExistsID, strMasterDataEntityExistsID);
-
-                    IncrementalCrawlingParser.performHistoryStuff(crawlingHistory, metadata);
-
-                    if(IncrementalCrawlingParser.UNMODIFIED.equals(metadata.get(IncrementalCrawlingParser.DATA_ENTITY_MODIFICATION_STATE))) continue;
+                    SyndEntry entry = (SyndEntry) e;
 
 
-                    metadata.add(Metadata.CONTENT_TYPE, strContentType);
-                    metadata.add(Metadata.SOURCE, strLink);
-                    metadata.add(Metadata.TITLE, stripTags(entry.getTitle()));
-                    metadata.add(Metadata.CREATOR, entry.getAuthor());
-                    metadata.add(Metadata.MODIFIED, new SimpleDateFormat("yyyy.MM.dd HH:mm:ss:SSS").format(entry.getPublishedDate()) );
+
+                    String strLink = entry.getLink();
+                    if(strLink != null)
+                    {
+
+                        XHTMLContentHandler xhtmlSubDoc = new XHTMLContentHandler(handler, metadata);
+                        xhtmlSubDoc.startDocument();
+
+                        TikaUtils.clearMetadata(metadata);
+
+                        // hier wollen wir mit unseren dataexistsID und contentFingerprint prüfen, ob dieser Entry schon mal indexiert wurde
+                        metadata.add(IncrementalCrawlingHistory.dataEntityExistsID, strLink);
+                        metadata.add(IncrementalCrawlingHistory.dataEntityContentFingerprint, entry.getPublishedDate().toString());
+                        metadata.add(IncrementalCrawlingHistory.masterDataEntityExistsID, strMasterDataEntityExistsID);
+
+                        IncrementalCrawlingParser.performHistoryStuff(crawlingHistory, metadata);
+
+                        if(IncrementalCrawlingParser.UNMODIFIED.equals(metadata.get(IncrementalCrawlingParser.DATA_ENTITY_MODIFICATION_STATE))) continue;
 
 
-                    xhtmlSubDoc.startElement("p");
-                    String strCleanedText = stripTags(entry.getDescription().getValue());
-                    xhtmlSubDoc.characters(strCleanedText.toCharArray(), 0, strCleanedText.length());
-                    xhtmlSubDoc.endElement("p");
+                        metadata.add(Metadata.CONTENT_TYPE, strContentType);
+                        metadata.add(Metadata.SOURCE, strLink);
+                        metadata.add(Metadata.TITLE, stripTags(entry.getTitle()));
+                        metadata.add(Metadata.CREATOR, entry.getAuthor());
+                        metadata.add(Metadata.MODIFIED, new SimpleDateFormat("yyyy.MM.dd HH:mm:ss:SSS").format(entry.getPublishedDate()));
 
-                    xhtmlSubDoc.endDocument();
+
+                        xhtmlSubDoc.startElement("p");
+                        String strCleanedText = stripTags(entry.getDescription().getValue());
+                        xhtmlSubDoc.characters(strCleanedText.toCharArray(), 0, strCleanedText.length());
+                        xhtmlSubDoc.endElement("p");
+
+                        xhtmlSubDoc.endDocument();
+                    }
+
                 }
-
             }
 
 

@@ -1,5 +1,7 @@
 package de.dfki.km.leech.lucene;
 
+
+
 import java.io.IOException;
 
 import org.apache.lucene.document.Document;
@@ -14,10 +16,12 @@ import org.apache.tika.metadata.Metadata;
 
 import de.dfki.km.leech.metadata.LeechMetadata;
 
+
+
 public class PageCountEstimator
 {
-    
-    
+
+
     /**
      * Adds a page count attribute to a document in the case no one is there. The method estimates the page cont (i.e. 400 terms => 1 page).
      * 
@@ -26,7 +30,7 @@ public class PageCountEstimator
      * @param reader
      * 
      * @return true in the case the doc was modified, false otherwise
-     *  
+     * 
      * @throws Exception
      */
     static public boolean addHeuristicDocPageCounts(int iDocNo, Document doc2modify, IndexReader reader) throws Exception
@@ -38,8 +42,10 @@ public class PageCountEstimator
         // wenn es schon einen Eintrag für die Seitenzahlen gibt, wird das Dokument ignoriert (das war zumindest so, solange schöne Zahln im Index
         // standen)
         String strPageCountValue = doc2modify.get(Metadata.PAGE_COUNT.getName());
-        if(strPageCountValue != null)
+        // if(strPageCountValue != null)
+        if(strPageCountValue != null && doc2modify.get(LeechMetadata.isHeuristicPageCount) == null)
         {
+
             // wenn da so ein verkrutztes Leech-Ding drin steht, dann machen wir da ne schöne Zahl draus :)
             int iIndexOfKrutzel = strPageCountValue.indexOf("^^");
             if(iIndexOfKrutzel == -1) return false;
@@ -65,16 +71,18 @@ public class PageCountEstimator
 
         // die Heuristik: 400 Terme ergeben eine Seite
 
-        int iDocTermCount = getDocumentTermCount(iDocNo, LeechMetadata.id, reader);
+        int iDocTermCount = getDocumentTermCount(iDocNo, LeechMetadata.body, reader);
 
         // ich sag jetzt mal einfach, daß ungefähr 400 Wörter auf einer Seite sind...
         iPageCount = (iDocTermCount / 400) + 1;
 
         // die geschätzte PageCount
+        doc2modify.removeFields(Metadata.PAGE_COUNT.getName());
         NumericField field = new NumericField(Metadata.PAGE_COUNT.getName(), Store.YES, true);
         field.setIntValue(iPageCount);
         if(field != null) doc2modify.add(field);
         // ein Flag, welches anzeigt, daß dieser TermCount geschätzt wurde
+        doc2modify.removeFields(LeechMetadata.isHeuristicPageCount);
         Field newField = new Field(LeechMetadata.isHeuristicPageCount, "true", Store.YES, Index.NOT_ANALYZED, TermVector.YES);
         if(newField != null) doc2modify.add(newField);
 

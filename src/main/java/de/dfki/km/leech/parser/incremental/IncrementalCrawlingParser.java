@@ -196,7 +196,7 @@ public class IncrementalCrawlingParser extends ParserDecorator
                 String strDataEntityId2Remove = itRemovedDataEntitiesIDs.next();
                 metadata.set(IncrementalCrawlingHistory.dataEntityExistsID, strDataEntityId2Remove);
 
-                InputStream dummyStream = new ByteArrayInputStream("leech sucks - hopefully :)".getBytes());
+                InputStream dummyStream = new ByteArrayInputStream("leech sucks - hopefully :)".getBytes("UTF-8"));
 
                 EmptyParser.INSTANCE.parse(dummyStream, handler4RemovedData, metadata, context);
             }

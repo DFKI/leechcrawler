@@ -4,6 +4,7 @@ package de.dfki.km.leech.util;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -49,7 +50,10 @@ public class LuceneIndexCreator
 
             System.out.println("Usage: LuceneIndexCreator [-noPageRedirects] [-noParseGeoCoordinates] [-parseInfoBoxes] [-parseLinksAndCategories]\n"
                     + " [-<staticAttName>=<staticAttValue>] [-buzzwordAttName=<attName>] [-buzzwordCount=<count>] [-calculatePageCounts]\n"
-                    + " <fileOrDir2CrawlPath> <targetLuceneIndexPath>\n\nComment: You can specify several static attribute value pairs.");
+                    + "[-li <readonlyLookupIndexPath>]"
+                    + " <fileOrDir2CrawlPath> <targetLuceneIndexPath>\n\nComments: - you can specify several static attribute value pairs.\n"
+                    + "- if you leave <fileOrDir2CrawlPath>, only postprocessing will be performed.\n"
+                    + "- you can add several lookup indices (-li).");
             System.out.println();
 
             return;
@@ -61,6 +65,7 @@ public class LuceneIndexCreator
         String strBuzzwordAttName = null;
         int iBuzzwordCount = 7;
         boolean bCalculatePageCounts = false;
+        LinkedList<String> llLookupIndexPaths = new LinkedList<String>();
 
 
 
@@ -107,6 +112,10 @@ public class LuceneIndexCreator
             {
                 bCalculatePageCounts = true;
             }
+            else if(strArg.startsWith("-li"))
+            {
+                llLookupIndexPaths.add(args[++i]);
+            }
             else if(strArg.startsWith("-"))
             {
                 strArg = strArg.substring(1);
@@ -138,27 +147,24 @@ public class LuceneIndexCreator
             if(hsStaticAttValuePairs.keySize() > 0)
                 Logger.getLogger(LuceneIndexCreator.class.getName()).info(
                         "Will add static attribute value pairs to each document: " + hsStaticAttValuePairs);
-        }
 
 
 
 
+            Leech leech = new Leech();
 
-        Leech leech = new Leech();
-
-        long startTime = StopWatch.startAndLogTime(Level.INFO);
-
-
-        CrawlReportContentHandler reportContentHandler;
-        IndexWriter indexWriter = null;
-        SimpleFSDirectory directory = new SimpleFSDirectory(new File(strLuceneIndexPath));
-        FieldConfig fieldConfig4Wikipedia = WikipediaDumpParser.getFieldConfig4ParserAttributes();
-
-        if(strLuceneIndexPath != null)
-        {
+            long startTime = StopWatch.startAndLogTime(Level.INFO);
 
 
-            IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_31, fieldConfig4Wikipedia.createAnalyzer());
+            CrawlReportContentHandler reportContentHandler;
+            IndexWriter indexWriter = null;
+            SimpleFSDirectory directory = new SimpleFSDirectory(new File(strLuceneIndexPath));
+            FieldConfig fieldConfig4Wikipedia = WikipediaDumpParser.getFieldConfig4ParserAttributes();
+
+
+
+
+            IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_CURRENT, fieldConfig4Wikipedia.createAnalyzer());
 
             config.setOpenMode(OpenMode.CREATE_OR_APPEND);
 
@@ -176,35 +182,32 @@ public class LuceneIndexCreator
 
             reportContentHandler =
                     new CrawlReportContentHandler(new PrintlnContentHandler(Verbosity.all, toLuceneContentHandler).setShowOnlyErrors(true));
-        }
-        else
-        {
-            reportContentHandler = new CrawlReportContentHandler(new PrintlnContentHandler(Verbosity.all).setShowOnlyErrors(true));
-        }
 
 
 
 
 
-        if(strFile2CrawlPath != null)
-        {
             File fFile2Crawl = new File(strFile2CrawlPath);
 
             leech.parse(fFile2Crawl, reportContentHandler.setCyclicReportPrintln(7000), context);
+
+
+            if(indexWriter != null)
+            {
+                Logger.getLogger(LuceneIndexCreator.class.getName()).info("Will commit and merge");
+                indexWriter.commit();
+                indexWriter.forceMerge(1, true);
+                indexWriter.close(true);
+
+                StopWatch.stopAndLogDistance(startTime, Level.INFO);
+
+                Logger.getLogger(LuceneIndexCreator.class.getName()).info("..finished crawling " + strFile2CrawlPath);
+            }
         }
 
 
-        if(indexWriter != null)
-        {
-            Logger.getLogger(LuceneIndexCreator.class.getName()).info("Will commit and merge");
-            indexWriter.commit();
-            indexWriter.forceMerge(1, true);
-            indexWriter.close(true);
 
-            StopWatch.stopAndLogDistance(startTime, Level.INFO);
 
-            Logger.getLogger(LuceneIndexCreator.class.getName()).info("..finished crawling " + strFile2CrawlPath);
-        }
 
 
 
@@ -218,7 +221,8 @@ public class LuceneIndexCreator
         postprocessor.enableBuzzwordGeneration(strBuzzwordAttName, iBuzzwordCount, true);
         postprocessor.enablePageCountEstimation();
 
-        postprocessor.postprocessIndex(strLuceneIndexPath, fieldConfig4Wikipedia);
+        postprocessor.postprocessIndex(strLuceneIndexPath, WikipediaDumpParser.getFieldConfig4ParserAttributes(),
+                llLookupIndexPaths.toArray(new String[0]));
 
 
     }

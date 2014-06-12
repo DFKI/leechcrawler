@@ -16,6 +16,7 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
+import org.apache.lucene.index.MultiReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
 import org.apache.lucene.index.TermEnum;
@@ -112,7 +113,7 @@ public class IndexPostprocessor
 
 
 
-    public void postprocessIndex(String strLuceneIndexPath, FieldConfig fieldConfig) throws Exception
+    public void postprocessIndex(String strLuceneIndexPath, FieldConfig fieldConfig, String... straLuceneReadOnlyLookupPaths) throws Exception
     {
 
         // wir öffnen den einen Index lediglich lesend, erstellen alle n Einträge einen neuen Index, mergen die am Schluß zusammen und tauschen den
@@ -129,7 +130,19 @@ public class IndexPostprocessor
         long lStart = System.currentTimeMillis();
 
 
+        LinkedList<IndexReader> llsubReaders = new LinkedList<IndexReader>();
         IndexReader reader4SourceIndex = IndexReader.open(new SimpleFSDirectory(new File(strLuceneIndexPath)));
+        llsubReaders.add(reader4SourceIndex);
+        for (String strLuceneReadOnlyLookupPath : straLuceneReadOnlyLookupPaths)
+            llsubReaders.add(IndexReader.open(new SimpleFSDirectory(new File(strLuceneReadOnlyLookupPath))));
+
+
+        IndexReader lookupReader;
+        if(llsubReaders.size() > 1)
+            lookupReader = new MultiReader(llsubReaders.toArray(new IndexReader[0]), true);
+        else
+            lookupReader = reader4SourceIndex;
+
 
 
         // wir machen uns einen leeren initialen Writer zum schreiben - den Rest macht der ToLuceneContentHandler
@@ -168,7 +181,7 @@ public class IndexPostprocessor
             // long lStartLoop = StopWatch.stopAndPrintTime();
             if(!StringUtils.nullOrWhitespace(m_strNewField4Buzzwords))
                 Buzzwords.addBuzzwords(iDocNo, doc2modify, m_strNewField4Buzzwords, sAttNames4BuzzwordCalculation, m_iMaxNumberOfBuzzwords,
-                        m_bSkipSimilarTerms, reader4SourceIndex);
+                        m_bSkipSimilarTerms, lookupReader);
             // lStartLoop = StopWatch.stopAndPrintDistance(lStartLoop);
             if(m_bEstimatePageCounts) PageCountEstimator.addHeuristicDocPageCounts(iDocNo, doc2modify, reader4SourceIndex);
 
@@ -182,7 +195,10 @@ public class IndexPostprocessor
         toLuceneContentHandler.crawlFinished();
         firstTmpWriter.forceMerge(1, true);
         firstTmpWriter.close(true);
-        reader4SourceIndex.close();
+        if(lookupReader instanceof MultiReader)
+            lookupReader.close();
+        else
+            reader4SourceIndex.close();
 
 
         // jetzt müssen wir den alten Index durch den neuen ersetzen

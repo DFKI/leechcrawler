@@ -102,7 +102,7 @@ public class FileURLStreamProvider extends URLStreamProvider
 
         File ourFile = new File(asUrl.toURI());
 
-        if(ourFile.isDirectory()) return TikaInputStream.get(new ByteArrayInputStream("leech sucks - hopefully :)".getBytes()));
+        if(ourFile.isDirectory()) return TikaInputStream.get(new ByteArrayInputStream("leech sucks - hopefully :)".getBytes("UTF-8")));
 
         return TikaInputStream.get(ourFile);
     }

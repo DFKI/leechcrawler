@@ -1,23 +1,18 @@
 /*
-    Leech - crawling capabilities for Apache Tika
-    
-    Copyright (C) 2012 DFKI GmbH, Author: Christian Reuschling
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-    Contact us by mail: christian.reuschling@dfki.de
-*/
+ * Leech - crawling capabilities for Apache Tika
+ * 
+ * Copyright (C) 2012 DFKI GmbH, Author: Christian Reuschling
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * Contact us by mail: christian.reuschling@dfki.de
+ */
 
 package de.dfki.km.leech.util;
 
@@ -28,11 +23,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.tika.exception.TikaException;
-import org.apache.tika.metadata.DublinCore;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.EmptyParser;
 import org.apache.tika.parser.ParseContext;
@@ -102,8 +97,8 @@ public class ExceptionUtils
      * better the {@link DataSinkContentHandler} interface, which is recommended.
      * 
      * @param e thhe exception occured during the crawl
-     * @param strSourceId some referencing ID - in the case it is null, the method will get Metadata.SOURCE from the metadata or, in the case this
-     *            is also null, Metadata.RESOURCE_NAME_KEY
+     * @param strSourceId some referencing ID - in the case it is null, the method will get Metadata.SOURCE from the metadata or, in the case this is
+     *            also null, Metadata.RESOURCE_NAME_KEY
      * @param metadata the metadata object for the data entity. Will be enhanced with the error message and given to the EmptyParser invocation
      * @param crawlerContext the original crawler configuration object
      * @param context the original ParseContext
@@ -119,44 +114,54 @@ public class ExceptionUtils
     static public void handleException(Throwable e, String strSourceId, Metadata metadata, CrawlerContext crawlerContext, ParseContext context,
             int iCurrentCrawlingDepth, ContentHandler handler2use4recursiveCall) throws TikaException, SAXException
     {
-        if(crawlerContext == null) crawlerContext = new CrawlerContext();
-
-        String strUrlOrSource4SubEntity = strSourceId;
-
-        if(strUrlOrSource4SubEntity == null) strUrlOrSource4SubEntity = metadata.get(Metadata.SOURCE);
-        if(strUrlOrSource4SubEntity == null) strUrlOrSource4SubEntity = metadata.get(Metadata.RESOURCE_NAME_KEY);
-        if(strUrlOrSource4SubEntity == null)
-            strUrlOrSource4SubEntity =
-                    "no data entity id known - in the case of a sub-entity, set it inside the metadata at your implementation of getSubDataEntitiesInformation(..) "
-                            + "under the key CrawlerParser.SOURCEID. Otherwise you maybe try to process an unsupported/broken URL, or it is totally strange.";
-
-
-
-
-        metadata.set(IncrementalCrawlingParser.DATA_ENTITY_MODIFICATION_STATE, IncrementalCrawlingParser.ERROR);
-        metadata.set(IncrementalCrawlingHistory.dataEntityExistsID, strUrlOrSource4SubEntity);
-        metadata.set("errorMessage", e.getMessage());
-        metadata.set("errorStacktrace", ExceptionUtils.createStackTraceString(e));
-
-        InputStream dummyStream = new ByteArrayInputStream("leech sucks - hopefully :)".getBytes());
-
-
-
-
-        // /////////////////////
-        if(crawlerContext.getInterruptIfException())
+        try
         {
-            if(iCurrentCrawlingDepth == 0)
-                Logger.getLogger(CrawlerParser.class.getName()).log(Level.SEVERE, "Error while processing " + strUrlOrSource4SubEntity, e);
+
+
+            if(crawlerContext == null) crawlerContext = new CrawlerContext();
+
+            String strUrlOrSource4SubEntity = strSourceId;
+
+            if(strUrlOrSource4SubEntity == null) strUrlOrSource4SubEntity = metadata.get(Metadata.SOURCE);
+            if(strUrlOrSource4SubEntity == null) strUrlOrSource4SubEntity = metadata.get(Metadata.RESOURCE_NAME_KEY);
+            if(strUrlOrSource4SubEntity == null)
+                strUrlOrSource4SubEntity =
+                        "no data entity id known - in the case of a sub-entity, set it inside the metadata at your implementation of getSubDataEntitiesInformation(..) "
+                                + "under the key CrawlerParser.SOURCEID. Otherwise you maybe try to process an unsupported/broken URL, or it is totally strange.";
+
+
+
+
+            metadata.set(IncrementalCrawlingParser.DATA_ENTITY_MODIFICATION_STATE, IncrementalCrawlingParser.ERROR);
+            metadata.set(IncrementalCrawlingHistory.dataEntityExistsID, strUrlOrSource4SubEntity);
+            metadata.set("errorMessage", e.getMessage());
+            metadata.set("errorStacktrace", ExceptionUtils.createStackTraceString(e));
+
+
+            InputStream dummyStream = new ByteArrayInputStream("leech sucks - hopefully :)".getBytes("UTF-8"));
+
+
+            // /////////////////////
+            if(crawlerContext.getInterruptIfException())
+            {
+                if(iCurrentCrawlingDepth == 0)
+                    Logger.getLogger(CrawlerParser.class.getName()).log(Level.SEVERE, "Error while processing " + strUrlOrSource4SubEntity, e);
+
+                // wir geben nun einfach den Error weiter - in der Metadata
+                EmptyParser.INSTANCE.parse(dummyStream, handler2use4recursiveCall, metadata, context);
+
+                throw new TikaException("Error while processing " + strUrlOrSource4SubEntity, e);
+            }
 
             // wir geben nun einfach den Error weiter - in der Metadata
             EmptyParser.INSTANCE.parse(dummyStream, handler2use4recursiveCall, metadata, context);
 
-            throw new TikaException("Error while processing " + strUrlOrSource4SubEntity, e);
-        }
 
-        // wir geben nun einfach den Error weiter - in der Metadata
-        EmptyParser.INSTANCE.parse(dummyStream, handler2use4recursiveCall, metadata, context);
+        }
+        catch (UnsupportedEncodingException e1)
+        {
+            Logger.getLogger(ExceptionUtils.class.getName()).log(Level.SEVERE, "Error", e);
+        }
 
     }
 
