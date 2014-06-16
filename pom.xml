@@ -4,7 +4,7 @@
 	<groupId>de.dfki.km</groupId>
 	<artifactId>leech</artifactId>
 	<packaging>jar</packaging>
-	<version>1.5</version>
+	<version>1.4</version>
 	<name>leech</name>
 	<url>http://leechcrawler.github.com/leech/</url>
 
@@ -75,7 +75,7 @@
 		<dependency>
 			<groupId>org.apache.tika</groupId>
 			<artifactId>tika-parsers</artifactId>
-			<version>1.5</version>
+			<version>1.4</version>
 		</dependency>
 
 		<dependency>
