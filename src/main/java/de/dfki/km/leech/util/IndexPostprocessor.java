@@ -12,14 +12,20 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import org.apache.lucene.document.Document;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
+import org.apache.lucene.index.MultiFields;
 import org.apache.lucene.index.MultiReader;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermDocs;
-import org.apache.lucene.index.TermEnum;
+import org.apache.lucene.index.Terms;
+import org.apache.lucene.index.TermsEnum;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.PrefixTermsEnum;
+import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.SimpleFSDirectory;
 import org.apache.lucene.util.Version;
 import org.apache.tika.metadata.Metadata;
@@ -35,38 +41,30 @@ import de.dfki.km.leech.metadata.LeechMetadata;
 public class IndexPostprocessor
 {
 
-    static protected List<String> terms(String strFieldName, String strPrefix, int iMaxTerms2Return, IndexReader reader) throws IOException,
-            URISyntaxException
+    static protected List<String> terms(String strFieldName, String strPrefix, int iMaxTerms2Return, IndexReader reader) throws IOException, URISyntaxException
     {
 
         LinkedList<String> llFieldTerms = new LinkedList<String>();
 
-        TermEnum termEnum = null;
-        try
+
+
+        Terms terms = MultiFields.getTerms(reader, strFieldName);
+        
+        if(terms == null) return llFieldTerms;
+
+        TermsEnum termsEnum = terms.iterator(null);
+
+        if(!StringUtils.nullOrWhitespace(strPrefix)) termsEnum = new PrefixTermsEnum(termsEnum, new Term(strFieldName, strPrefix).bytes());
+
+        while (termsEnum.next() != null)
         {
+            String strTerm = termsEnum.term().utf8ToString();
 
-            termEnum = reader.terms(new Term(strFieldName, strPrefix));
+            llFieldTerms.add(strTerm);
 
-            for (int i = 0; i < iMaxTerms2Return; i++)
-            {
-                if(termEnum.term() == null) break;
-                if(!termEnum.term().field().equals(strFieldName)) break;
-
-                String strFieldTerm = termEnum.term().text();
-                if(!strFieldTerm.startsWith(strPrefix)) break;
-
-
-                llFieldTerms.add(strFieldTerm);
-
-                if(termEnum.next() == false) break;
-            }
-
-
+            if(llFieldTerms.size() >= iMaxTerms2Return) break;
         }
-        finally
-        {
-            if(termEnum != null) termEnum.close();
-        }
+
 
 
         return llFieldTerms;
@@ -124,17 +122,17 @@ public class IndexPostprocessor
 
         if(!StringUtils.nullOrWhitespace(m_strNewField4Buzzwords))
             Logger.getLogger(LuceneIndexCreator.class.getName()).info("Index postprocessing: Will create buzzwords");
-        if(m_bEstimatePageCounts)
-            Logger.getLogger(LuceneIndexCreator.class.getName()).info("Index postprocessing: Will calculate heuristic page counts");
+        if(m_bEstimatePageCounts) Logger.getLogger(LuceneIndexCreator.class.getName()).info("Index postprocessing: Will calculate heuristic page counts");
 
         long lStart = System.currentTimeMillis();
 
 
         LinkedList<IndexReader> llsubReaders = new LinkedList<IndexReader>();
-        IndexReader reader4SourceIndex = IndexReader.open(new SimpleFSDirectory(new File(strLuceneIndexPath)));
+        IndexReader reader4SourceIndex = DirectoryReader.open(new SimpleFSDirectory(new File(strLuceneIndexPath)));
+        IndexSearcher searcher4SourceIndex = new IndexSearcher(reader4SourceIndex);
         llsubReaders.add(reader4SourceIndex);
         for (String strLuceneReadOnlyLookupPath : straLuceneReadOnlyLookupPaths)
-            llsubReaders.add(IndexReader.open(new SimpleFSDirectory(new File(strLuceneReadOnlyLookupPath))));
+            llsubReaders.add(DirectoryReader.open(new SimpleFSDirectory(new File(strLuceneReadOnlyLookupPath))));
 
 
         IndexReader lookupReader;
@@ -151,7 +149,7 @@ public class IndexPostprocessor
         File fOurTmpDir = new File(strTmpPath);
 
 
-        IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_CURRENT, fieldConfig.createAnalyzer());
+        IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_9, fieldConfig.createAnalyzer());
         config.setOpenMode(OpenMode.CREATE);
 
         IndexWriter firstTmpWriter = new IndexWriter(new SimpleFSDirectory(fOurTmpDir), config);
@@ -173,15 +171,16 @@ public class IndexPostprocessor
         int i = 0;
         for (String strId : llAllIds)
         {
-            TermDocs termDocs = reader4SourceIndex.termDocs(new Term(LeechMetadata.id, strId));
-            termDocs.next();
-            int iDocNo = termDocs.doc();
+            
+            TopDocs topDocs = searcher4SourceIndex.search(new TermQuery(new Term(LeechMetadata.id, strId)), 1);
+            
+            int iDocNo = topDocs.scoreDocs[0].doc;
             Document doc2modify = reader4SourceIndex.document(iDocNo);
 
             // long lStartLoop = StopWatch.stopAndPrintTime();
             if(!StringUtils.nullOrWhitespace(m_strNewField4Buzzwords))
-                Buzzwords.addBuzzwords(iDocNo, doc2modify, m_strNewField4Buzzwords, sAttNames4BuzzwordCalculation, m_iMaxNumberOfBuzzwords,
-                        m_bSkipSimilarTerms, lookupReader);
+                Buzzwords.addBuzzwords(iDocNo, doc2modify, m_strNewField4Buzzwords, sAttNames4BuzzwordCalculation, m_iMaxNumberOfBuzzwords, m_bSkipSimilarTerms,
+                        lookupReader);
             // lStartLoop = StopWatch.stopAndPrintDistance(lStartLoop);
             if(m_bEstimatePageCounts) PageCountEstimator.addHeuristicDocPageCounts(iDocNo, doc2modify, reader4SourceIndex);
 

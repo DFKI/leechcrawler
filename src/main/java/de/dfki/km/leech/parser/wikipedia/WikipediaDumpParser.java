@@ -197,7 +197,7 @@ public class WikipediaDumpParser implements Parser
         FieldConfig fieldConfig = new FieldConfig();
 
         fieldConfig.defaultFieldMapping =
-                new FieldMapping("org.apache.lucene.analysis.KeywordAnalyzer", Store.YES, Index.NOT_ANALYZED, TermVector.NO, FieldType.STRING);
+                new FieldMapping("org.apache.lucene.analysis.core.KeywordAnalyzer", Store.YES, Index.NOT_ANALYZED, TermVector.NO, FieldType.STRING);
 
 
 
@@ -252,13 +252,13 @@ public class WikipediaDumpParser implements Parser
 
 
 
-        fieldConfig.hsFieldName2FieldMapping.put("modified", new FieldMapping("org.apache.lucene.analysis.KeywordAnalyzer", Store.YES,
+        fieldConfig.hsFieldName2FieldMapping.put("modified", new FieldMapping("org.apache.lucene.analysis.core.KeywordAnalyzer", Store.YES,
                 Index.ANALYZED, TermVector.NO, FieldType.DATE));
 
-        fieldConfig.hsFieldName2FieldMapping.put("longitude", new FieldMapping("org.apache.lucene.analysis.KeywordAnalyzer", Store.YES,
+        fieldConfig.hsFieldName2FieldMapping.put("longitude", new FieldMapping("org.apache.lucene.analysis.core.KeywordAnalyzer", Store.YES,
                 Index.ANALYZED, TermVector.NO, FieldType.DOUBLE));
 
-        fieldConfig.hsFieldName2FieldMapping.put("latitude", new FieldMapping("org.apache.lucene.analysis.KeywordAnalyzer", Store.YES,
+        fieldConfig.hsFieldName2FieldMapping.put("latitude", new FieldMapping("org.apache.lucene.analysis.core.KeywordAnalyzer", Store.YES,
                 Index.ANALYZED, TermVector.NO, FieldType.DOUBLE));
 
 

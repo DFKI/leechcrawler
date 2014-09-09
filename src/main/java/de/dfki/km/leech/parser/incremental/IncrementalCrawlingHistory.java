@@ -3,11 +3,11 @@
  * 
  * Copyright (C) 2012 DFKI GmbH, Author: Christian Reuschling
  * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation,
+ * either version 3 of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  * 
@@ -20,27 +20,24 @@ package de.dfki.km.leech.parser.incremental;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.lucene.analysis.KeywordAnalyzer;
+import org.apache.lucene.analysis.core.KeywordAnalyzer;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.document.Field.TermVector;
-import org.apache.lucene.document.FieldSelector;
-import org.apache.lucene.document.FieldSelectorResult;
-import org.apache.lucene.document.NumericField;
+import org.apache.lucene.document.LongField;
+import org.apache.lucene.document.StringField;
 import org.apache.lucene.index.CorruptIndexException;
-import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
+import org.apache.lucene.index.MultiFields;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermDocs;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
@@ -51,6 +48,7 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TotalHitCountCollector;
 import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.store.SimpleFSDirectory;
+import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.Version;
 
 import de.dfki.km.leech.config.CrawlerContext;
@@ -59,39 +57,35 @@ import de.dfki.km.leech.util.StringUtils;
 
 
 /**
- * A persistent history database, remarking everything that was processed during a crawl. This history makes it possible to fulfill incremental
- * crawling, where you can quickly check whether a data entity found during the crawl is new or modified with respect to the last crawl. Further, all
- * data entities that was removed since the last crawl can be determined for final synchronization.<br>
- * To check whether a file is new or modified, IncrementalCrawlingHistory needs two informations: a 'data entity exists ID', which is an identifier
- * for a data entity that is independent from the content of this entity. It is only for identifying the existence, not to check whether it has
- * changed. A 'data entity content fingerprint' gives the hint whether the content of the data entity has changed. This e.g. can be the modifed date
- * of a file, or a mail header hash.<br>
- * To determine the data entities that were removed since the last crawl, IncrementalCrawlingHistory remarks the crawl starting time, and updates a
- * 'last crawled/checked time' entry for every data entity. When the crawl is finished, every data entity which 'last crawled/checked time' is before
- * the remarked crawl starting time is considered as outdated and thus as removed.<br>
- * This is an easy, intuitive, general approach that should work for almost all possible data entities. Other approaches stores e.g. parent/child
- * relationships of data entities, maintain resulting relationship lists, and infer whether an entity was deleted or not. These approaches have the
- * advantage that you can determine, in some cases, immediately by crawling a container data source whether a data entity was deleted or not, before
- * the recursive call. Nevertheless, where this is easy in e.g. file system data sources, in other scenarios as web crawlers this is much more
- * complicated, where a link can be potentially part of several 'container websites'.<br>
- * The timestamp-approach we choose is much easier and works in all scenarios with the same conditions, but has 2 disadvantages against the other
- * approaches:<br>
- * <li>You have to update every data entity history entry on every crawl with the new 'last crawled/checked time', even if the entity has not changed
- * at all.<br> <li>The information which data entities were removed can be determined only at the end of a crawl, for the whole history. <br>
+ * A persistent history database, remarking everything that was processed during a crawl. This history makes it possible to fulfill incremental crawling, where you can
+ * quickly check whether a data entity found during the crawl is new or modified with respect to the last crawl. Further, all data entities that was removed since the
+ * last crawl can be determined for final synchronization.<br>
+ * To check whether a file is new or modified, IncrementalCrawlingHistory needs two informations: a 'data entity exists ID', which is an identifier for a data entity that
+ * is independent from the content of this entity. It is only for identifying the existence, not to check whether it has changed. A 'data entity content fingerprint'
+ * gives the hint whether the content of the data entity has changed. This e.g. can be the modifed date of a file, or a mail header hash.<br>
+ * To determine the data entities that were removed since the last crawl, IncrementalCrawlingHistory remarks the crawl starting time, and updates a 'last crawled/checked
+ * time' entry for every data entity. When the crawl is finished, every data entity which 'last crawled/checked time' is before the remarked crawl starting time is
+ * considered as outdated and thus as removed.<br>
+ * This is an easy, intuitive, general approach that should work for almost all possible data entities. Other approaches stores e.g. parent/child relationships of data
+ * entities, maintain resulting relationship lists, and infer whether an entity was deleted or not. These approaches have the advantage that you can determine, in some
+ * cases, immediately by crawling a container data source whether a data entity was deleted or not, before the recursive call. Nevertheless, where this is easy in e.g.
+ * file system data sources, in other scenarios as web crawlers this is much more complicated, where a link can be potentially part of several 'container websites'.<br>
+ * The timestamp-approach we choose is much easier and works in all scenarios with the same conditions, but has 2 disadvantages against the other approaches:<br>
+ * <li>You have to update every data entity history entry on every crawl with the new 'last crawled/checked time', even if the entity has not changed at all.<br> <li>The
+ * information which data entities were removed can be determined only at the end of a crawl, for the whole history. <br>
  * <br>
  * We realized this crawling history with an underlying Lucene index.
  * 
  * <br>
- * To enable incremental indexing during a crawl, pass a CrawlerConfig instance with a path to the history into the ParseContext parameter of the
- * Leech.parse(..) method:<br>
+ * To enable incremental indexing during a crawl, pass a CrawlerConfig instance with a path to the history into the ParseContext parameter of the Leech.parse(..) method:<br>
  * <code>
  * Leech leech = new Leech();<br>
  * Metadata metadata = new Metadata();<br>
  * {@link CrawlerContext} crawlerContext = new {@link CrawlerContext}().setIncrementalCrawlingHistoryPath("./history/forResourceDir");<br>
  * leech.parse(new File("resource"), new PrintlnContentHandler(metadata), crawlerContext.createParseContext());<br>
  * </code> <br>
- * Make sure that you always use the according history for a specific crawling source - this is a 1:1 relationship, you can't mix. Otherwise, all new
- * stuff will be considered as new, and all old stuff as deleted.
+ * Make sure that you always use the according history for a specific crawling source - this is a 1:1 relationship, you can't mix. Otherwise, all new stuff will be
+ * considered as new, and all old stuff as deleted.
  * 
  * @author Christian Reuschling, Dipl.Ing.(BA)
  */
@@ -136,24 +130,15 @@ public class IncrementalCrawlingHistory
 
                     refreshIndexReaderz();
                     TopDocs topDocs = m_indexSearcher.search(m_query, 5000);
+
+                    Bits liveDocs = MultiFields.getLiveDocs(m_indexReader);
+
                     for (ScoreDoc scoreDoc : topDocs.scoreDocs)
                     {
-                        if(m_indexReader.isDeleted(scoreDoc.doc)) continue;
+                        // skip deleted documents
+                        if(liveDocs != null && !liveDocs.get(scoreDoc.doc)) continue;
 
-                        Document doc4Queue = m_indexReader.document(scoreDoc.doc, new FieldSelector()
-                        {
-                            private static final long serialVersionUID = 1585586893215036218L;
-
-
-
-                            @Override
-                            public FieldSelectorResult accept(String fieldName)
-                            {
-                                if(fieldName.equals(dataEntityExistsID)) return FieldSelectorResult.LOAD_AND_BREAK;
-
-                                return FieldSelectorResult.NO_LOAD;
-                            }
-                        });
+                        Document doc4Queue = m_indexReader.document(scoreDoc.doc, Collections.singleton(dataEntityExistsID));
 
 
                         m_llQueuedOutdatedIDs.add(doc4Queue.get(dataEntityExistsID));
@@ -224,10 +209,9 @@ public class IncrementalCrawlingHistory
 
 
     /**
-     * Defines the states whether a data entity is in the history or not. There are three states: Exist.NOT says that the data entity has no entry
-     * inside the history at all. Exist.YES_UNPROCESSED means that the entity has an entry inside the history, and that it still wasn't processed
-     * during the current crawl. Exist.YES_PROCESSED means that there is an entry but the data entity was processed in this run yet, so normally
-     * another processing is unnecessary. This is to detect cycles.
+     * Defines the states whether a data entity is in the history or not. There are three states: Exist.NOT says that the data entity has no entry inside the history at
+     * all. Exist.YES_UNPROCESSED means that the entity has an entry inside the history, and that it still wasn't processed during the current crawl. Exist.YES_PROCESSED
+     * means that there is an entry but the data entity was processed in this run yet, so normally another processing is unnecessary. This is to detect cycles.
      * 
      * @author Christian Reuschling, Dipl.Ing.(BA)
      */
@@ -244,7 +228,7 @@ public class IncrementalCrawlingHistory
 
     static public final String lastCrawledTime = "lastCrawledTime";
 
-    protected IndexReader m_indexReader = null;
+    protected DirectoryReader m_indexReader = null;
 
     protected IndexSearcher m_indexSearcher = null;
 
@@ -287,10 +271,10 @@ public class IncrementalCrawlingHistory
     /**
      * Remarks a new data entity, together with the current time as 'last crawled/checked time'.
      * 
-     * @param strDataEntityExistsID an identifier for a data entity that is independent from the content of this entity. It is only for identifying
-     *            the occurence, not to check whether it has changed (e.g. a filename)
-     * @param strDataEntityContentFingerprint some fingerprint/identifier that gives the hint whether the content of the data entity has changed, e.g.
-     *            the modifed date of a file
+     * @param strDataEntityExistsID an identifier for a data entity that is independent from the content of this entity. It is only for identifying the occurence, not to
+     *            check whether it has changed (e.g. a filename)
+     * @param strDataEntityContentFingerprint some fingerprint/identifier that gives the hint whether the content of the data entity has changed, e.g. the modifed date of
+     *            a file
      * 
      * @throws IOException
      * @throws CorruptIndexException
@@ -305,31 +289,29 @@ public class IncrementalCrawlingHistory
     /**
      * Remarks a new data entity, together with the current time as 'last crawled/checked time'.
      * 
-     * @param strDataEntityExistsID an identifier for a data entity that is independent from the content of this entity. It is only for identifying
-     *            the occurence, not to check whether it has changed (e.g. a filename)
-     * @param strDataEntityContentFingerprint some fingerprint/identifier that gives the hint whether the content of the data entity has changed, e.g.
-     *            the modifed date of a file
-     * @param strMasterDataEntityExistsID optional: an EntityExistsID of another data entity that is our 'master' which means that when the master is
-     *            updated with {@link #updateDataEntityLastCrawledTime(String)}, all associated slaves will be also updated. This is e.g. for the case
-     *            when you are in a second run for RSS-File indexing, and leech recognizes that this file didn't changed. Now we don't want to go
-     *            unnecessarily into the fil and mark each entry on it's own. We know no subentry has changed, and can immediately mark them as
-     *            processed with {@link #updateDataEntityLastCrawledTime(String)} on the master dataEntityExistsID, which is the one from the RSS
-     *            file. Leave it null or empty in the case you don't need to use it.
+     * @param strDataEntityExistsID an identifier for a data entity that is independent from the content of this entity. It is only for identifying the occurence, not to
+     *            check whether it has changed (e.g. a filename)
+     * @param strDataEntityContentFingerprint some fingerprint/identifier that gives the hint whether the content of the data entity has changed, e.g. the modifed date of
+     *            a file
+     * @param strMasterDataEntityExistsID optional: an EntityExistsID of another data entity that is our 'master' which means that when the master is updated with
+     *            {@link #updateDataEntityLastCrawledTime(String)}, all associated slaves will be also updated. This is e.g. for the case when you are in a second run for
+     *            RSS-File indexing, and leech recognizes that this file didn't changed. Now we don't want to go unnecessarily into the fil and mark each entry on it's
+     *            own. We know no subentry has changed, and can immediately mark them as processed with {@link #updateDataEntityLastCrawledTime(String)} on the master
+     *            dataEntityExistsID, which is the one from the RSS file. Leave it null or empty in the case you don't need to use it.
      * 
      * @throws IOException
      * @throws CorruptIndexException
      */
-    public void addDataEntity(String strDataEntityExistsID, String strDataEntityContentFingerprint, String strMasterDataEntityExistsID)
-            throws CorruptIndexException, IOException
+    public void addDataEntity(String strDataEntityExistsID, String strDataEntityContentFingerprint, String strMasterDataEntityExistsID) throws CorruptIndexException,
+            IOException
     {
 
         Document doc = new Document();
 
-        doc.add(new Field(dataEntityExistsID, strDataEntityExistsID, Store.YES, Index.ANALYZED, TermVector.NO));
-        doc.add(new Field(dataEntityContentFingerprint, strDataEntityContentFingerprint, Store.YES, Index.ANALYZED_NO_NORMS, TermVector.NO));
-        doc.add(new NumericField(lastCrawledTime, Store.YES, true).setLongValue(System.currentTimeMillis()));
-        if(!StringUtils.nullOrWhitespace(strMasterDataEntityExistsID))
-            doc.add(new Field(masterDataEntityExistsID, strMasterDataEntityExistsID, Store.YES, Index.ANALYZED, TermVector.NO));
+        doc.add(new StringField(dataEntityExistsID, strDataEntityExistsID, Store.YES));
+        doc.add(new StringField(dataEntityContentFingerprint, strDataEntityContentFingerprint, Store.YES));
+        doc.add(new LongField(lastCrawledTime, System.currentTimeMillis(), Store.YES));
+        if(!StringUtils.nullOrWhitespace(strMasterDataEntityExistsID)) doc.add(new StringField(masterDataEntityExistsID, strMasterDataEntityExistsID, Store.YES));
 
         m_indexWriter.addDocument(doc);
 
@@ -343,7 +325,6 @@ public class IncrementalCrawlingHistory
 
         if(m_indexSearcher != null)
         {
-            m_indexSearcher.close();
             m_indexSearcher = null;
         }
 
@@ -365,16 +346,14 @@ public class IncrementalCrawlingHistory
 
 
     /**
-     * Returns all DataEntityExistsIDs with a 'last crawled/checked time' before the 'crawl starting time' as outdated data entities. These are all
-     * entities that doesn't exist in this crawl anymore, and thus can be considered as removed.<br>
-     * You can only invoke and walk to the iterator once - while iterating, the outdated entries inside the history will be deleted. In the case you
-     * invoke this method twice, the second invocation will result into an empty list. This is to ensure that also huge deleted entity lists can be
-     * handled without problematic memory consumption.<br>
-     * Remark: The writer and reader instance for the underlying lucene index will be closed when you walk the iterator to the end, all data will be
-     * committed before.
+     * Returns all DataEntityExistsIDs with a 'last crawled/checked time' before the 'crawl starting time' as outdated data entities. These are all entities that doesn't
+     * exist in this crawl anymore, and thus can be considered as removed.<br>
+     * You can only invoke and walk to the iterator once - while iterating, the outdated entries inside the history will be deleted. In the case you invoke this method
+     * twice, the second invocation will result into an empty list. This is to ensure that also huge deleted entity lists can be handled without problematic memory
+     * consumption.<br>
+     * Remark: The writer and reader instance for the underlying lucene index will be closed when you walk the iterator to the end, all data will be committed before.
      * 
-     * @return all DataEntityExistsIDs with a 'last crawled/checked time' before the 'crawl starting time', thus all entities that can be considered
-     *         as removed.
+     * @return all DataEntityExistsIDs with a 'last crawled/checked time' before the 'crawl starting time', thus all entities that can be considered as removed.
      */
     public Iterator<String> crawlFinished()
     {
@@ -418,16 +397,15 @@ public class IncrementalCrawlingHistory
 
 
     /**
-     * Checks whether an ID exists inside the incremental crawling history or not. During the crawl, this is to identify quickly whether a data entity
-     * is completely new or not.
+     * Checks whether an ID exists inside the incremental crawling history or not. During the crawl, this is to identify quickly whether a data entity is completely new
+     * or not.
      * 
-     * @param strDataEntityExistsID an identifier for a data entity that is independent from the content of this entity. It is only for identifying
-     *            the occurence, not to check whether it has changed (e.g. a filename)
+     * @param strDataEntityExistsID an identifier for a data entity that is independent from the content of this entity. It is only for identifying the occurence, not to
+     *            check whether it has changed (e.g. a filename)
      * 
-     * @return There are three states: Exist.NOT says that the data entity has no entry inside the history at all. Exist.YES_UNPROCESSED means that
-     *         the entity has an entry inside the history, and that it still wasn't processed during the current crawl. Exist.YES_PROCESSED means that
-     *         there is an entry but the data entity was processed in this run yet, so normally another processing is unnecessary. This is to detect
-     *         cycles.
+     * @return There are three states: Exist.NOT says that the data entity has no entry inside the history at all. Exist.YES_UNPROCESSED means that the entity has an
+     *         entry inside the history, and that it still wasn't processed during the current crawl. Exist.YES_PROCESSED means that there is an entry but the data entity
+     *         was processed in this run yet, so normally another processing is unnecessary. This is to detect cycles.
      * 
      * @throws IOException
      */
@@ -447,15 +425,14 @@ public class IncrementalCrawlingHistory
 
 
     /**
-     * Checks whether an ID with a specific content fingerprint exists in the crawling history or not. During the crawl, this is to identify quickly
-     * whether a data entity has changed its content or not. Of course, this makes only sense in the case the content fingerprint that gives the hint
-     * whether the entity has changed can be created quickly, at best without extracting the content. Such a fingerprint can be e.g. a modified date
-     * of a file, or the time attribute of an email.
+     * Checks whether an ID with a specific content fingerprint exists in the crawling history or not. During the crawl, this is to identify quickly whether a data entity
+     * has changed its content or not. Of course, this makes only sense in the case the content fingerprint that gives the hint whether the entity has changed can be
+     * created quickly, at best without extracting the content. Such a fingerprint can be e.g. a modified date of a file, or the time attribute of an email.
      * 
-     * @param strDataEntityExistsID an identifier for a data entity that is independent from the content of this entity. It is only for identifying
-     *            the occurence, not to check whether it has changed (e.g. a filename)
-     * @param strDataEntityContentFingerprint some fingerprint/identifier that gives the hint whether the content of the data entity has changed, e.g.
-     *            the modifed date of a file
+     * @param strDataEntityExistsID an identifier for a data entity that is independent from the content of this entity. It is only for identifying the occurence, not to
+     *            check whether it has changed (e.g. a filename)
+     * @param strDataEntityContentFingerprint some fingerprint/identifier that gives the hint whether the content of the data entity has changed, e.g. the modifed date of
+     *            a file
      * 
      * @return true in the case this identifier exists with exact this content fingerprint inside the crawling history
      * 
@@ -483,8 +460,8 @@ public class IncrementalCrawlingHistory
     /**
      * Gets the stored content fingerprint for a given data entity entry.
      * 
-     * @param strDataEntityExistsID an identifier for a data entity that is independent from the content of this entity. It is only for identifying
-     *            the occurence, not to check whether it has changed (e.g. a filename)
+     * @param strDataEntityExistsID an identifier for a data entity that is independent from the content of this entity. It is only for identifying the occurence, not to
+     *            check whether it has changed (e.g. a filename)
      * 
      * @return the according content fingerprint stored for this data entity, null in the case this data entity was not found
      * 
@@ -495,24 +472,11 @@ public class IncrementalCrawlingHistory
         Term termId = new Term(dataEntityExistsID, strDataEntityExistsID);
 
         refreshIndexReaderz();
-        TermDocs termDocs = m_indexReader.termDocs(termId);
+        TopDocs topDocs = m_indexSearcher.search(new TermQuery(termId), 1);
 
-        if(!termDocs.next()) return null;
+        if(topDocs.totalHits == 0) return null;
 
-        Document doc = m_indexReader.document(termDocs.doc(), new FieldSelector()
-        {
-            private static final long serialVersionUID = 1L;
-
-
-
-            @Override
-            public FieldSelectorResult accept(String fieldName)
-            {
-                if(fieldName.equals(dataEntityContentFingerprint)) return FieldSelectorResult.LOAD_AND_BREAK;
-
-                return FieldSelectorResult.NO_LOAD;
-            }
-        });
+        Document doc = m_indexReader.document(topDocs.scoreDocs[0].doc, Collections.singleton(dataEntityContentFingerprint));
 
         return doc.get(dataEntityContentFingerprint);
     }
@@ -520,11 +484,11 @@ public class IncrementalCrawlingHistory
 
 
     /**
-     * Gets the stored last crawled time for a given data entity entry. This can be used to e.g. determine whether a data entity was already processed
-     * during the current crawl or not. If it was processed already, this is a hint for a cycle.
+     * Gets the stored last crawled time for a given data entity entry. This can be used to e.g. determine whether a data entity was already processed during the current
+     * crawl or not. If it was processed already, this is a hint for a cycle.
      * 
-     * @param strDataEntityExistsID an identifier for a data entity that is independent from the content of this entity. It is only for identifying
-     *            the occurence, not to check whether it has changed (e.g. a filename)
+     * @param strDataEntityExistsID an identifier for a data entity that is independent from the content of this entity. It is only for identifying the occurence, not to
+     *            check whether it has changed (e.g. a filename)
      * 
      * @return the according last crawled time stored for this data entity, null in the case this data entity was not found
      * 
@@ -535,24 +499,11 @@ public class IncrementalCrawlingHistory
         Term termId = new Term(dataEntityExistsID, strDataEntityExistsID);
 
         refreshIndexReaderz();
-        TermDocs termDocs = m_indexReader.termDocs(termId);
+        TopDocs topDocs = m_indexSearcher.search(new TermQuery(termId), 1);
 
-        if(!termDocs.next()) return null;
+        if(topDocs.totalHits == 0) return null;
 
-        Document doc = m_indexReader.document(termDocs.doc(), new FieldSelector()
-        {
-            private static final long serialVersionUID = 1L;
-
-
-
-            @Override
-            public FieldSelectorResult accept(String fieldName)
-            {
-                if(fieldName.equals(lastCrawledTime)) return FieldSelectorResult.LOAD_AND_BREAK;
-
-                return FieldSelectorResult.NO_LOAD;
-            }
-        });
+        Document doc = m_indexReader.document(topDocs.scoreDocs[0].doc, Collections.singleton(lastCrawledTime));
 
         return Long.valueOf(doc.get(lastCrawledTime));
     }
@@ -583,13 +534,13 @@ public class IncrementalCrawlingHistory
     {
         if(m_indexWriter == null)
         {
-            IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_35, new KeywordAnalyzer());
+            IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_9, new KeywordAnalyzer());
             config.setOpenMode(OpenMode.CREATE_OR_APPEND);
 
             m_indexWriter = new IndexWriter(new SimpleFSDirectory(new File(m_strHistoryPath)), config);
         }
 
-        if(m_indexReader == null) m_indexReader = IndexReader.open(m_indexWriter, true);
+        if(m_indexReader == null) m_indexReader = DirectoryReader.open(m_indexWriter, true);
 
         if(m_indexSearcher == null) m_indexSearcher = new IndexSearcher(m_indexReader);
     }
@@ -600,13 +551,12 @@ public class IncrementalCrawlingHistory
     {
         try
         {
-            IndexReader newReader = IndexReader.openIfChanged(m_indexReader);
+            DirectoryReader newReader = DirectoryReader.openIfChanged(m_indexReader);
 
             if(newReader != null)
             {
                 m_indexReader.close();
                 m_indexReader = newReader;
-                m_indexSearcher.close();
                 m_indexSearcher = new IndexSearcher(m_indexReader);
             }
 
@@ -623,10 +573,10 @@ public class IncrementalCrawlingHistory
     /**
      * Updates a whole data entity - same as addDataEntity, but removes a former entry before storing the new one
      * 
-     * @param strDataEntityExistsID an identifier for a data entity that is independent from the content of this entity. It is only for identifying
-     *            the occurence, not to check whether it has changed (e.g. a filename)
-     * @param strDataEntityContentFingerprint some fingerprint/identifier that gives the hint whether the content of the data entity has changed, e.g.
-     *            the modifed date of a file
+     * @param strDataEntityExistsID an identifier for a data entity that is independent from the content of this entity. It is only for identifying the occurence, not to
+     *            check whether it has changed (e.g. a filename)
+     * @param strDataEntityContentFingerprint some fingerprint/identifier that gives the hint whether the content of the data entity has changed, e.g. the modifed date of
+     *            a file
      * 
      * @throws IOException
      * @throws CorruptIndexException
@@ -641,22 +591,21 @@ public class IncrementalCrawlingHistory
     /**
      * Updates a whole data entity - same as addDataEntity, but removes a former entry before storing the new one
      * 
-     * @param strDataEntityExistsID an identifier for a data entity that is independent from the content of this entity. It is only for identifying
-     *            the occurence, not to check whether it has changed (e.g. a filename)
-     * @param strDataEntityContentFingerprint some fingerprint/identifier that gives the hint whether the content of the data entity has changed, e.g.
-     *            the modifed date of a file
-     * @param strMasterDataEntityExistsID optional: an EntityExistsID of another data entity that is our 'master' which means that when the master is
-     *            updated with {@link #updateDataEntityLastCrawledTime(String)}, all associated slaves will be also updated. This is e.g. for the case
-     *            when you are in a second run for RSS-File indexing, and leech recognizes that this file didn't changed. Now we don't want to go
-     *            unnecessarily into the fil and mark each entry on it's own. We know no subentry has changed, and can immediately mark them as
-     *            processed with {@link #updateDataEntityLastCrawledTime(String)} on the master dataEntityExistsID, which is the one from the RSS
-     *            file. Leave it null or empty in the case you don't need to use it.
+     * @param strDataEntityExistsID an identifier for a data entity that is independent from the content of this entity. It is only for identifying the occurence, not to
+     *            check whether it has changed (e.g. a filename)
+     * @param strDataEntityContentFingerprint some fingerprint/identifier that gives the hint whether the content of the data entity has changed, e.g. the modifed date of
+     *            a file
+     * @param strMasterDataEntityExistsID optional: an EntityExistsID of another data entity that is our 'master' which means that when the master is updated with
+     *            {@link #updateDataEntityLastCrawledTime(String)}, all associated slaves will be also updated. This is e.g. for the case when you are in a second run for
+     *            RSS-File indexing, and leech recognizes that this file didn't changed. Now we don't want to go unnecessarily into the fil and mark each entry on it's
+     *            own. We know no subentry has changed, and can immediately mark them as processed with {@link #updateDataEntityLastCrawledTime(String)} on the master
+     *            dataEntityExistsID, which is the one from the RSS file. Leave it null or empty in the case you don't need to use it.
      * 
      * @throws IOException
      * @throws CorruptIndexException
      */
-    public void updateDataEntity(String strDataEntityExistsID, String strDataEntityContentFingerprint, String strMasterDataEntityExistsID)
-            throws CorruptIndexException, IOException
+    public void updateDataEntity(String strDataEntityExistsID, String strDataEntityContentFingerprint, String strMasterDataEntityExistsID) throws CorruptIndexException,
+            IOException
     {
 
         Term termId = new Term(dataEntityExistsID, strDataEntityExistsID);
@@ -664,11 +613,11 @@ public class IncrementalCrawlingHistory
 
         Document doc = new Document();
 
-        doc.add(new Field(dataEntityExistsID, strDataEntityExistsID, Store.YES, Index.ANALYZED_NO_NORMS, TermVector.NO));
-        doc.add(new Field(dataEntityContentFingerprint, strDataEntityContentFingerprint, Store.YES, Index.ANALYZED_NO_NORMS, TermVector.NO));
-        doc.add(new NumericField(lastCrawledTime, Store.YES, true).setLongValue(System.currentTimeMillis()));
+        doc.add(new StringField(dataEntityExistsID, strDataEntityExistsID, Store.YES));
+        doc.add(new StringField(dataEntityContentFingerprint, strDataEntityContentFingerprint, Store.YES));
+        doc.add(new LongField(lastCrawledTime, System.currentTimeMillis(), Store.YES));
         if(!StringUtils.nullOrWhitespace(strMasterDataEntityExistsID))
-            doc.add(new Field(masterDataEntityExistsID, strMasterDataEntityExistsID, Store.YES, Index.ANALYZED, TermVector.NO));
+            doc.add(new StringField(masterDataEntityExistsID, strMasterDataEntityExistsID, Store.YES));
 
 
         m_indexWriter.updateDocument(termId, doc);
@@ -678,9 +627,8 @@ public class IncrementalCrawlingHistory
 
 
     /**
-     * Sets a data entities 'last crawled/checked time' entry to the current time. In the case this data entity is a master entity, all slave
-     * documents will be updated also. You can set an entity as a master entity with {@link #addDataEntity(String, String, String)} or
-     * {@link #updateDataEntity(String, String, String)}
+     * Sets a data entities 'last crawled/checked time' entry to the current time. In the case this data entity is a master entity, all slave documents will be updated
+     * also. You can set an entity as a master entity with {@link #addDataEntity(String, String, String)} or {@link #updateDataEntity(String, String, String)}
      * 
      * @param strDataEntityExistsID the data entity which is finally checked/crawled
      * 
@@ -693,37 +641,36 @@ public class IncrementalCrawlingHistory
         Term termId = new Term(dataEntityExistsID, strDataEntityExistsID);
 
         refreshIndexReaderz();
-        TermDocs termDocs = m_indexReader.termDocs(termId);
+        TopDocs topDocs = m_indexSearcher.search(new TermQuery(termId), 1);
 
-        if(!termDocs.next())
-            throw new IllegalStateException("there has to be an data entry with Id " + strDataEntityExistsID + " for updating. Nothing was found.");
+        if(topDocs.totalHits == 0) throw new IllegalStateException("there has to be an data entry with Id " + strDataEntityExistsID + " for updating. Nothing was found.");
 
 
         long lCurrentTime = System.currentTimeMillis();
 
-        Document doc = m_indexReader.document(termDocs.doc());
+        Document doc = m_indexReader.document(topDocs.scoreDocs[0].doc);
 
         doc.removeFields(lastCrawledTime);
-        doc.add(new NumericField(lastCrawledTime, Store.YES, true).setLongValue(lCurrentTime));
+        doc.add(new LongField(lastCrawledTime, lCurrentTime, Store.YES));
 
         m_indexWriter.updateDocument(termId, doc);
 
-        
-        
+
+
 
         // wenn das Teil eine MasterDataEntity ist, dann müssen alle assoziierten Sklaven auch noch aktualisiert werden
 
         termId = new Term(masterDataEntityExistsID, strDataEntityExistsID);
 
-        termDocs = m_indexReader.termDocs(termId);
+        topDocs = m_indexSearcher.search(new TermQuery(termId), Integer.MAX_VALUE);
 
-        while (termDocs.next())
+        for( int i=0; i<topDocs.scoreDocs.length; i++)
         {
 
-            Document slaveDoc = m_indexReader.document(termDocs.doc());
+            Document slaveDoc = m_indexReader.document(topDocs.scoreDocs[i].doc);
 
             slaveDoc.removeFields(lastCrawledTime);
-            slaveDoc.add(new NumericField(lastCrawledTime, Store.YES, true).setLongValue(lCurrentTime));
+            slaveDoc.add(new LongField(lastCrawledTime, lCurrentTime, Store.YES));
 
             m_indexWriter.updateDocument(termId, doc);
         }

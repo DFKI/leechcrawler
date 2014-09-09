@@ -30,20 +30,18 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.document.AbstractField;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
+import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -252,7 +250,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
     {
         for (Entry<String, String> fieldName2Value : getStaticAttributeValuePairs().entryList())
         {
-            AbstractField field = FieldFactory.createField(fieldName2Value.getKey(), fieldName2Value.getValue(), m_fieldConfig);
+            IndexableField field = FieldFactory.createField(fieldName2Value.getKey(), fieldName2Value.getValue(), m_fieldConfig);
             if(field != null)
                 doc.add(field);
             else
@@ -376,7 +374,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
             {
                 for (String strValue : metadata.getValues(strFieldName))
                 {
-                    AbstractField field = FieldFactory.createField(strFieldName, strValue, m_fieldConfig);
+                    IndexableField field = FieldFactory.createField(strFieldName, strValue, m_fieldConfig);
                     if(field != null)
                         doc.add(field);
                     else
@@ -392,7 +390,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
                 {
                     for (String strValue : metadata.getValues(strFieldName))
                     {
-                        AbstractField field = FieldFactory.createField(strFieldCopy, strValue, m_fieldConfig);
+                        IndexableField field = FieldFactory.createField(strFieldCopy, strValue, m_fieldConfig);
                         if(field != null)
                             doc.add(field);
                         else
@@ -420,7 +418,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
                 if(strNewValue != null)
                 {
-                    AbstractField field = FieldFactory.createField(strTargetAtt, strNewValue, m_fieldConfig);
+                    IndexableField field = FieldFactory.createField(strTargetAtt, strNewValue, m_fieldConfig);
                     if(field != null)
                         doc.add(field);
                     else
@@ -439,8 +437,8 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
         for (Entry<String, String> fieldname2fieldValRegEx : m_hsFieldName2FieldValueConstraint.entrySet())
         {
-            Fieldable[] fieldables = doc.getFieldables(fieldname2fieldValRegEx.getKey());
-            for (Fieldable fieldable : fieldables)
+            IndexableField[] fieldables = doc.getFields(fieldname2fieldValRegEx.getKey());
+            for (IndexableField fieldable : fieldables)
             {
                 String strVal = fieldable.stringValue();
                 if(strVal.matches(fieldname2fieldValRegEx.getValue()))

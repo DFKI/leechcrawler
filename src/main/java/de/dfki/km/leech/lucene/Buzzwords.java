@@ -2,24 +2,28 @@ package de.dfki.km.leech.lucene;
 
 
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.PriorityQueue;
 import java.util.Set;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Fieldable;
+import org.apache.lucene.document.FieldType;
+import org.apache.lucene.index.FieldInfo.IndexOptions;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermVectorEntry;
-import org.apache.lucene.search.DefaultSimilarity;
+import org.apache.lucene.index.Terms;
+import org.apache.lucene.index.TermsEnum;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.similarities.DefaultSimilarity;
 
 import de.dfki.km.leech.util.Levenshtein;
 import de.dfki.km.leech.util.MultiValueTreeMap;
@@ -27,8 +31,8 @@ import de.dfki.km.leech.util.MultiValueTreeMap;
 
 
 /**
- * The class Buzzwords extracts keywords out of documents - these can be in the form of lucene-documents, which enables to calculate the buzzwords
- * very fast because the most information is still in the lucene index. But also strings can be processed, with an index as a base for calculation
+ * The class Buzzwords extracts keywords out of documents - these can be in the form of lucene-documents, which enables to calculate the buzzwords very fast because the
+ * most information is still in the lucene index. But also strings can be processed, with an index as a base for calculation
  * 
  * @author Christian Reuschling, Elisabeth Wolf
  * 
@@ -44,6 +48,7 @@ public class Buzzwords
 
     /**
      * Adds calculated buzzwords to the given document. The method makes use of the IndexAccessor default Analyzer.
+     * 
      * @param iDocNo the lucene document number inside the index behind reader, for the document doc2modify
      * @param doc2modify the document that should enriched with a new buzzword field
      * @param strIdFieldName the attribute name that should be used to identify the documents according to their id String
@@ -51,19 +56,18 @@ public class Buzzwords
      * @param sAttNames4BuzzwordCalculation the attributes that should be considered for buzzword generation
      * @param iMaxNumberOfBuzzwords the maximum number of buzzwords the method should generate
      * @param bSkipSimilarTerms true: similar terms (according to the Levenshtein-distance) will be skipped for better readability
-     * @param reader the lucene index reader 
+     * @param reader the lucene index reader
      * 
      * @return true in the case the document object was modified, false otherwise. The method do not modify the index entry
      * 
      * @throws Exception
      */
-    static public boolean addBuzzwords(int iDocNo, Document doc2modify, String strNewField4Buzzwords,
-            Set<String> sAttNames4BuzzwordCalculation, int iMaxNumberOfBuzzwords, boolean bSkipSimilarTerms, IndexReader reader) throws Exception
+    static public boolean addBuzzwords(int iDocNo, Document doc2modify, String strNewField4Buzzwords, Set<String> sAttNames4BuzzwordCalculation,
+            int iMaxNumberOfBuzzwords, boolean bSkipSimilarTerms, IndexReader reader) throws Exception
     {
 
 
-        List<String> lBuzzwords =
-                getBuzzwords(iDocNo, doc2modify, sAttNames4BuzzwordCalculation, iMaxNumberOfBuzzwords, bSkipSimilarTerms, reader);
+        List<String> lBuzzwords = getBuzzwords(iDocNo, doc2modify, sAttNames4BuzzwordCalculation, iMaxNumberOfBuzzwords, bSkipSimilarTerms, reader);
 
         // wenn es keinen Content gibt, mache mer gar nix
         if(lBuzzwords == null) return false;
@@ -77,8 +81,12 @@ public class Buzzwords
         // wenn es das Buzzword-feld schon gibt, wirds gelöscht
         doc2modify.removeFields(strNewField4Buzzwords);
         // die neu berechneten Buzzwords werden zum Doc hinzugefügt
-        doc2modify.add(new Field(strNewField4Buzzwords, strbBuzzWordz.toString(), Field.Store.YES, Field.Index.ANALYZED,
-                Field.TermVector.WITH_POSITIONS_OFFSETS));
+        FieldType fieldType =
+                new DynamicFieldType().setIndexeD(true).setIndexOptionS(IndexOptions.DOCS_AND_FREQS_AND_POSITIONS_AND_OFFSETS).setStoreD(true)
+                        .setStoreTermVectorOffsetS(true).setTokenizeD(true).freezE();
+
+        Field field4buzzwords = new Field(strNewField4Buzzwords, strbBuzzWordz.toString(), fieldType);
+        doc2modify.add(field4buzzwords);
 
 
         return true;
@@ -86,26 +94,18 @@ public class Buzzwords
 
 
 
-    static int docID2DocNo(String strDocIdAttributeName, String strDocID, IndexReader reader) throws Exception
+    static protected int docID2DocNo(String strDocIdAttributeName, String strDocID, IndexReader reader) throws Exception
     {
         int luceneDocumentNumber;
 
         IndexSearcher searcher = new IndexSearcher(reader);
-        try
-        {
 
-            TopDocs topDocs = searcher.search(new TermQuery(new Term(strDocIdAttributeName, strDocID)), 1);
+        TopDocs topDocs = searcher.search(new TermQuery(new Term(strDocIdAttributeName, strDocID)), 1);
 
-            if(topDocs.totalHits == 0) throw new Exception("no lucene document found with id '" + strDocID + "'");
+        if(topDocs.totalHits == 0) throw new Exception("no lucene document found with id '" + strDocID + "'");
 
-            // es sollte lediglich ein Dokument mit dieser id aufzufinden sein...
-            luceneDocumentNumber = topDocs.scoreDocs[0].doc;
-        }
-        finally
-        {
-            searcher.close();
-
-        }
+        // es sollte lediglich ein Dokument mit dieser id aufzufinden sein...
+        luceneDocumentNumber = topDocs.scoreDocs[0].doc;
 
         return luceneDocumentNumber;
     }
@@ -128,16 +128,15 @@ public class Buzzwords
      * 
      * @return the list of the extracted buzzwords, null in the case the given attribute doesn't exist
      * 
-     * @throws Exception 
+     * @throws Exception
      * @throws URINotFoundException
      */
-    static public List<String> getBuzzwords(int iDocNo, Document doc2modify, Set<String> sAttNames4BuzzwordCalculation,
-            int iMaxNumberOfBuzzwords, boolean bSkipSimilarTerms, IndexReader reader) throws Exception
+    static public List<String> getBuzzwords(int iDocNo, Document doc2modify, Set<String> sAttNames4BuzzwordCalculation, int iMaxNumberOfBuzzwords,
+            boolean bSkipSimilarTerms, IndexReader reader) throws Exception
     {
 
         LinkedHashMap<String, Float> buzzwordsWithTfIdf =
-                getBuzzwordsWithTfIdf(iDocNo, doc2modify, sAttNames4BuzzwordCalculation, iMaxNumberOfBuzzwords, bSkipSimilarTerms,
-                        reader);
+                getBuzzwordsWithTfIdf(iDocNo, doc2modify, sAttNames4BuzzwordCalculation, iMaxNumberOfBuzzwords, bSkipSimilarTerms, reader);
 
         LinkedList<String> llBuzzwords = new LinkedList<String>(buzzwordsWithTfIdf.keySet());
 
@@ -148,35 +147,32 @@ public class Buzzwords
 
 
     /**
-     * Gets the buzzwords for fields of a document, together with their document TfIdf value. The metohd makes use of the IndexAccessor default
-     * Analyzer.
+     * Gets the buzzwords for fields of a document, together with their document TfIdf value. The metohd makes use of the IndexAccessor default Analyzer.
+     * 
      * @param iDocNo the lucene document number inside the index behind reader, for the document doc2modify
      * @param doc2modify the document that should enriched with a new buzzword field
      * @param sAttNames4BuzzwordCalculation the name of the attributes the buzzwords should be extracted from.
      * @param iMaxNumberOfBuzzwords the maximum number of buzzwords
      * @param bSkipSimilarTerms true: similar terms (according to the Levenshtein-distance) will be skipped for better readability
-     * @param reader the lucene index reader 
+     * @param reader the lucene index reader
      * 
-     * @return the extracted buzzwords, boosted according their score. Key: the term itself. Value: the according score. null in the case the given
-     *         attribute doesn't exist.
-     *         
-     * @throws Exception 
+     * @return the extracted buzzwords, boosted according their score. Key: the term itself. Value: the according score. null in the case the given attribute doesn't
+     *         exist.
+     * 
+     * @throws Exception
      */
-    static public LinkedHashMap<String, Float> getBuzzwordsWithTfIdf(int iDocNo,Document doc2modify,
-            Set<String> sAttNames4BuzzwordCalculation, int iMaxNumberOfBuzzwords, boolean bSkipSimilarTerms, IndexReader reader)
-            throws Exception
+    static public LinkedHashMap<String, Float> getBuzzwordsWithTfIdf(int iDocNo, Document doc2modify, Set<String> sAttNames4BuzzwordCalculation,
+            int iMaxNumberOfBuzzwords, boolean bSkipSimilarTerms, IndexReader reader) throws Exception
     {
 
         MultiValueTreeMap<Float, String> tmScore2Term =
-                retrieveInterestingTerms(iDocNo, doc2modify, sAttNames4BuzzwordCalculation, iMaxNumberOfBuzzwords, 2, 1, 2,
-                        bSkipSimilarTerms, reader);
+                retrieveInterestingTerms(iDocNo, doc2modify, sAttNames4BuzzwordCalculation, iMaxNumberOfBuzzwords, 2, 1, 2, bSkipSimilarTerms, reader);
 
         if(tmScore2Term.valueSize() < iMaxNumberOfBuzzwords)
         {
 
             MultiValueTreeMap<Float, String> tmScore2TermWeak =
-                    retrieveInterestingTerms(iDocNo, doc2modify, sAttNames4BuzzwordCalculation, iMaxNumberOfBuzzwords, 1, 1, 2,
-                            bSkipSimilarTerms, reader);
+                    retrieveInterestingTerms(iDocNo, doc2modify, sAttNames4BuzzwordCalculation, iMaxNumberOfBuzzwords, 1, 1, 2, bSkipSimilarTerms, reader);
 
             while (tmScore2TermWeak.keySize() > 0)
             {
@@ -214,36 +210,41 @@ public class Buzzwords
      * 
      * @throws Exception
      */
-    public static List<Term2FrequencyEntry> getTopFrequentTerms(int iDocNo, Document doc2modify, String strFieldName,
-            int iMinFrequency, int iMinWordLength, int iMaxNumberOfTerms, IndexReader reader) throws Exception
+    public static List<Term2FrequencyEntry> getTopFrequentTerms(int iDocNo, Document doc2modify, String strFieldName, int iMinFrequency, int iMinWordLength,
+            int iMaxNumberOfTerms, IndexReader reader) throws Exception
     {
 
         LinkedList<Term2FrequencyEntry> llTerm2Frequency = new LinkedList<Term2FrequencyEntry>();
-
-        TopFrequentTermsTermVectorMapper vectorMapper = new TopFrequentTermsTermVectorMapper();
-        vectorMapper.setExpectations(strFieldName, iMinFrequency, iMinWordLength, iMaxNumberOfTerms, true, true);
-
-        // wenn es das feld gar nicht gibt in diesem doc, dann machen wir gar nix! (das überprüfen ist erheblich billiger als das unnötige
-        // iterieren durch alles im reader
-        if(doc2modify.getFieldable(strFieldName) == null) return llTerm2Frequency;
-
-        reader.getTermFreqVector(iDocNo, strFieldName, vectorMapper);
-
-
-        // kein Inhalt im Attribut - wir sind schon fertig :)
-        if(vectorMapper.getFieldToTerms().isEmpty()) return llTerm2Frequency;
-
-        List<TermVectorEntry> sortedTerms = vectorMapper.getFieldToTerms().get(strFieldName);
-
-        for (TermVectorEntry termVectorEntry : sortedTerms)
+        PriorityQueue<Term2FrequencyEntry> pqTerm2Frequency = new PriorityQueue<Term2FrequencyEntry>(iMaxNumberOfTerms, new Comparator<Term2FrequencyEntry>()
         {
-            // XXX wenn wir das auch für numerische Attribute haben wollen, müssen wir hier wahrscheinlich noch gesondert auslesen/umwandeln.
-            // Siehe getFieldMinMaxStringValues
-            String strTerm = termVectorEntry.getTerm();
-            int iFrequency = termVectorEntry.getFrequency();
 
-            llTerm2Frequency.add(new Term2FrequencyEntry(strTerm, iFrequency));
+            @Override
+            public int compare(Term2FrequencyEntry o1, Term2FrequencyEntry o2)
+            {
+                return o1.getFrequency().compareTo(o2.getFrequency());
+            }
+        });
+
+        // wenn es das feld gar nicht gibt in diesem doc, dann machen wir gar nix! (das überprüfen ist erheblich billiger als das unnötige iterieren durch alles im reader
+        if(doc2modify.getField(strFieldName) == null) return llTerm2Frequency;
+
+        Terms termVector = reader.getTermVector(iDocNo, strFieldName);
+
+        TermsEnum termsEnum = termVector.iterator(null);
+
+        while (termsEnum.next() != null)
+        {
+            String strTerm = termsEnum.term().utf8ToString();
+            long lFrequency = termsEnum.totalTermFreq();
+
+            if(lFrequency >= iMinFrequency && strTerm.length() >= iMinWordLength)
+                pqTerm2Frequency.add(new Term2FrequencyEntry(strTerm, Long.valueOf(lFrequency).intValue()));
+
+            if(pqTerm2Frequency.size() > iMaxNumberOfTerms) pqTerm2Frequency.poll();
         }
+
+        for (Term2FrequencyEntry term2Frq : pqTerm2Frequency)
+            llTerm2Frequency.add(0, term2Frq);
 
 
 
@@ -252,9 +253,8 @@ public class Buzzwords
 
 
 
-    static MultiValueTreeMap<Float, String> retrieveInterestingTerms(int iDocNo,Document doc2modify,
-            Set<String> sAttNames4BuzzwordCalculation, int iMaxNumberOfBuzzwords, int iMinDocFreq, int iMinTermFreq, int iMinWordLen,
-            boolean bSkipSimilarTerms, IndexReader reader) throws Exception
+    static MultiValueTreeMap<Float, String> retrieveInterestingTerms(int iDocNo, Document doc2modify, Set<String> sAttNames4BuzzwordCalculation,
+            int iMaxNumberOfBuzzwords, int iMinDocFreq, int iMinTermFreq, int iMinWordLen, boolean bSkipSimilarTerms, IndexReader reader) throws Exception
     {
 
         int iIndexDocumentCount = reader.numDocs();
@@ -266,8 +266,7 @@ public class Buzzwords
         {
 
             // XXX: hier ist erst mal die Anzahl der verschiedenen Terme des docs hartkodiert
-            List<Term2FrequencyEntry> topFrequentTerms =
-                    getTopFrequentTerms(iDocNo, doc2modify, strFieldName, iMinTermFreq, iMinWordLen, 1234, reader);
+            List<Term2FrequencyEntry> topFrequentTerms = getTopFrequentTerms(iDocNo, doc2modify, strFieldName, iMinTermFreq, iMinWordLen, 1234, reader);
 
             for (Term2FrequencyEntry topTerm2FreqLocal : topFrequentTerms)
             {
@@ -350,9 +349,6 @@ public class Buzzwords
 
         return tmScore2Term;
     }
-
-
-
 
 
 

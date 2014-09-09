@@ -3,8 +3,7 @@ package de.dfki.km.leech.lucene;
 import java.io.Reader;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.LowerCaseFilter;
-import org.apache.lucene.analysis.ReusableAnalyzerBase;
+import org.apache.lucene.analysis.core.LowerCaseFilter;
 import org.apache.lucene.util.Version;
 
 
@@ -12,7 +11,7 @@ import org.apache.lucene.util.Version;
 /**
  * An {@link Analyzer} that filters {@link LetterOrDigitLowerCaseTokenizer} with {@link LowerCaseFilter}
  **/
-public class LeechSimpleAnalyzer extends ReusableAnalyzerBase
+public class LeechSimpleAnalyzer extends Analyzer
 {
 
     static final protected LeechSimpleAnalyzer m_singelton = new LeechSimpleAnalyzer();

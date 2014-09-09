@@ -14,7 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
+import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
 
 import de.dfki.km.leech.lucene.FieldConfig.FieldMapping;
 import de.dfki.km.leech.util.StringUtils;

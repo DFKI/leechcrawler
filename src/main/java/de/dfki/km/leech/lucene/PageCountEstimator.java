@@ -5,13 +5,11 @@ package de.dfki.km.leech.lucene;
 import java.io.IOException;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.NumericField;
-import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.document.Field.TermVector;
+import org.apache.lucene.document.IntField;
+import org.apache.lucene.document.StringField;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.TermFreqVector;
+import org.apache.lucene.index.Terms;
 import org.apache.tika.metadata.Metadata;
 
 import de.dfki.km.leech.metadata.LeechMetadata;
@@ -53,8 +51,7 @@ public class PageCountEstimator
             String strPageCountValueNice = strPageCountValue.substring(0, iIndexOfKrutzel);
             doc2modify.removeFields(Metadata.PAGE_COUNT.getName());
 
-            NumericField field = new NumericField(Metadata.PAGE_COUNT.getName(), Store.YES, true);
-            field.setIntValue(Integer.parseInt(strPageCountValueNice));
+            IntField field = new IntField(Metadata.PAGE_COUNT.getName(), Integer.parseInt(strPageCountValueNice), Store.YES);
 
             if(field != null) doc2modify.add(field);
 
@@ -78,12 +75,11 @@ public class PageCountEstimator
 
         // die geschätzte PageCount
         doc2modify.removeFields(Metadata.PAGE_COUNT.getName());
-        NumericField field = new NumericField(Metadata.PAGE_COUNT.getName(), Store.YES, true);
-        field.setIntValue(iPageCount);
+        IntField field = new IntField(Metadata.PAGE_COUNT.getName(), iPageCount, Store.YES);
         if(field != null) doc2modify.add(field);
         // ein Flag, welches anzeigt, daß dieser TermCount geschätzt wurde
         doc2modify.removeFields(LeechMetadata.isHeuristicPageCount);
-        Field newField = new Field(LeechMetadata.isHeuristicPageCount, "true", Store.YES, Index.NOT_ANALYZED, TermVector.YES);
+        StringField newField = new StringField(LeechMetadata.isHeuristicPageCount, "true", Store.YES);
         if(newField != null) doc2modify.add(newField);
 
 
@@ -95,22 +91,16 @@ public class PageCountEstimator
     public static Integer getDocumentTermCount(int iDocNo, String strFieldName4TermCounting, IndexReader reader) throws IOException
     {
 
-        int iTermCount = 0;
+        long lTermCount = 0;
 
 
-        TermFreqVector freqVector = reader.getTermFreqVector(iDocNo, strFieldName4TermCounting);
+        Terms termVector = reader.getTermVector(iDocNo, strFieldName4TermCounting);
 
         // manchmal gibt es auch Dokumente, die keinen content bzw. keinen TermFreqVector haben....
-        if(freqVector != null)
-        {
-            int[] iaTermFreqs = freqVector.getTermFrequencies();
-
-            for (int iFreq : iaTermFreqs)
-                iTermCount += iFreq;
-        }
+        if(termVector != null) lTermCount = termVector.getSumTotalTermFreq();
 
 
-        return iTermCount;
+        return Long.valueOf(lTermCount).intValue();
     }
 
 }

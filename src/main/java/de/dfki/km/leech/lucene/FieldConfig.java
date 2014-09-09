@@ -5,10 +5,10 @@ package de.dfki.km.leech.lucene;
 import java.util.HashMap;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.document.AbstractField;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
+import org.apache.lucene.index.IndexableField;
 
 import de.dfki.km.leech.util.StringUtils;
 
@@ -21,9 +21,9 @@ public class FieldConfig
     {
 
         /**
-         * The class name of the analyzer as String, e.g. "org.apache.lucene.analysis.KeywordAnalyzer" (which is also the default)
+         * The class name of the analyzer as String, e.g. "org.apache.lucene.analysis.core.KeywordAnalyzer" (which is also the default)
          */
-        public String analyzer = "org.apache.lucene.analysis.KeywordAnalyzer";
+        public String analyzer = "org.apache.lucene.analysis.core.KeywordAnalyzer";
 
 
 
@@ -251,7 +251,7 @@ public class FieldConfig
      * 
      * @throws Exception
      */
-    public AbstractField createField(String strAttName, String strAttValue) throws Exception
+    public IndexableField createField(String strAttName, String strAttValue) throws Exception
     {
         return FieldFactory.createField(strAttName, strAttValue, this);
     }
