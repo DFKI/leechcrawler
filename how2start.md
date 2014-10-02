@@ -20,7 +20,7 @@ and in the \<dependencies\> section
   	<dependency>
   	   <groupId>de.dfki.km</groupId>
   	   <artifactId>leech</artifactId>
-  	   <version>1.6</version>
+  	   <version>1.6.1</version>
   	</dependency>
 
 
