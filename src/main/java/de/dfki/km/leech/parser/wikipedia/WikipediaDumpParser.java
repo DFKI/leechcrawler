@@ -27,7 +27,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.rmi.server.UID;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -44,7 +43,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
@@ -641,7 +640,7 @@ public class WikipediaDumpParser implements Parser
                     strCleanedText = strCleanedText.replaceAll("\\{\\{", " ");
                     strCleanedText = strCleanedText.replaceAll("\\}\\}", " ");
 
-                    strCleanedText = StringEscapeUtils.unescapeHtml(strCleanedText);
+                    strCleanedText = StringEscapeUtils.unescapeHtml4(strCleanedText);
 
                     continue;
                 }

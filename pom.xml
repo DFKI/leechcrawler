@@ -4,7 +4,7 @@
 	<groupId>de.dfki.km</groupId>
 	<artifactId>leech</artifactId>
 	<packaging>jar</packaging>
-	<version>1.6</version>
+	<version>1.6.1</version>
 	<name>leech</name>
 	<url>http://leechcrawler.github.com/leech/</url>
 
@@ -29,21 +29,6 @@
 
 
 	<repositories>
-		<repository>
-			<id>info-bliki-repository</id>
-			<url>http://gwtwiki.googlecode.com/svn/maven-repository/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-
-		<repository>
-			<id>mapdb-snapshots</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</repository>
 
 	</repositories>
 
@@ -94,7 +79,7 @@
 		<dependency>
 			<groupId>info.bliki.wiki</groupId>
 			<artifactId>bliki-core</artifactId>
-			<version>3.0.17</version>
+			<version>3.0.19</version>
 		</dependency>
 
 		<dependency>
@@ -103,17 +88,19 @@
 			<version>1.4.5</version>
 		</dependency>
 
+
 		<dependency>
-			<groupId>org.apache.jdbm</groupId>
-			<artifactId>jdbm</artifactId>
-			<version>3.0-SNAPSHOT</version>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.3.2</version>
 		</dependency>
 
-		<!-- <dependency> -->
-		<!-- <groupId>org.mapdb</groupId> -->
-		<!-- <artifactId>mapdb</artifactId> -->
-		<!-- <version>>1.0.5</version> -->
-		<!-- </dependency> -->
+
+		<dependency>
+			<groupId>org.mapdb</groupId>
+			<artifactId>mapdb</artifactId>
+			<version>1.0.6</version>
+		</dependency>
 
 	</dependencies>
 

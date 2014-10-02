@@ -2,12 +2,13 @@ package de.dfki.km.leech.util;
 
 
 
+import java.io.File;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 
-import org.apache.jdbm.DB;
-import org.apache.jdbm.DBMaker;
+import org.mapdb.DB;
+import org.mapdb.DBMaker;
 
 
 
@@ -48,8 +49,9 @@ public class MultiValueBalancedTreeMap<K, V> extends MultiValueHashMap<K, V>
 
 
 
-    private boolean bEnableHTreeBackend = false;
-    protected DB m_jdbmDB;
+    private boolean bEnableHTreeBackend = true;
+
+    protected DB m_mapDB;
 
 
 
@@ -97,14 +99,13 @@ public class MultiValueBalancedTreeMap<K, V> extends MultiValueHashMap<K, V>
 
 
     /**
-     * Adds a value into the Collection under the specified key. Must be overwritten because of a bug inside jdbm (some values are lost if you don't
-     * put the value again)
+     * Adds a value into the Collection under the specified key. Must be overwritten because of a bug inside jdbm (some values are lost if you don't put the value again)
      * 
      * @param key the key where to add the given value
      * @param value the value to add into the Collection under the specified key
      * 
-     * @return null in the case the Collection changed as a result of the call, value otherwise. (Returns 'value' if this collection does not permit
-     *         duplicates and already contains the specified element.)
+     * @return null in the case the Collection changed as a result of the call, value otherwise. (Returns 'value' if this collection does not permit duplicates and
+     *         already contains the specified element.)
      */
     @Override
     @SuppressWarnings("unchecked")
@@ -143,14 +144,14 @@ public class MultiValueBalancedTreeMap<K, V> extends MultiValueHashMap<K, V>
 
 
     /**
-     * Adds all values into the Collection under the specified key. Must be overwritten because of a bug inside jdbm (some values are lost if you
-     * don't put the value again)
+     * Adds all values into the Collection under the specified key. Must be overwritten because of a bug inside jdbm (some values are lost if you don't put the value
+     * again)
      * 
      * @param key the key where to add the given values
      * @param values the values to add into the Collection under the specified key
      * 
-     * @return null in the case the Collection changed as a result of the call, values otherwise. (Returns 'values' if this collection does not permit
-     *         duplicates and already contains the specified element.)
+     * @return null in the case the Collection changed as a result of the call, values otherwise. (Returns 'values' if this collection does not permit duplicates and
+     *         already contains the specified element.)
      */
     @Override
     @SuppressWarnings("unchecked")
@@ -191,32 +192,24 @@ public class MultiValueBalancedTreeMap<K, V> extends MultiValueHashMap<K, V>
     }
 
 
+
     @Override
     protected Map createInternalMap(int initialCapacity, float loadFactor, Map m)
     {
 
-        String strJdbmPath = FileUtils.getAppDirectory() + "/multiValueBalancedTree_" + FileUtils.getRandomUniqueFilename();
-
-        // JDBM3
-        m_jdbmDB = DBMaker.openFile(strJdbmPath).disableTransactions().disableLocking().deleteFilesAfterClose().closeOnExit().make();
-
-        Map<? extends Comparable, Collection<V>> map;
-        if(bEnableHTreeBackend)
-            map = m_jdbmDB.createHashMap("temp");
-        else
-            map = m_jdbmDB.createTreeMap("temp");
-
+        String strMapDBPath = FileUtils.getAppDirectory() + "/multiValueBalancedTree_" + FileUtils.getRandomUniqueFilename();
 
 
         // MapDB (JDBM4)
-        // m_jdbmDB = DBMaker.newFileDB(new
-        // File(strJdbmPath)).deleteFilesAfterClose().closeOnJvmShutdown().journalDisable().asyncWriteDisable().make();
-        //
-        // Map<? extends Comparable, Collection<V>> map;
-        // if(bEnableHTreeBackend)
-        // map = m_jdbmDB.getHashMap("temp");
-        // else
-        // map = m_jdbmDB.getTreeMap("temp");
+        m_mapDB =
+                DBMaker.newFileDB(new File(strMapDBPath)).deleteFilesAfterClose().asyncWriteEnable().transactionDisable().closeOnJvmShutdown()
+                        .mmapFileEnableIfSupported().make();
+
+        Map<? extends Comparable, Collection<V>> map;
+        if(bEnableHTreeBackend)
+            map = m_mapDB.getHashMap("temp");
+        else
+            map = m_mapDB.getTreeMap("temp");
 
         if(m != null) map.putAll(m);
 
@@ -226,10 +219,10 @@ public class MultiValueBalancedTreeMap<K, V> extends MultiValueHashMap<K, V>
 
 
 
-    public MultiValueBalancedTreeMap<K,V> enableHTreeBackend4LongKeys(boolean bEnable)
+    public MultiValueBalancedTreeMap<K, V> enableHTreeBackend4LongKeys(boolean bEnable)
     {
         this.bEnableHTreeBackend = bEnable;
-        
+
         return this;
     }
 
@@ -238,10 +231,10 @@ public class MultiValueBalancedTreeMap<K, V> extends MultiValueHashMap<K, V>
     @Override
     protected void finalize() throws Throwable
     {
-        if(m_jdbmDB != null)
+        if(m_mapDB != null)
         {
-            m_jdbmDB.close();
-            m_jdbmDB = null;
+            m_mapDB.close();
+            m_mapDB = null;
         }
     }
 
