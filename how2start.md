@@ -6,12 +6,12 @@ Leech is offered in our own repository. Add following entries to your pom.xml:
 
     <repositories>
        <repository>
-          <id>dfki-km-libs-releases-local</id>
-          <url>http://www.dfki.uni-kl.de/artifactory2/libs-releases-local</url>
+          <id>dfki-km-libs-releases</id>
+          <url>http://www.dfki.uni-kl.de/artifactory2/libs-releases</url>
        </repository>
        <repository>
-          <id>dfki-km-libs-snapshots-local</id>
-          <url>http://www.dfki.uni-kl.de/artifactory2/libs-snapshots-local</url>
+          <id>dfki-km-libs-snapshots</id>
+          <url>http://www.dfki.uni-kl.de/artifactory2/libs-snapshots</url>
        </repository>
 	</repositories>
 
