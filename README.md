@@ -1,10 +1,12 @@
 Leech
 =====
 
-Crawling capabilities for Apache Tika. Crawl content out of e.g. file systems, http(s) sources (webcrawling) or imap(s) servers. Leech offers additional Tika parsers providing these crawling capabilities.  
-It is the RDF free successor of Aperture from the DFKI GmbH Knowledge Management group and available unter the terms of the [GPLv3](http://www.gnu.org/licenses/gpl.html). In the case you need a different license or want to make a project with us, feel free to [contact us](https://github.com/leechcrawler/leech/blob/master/people.md)!
+Crawling capabilities for Apache Tika. Crawl content out of e.g. file systems, http(s) sources (webcrawling) or imap(s) servers. LeechCrawler offers additional Tika parsers providing these crawling capabilities.  
+It is the RDF free successor of Aperture from the DFKI GmbH Knowledge Management group. In the case you want to make a project with us, feel free to [contact us](https://github.com/leechcrawler/leech/blob/master/people.md)!
 
-The key intentions of Leech:
+LeechCrawler is published under the 3-Clause BSD License, Owner/Organization: DFKI GmbH, 2013.
+
+The key intentions of LeechCrawler:
 * Ease of use - crawl a data source with a few lines of code.
 * Low learning curve - Leech integrates seamlessly into the Tika world.
 * Extensibility - write your own crawlers, support new data source protocols and plug them in by simply adding your jar into the classpath.
@@ -12,7 +14,7 @@ The key intentions of Leech:
 * Incremental crawling (second run crawls only the differences inside a data source, according to the last crawl). Offered for existing and new crawlers.
 
 ***
-[How to start](https://github.com/leechcrawler/leech/blob/master/how2start.md) | [Code snippets / Examples](https://github.com/leechcrawler/leech/blob/master/codeSnippets.md) | [Extending Leech](https://github.com/leechcrawler/leech/blob/master/extending.md) | [Mailing list](https://github.com/leechcrawler/leech/blob/master/mailinglist.md) | [People / Contact] (https://github.com/leechcrawler/leech/blob/master/people.md) | [Supporters](https://github.com/leechcrawler/leech/blob/master/supporters.md)
+[How to start](https://github.com/leechcrawler/leech/blob/master/how2start.md) | [Code snippets / Examples](https://github.com/leechcrawler/leech/blob/master/codeSnippets.md) | [Extending LeechCrawler](https://github.com/leechcrawler/leech/blob/master/extending.md) | [Mailing list](https://github.com/leechcrawler/leech/blob/master/mailinglist.md) | [People / Contact] (https://github.com/leechcrawler/leech/blob/master/people.md) | [Supporters](https://github.com/leechcrawler/leech/blob/master/supporters.md)
 ***
 Crawl something incrementally in 1 minute:
 
