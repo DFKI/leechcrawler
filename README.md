@@ -4,7 +4,7 @@ LeechCrawler
 Crawling capabilities for Apache Tika. Crawl content out of e.g. file systems, http(s) sources (webcrawling) or imap(s) servers. LeechCrawler offers additional Tika parsers providing these crawling capabilities.  
 It is the RDF free successor of Aperture from the DFKI GmbH Knowledge Management group. In the case you want to make a project with us, feel free to [contact us](https://github.com/leechcrawler/leech/blob/master/people.md)!
 
-LeechCrawler is published under the 3-Clause BSD License, Owner/Organization: DFKI GmbH, 2013.
+LeechCrawler is published under the [3-Clause BSD License](http://opensource.org/licenses/BSD-3-Clause), Owner/Organization: DFKI GmbH, 2013.
 
 The key intentions of LeechCrawler:
 * Ease of use - crawl a data source with a few lines of code.
