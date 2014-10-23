@@ -1,4 +1,4 @@
-Leech
+LeechCrawler
 =====
 
 Crawling capabilities for Apache Tika. Crawl content out of e.g. file systems, http(s) sources (webcrawling) or imap(s) servers. LeechCrawler offers additional Tika parsers providing these crawling capabilities.  
