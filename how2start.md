@@ -25,7 +25,9 @@ and in the \<dependencies\> section
 
 
 The version corresponds to the used Tika release version. Currently, these versions are available:
+
 1.3, 1.4, 1.5, 1.6, 1.6.1 (artifactId: leech)
+
 1.7 (artifactId: leechcrawler)
 
 **You can also [download](http://www.dfki.uni-kl.de/leech/free/) all needed libraries in the case you don't use maven.**
