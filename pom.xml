@@ -5,7 +5,7 @@
 	<artifactId>leechcrawler</artifactId>
 	<packaging>jar</packaging>
 	<version>1.7</version>
-	<name>leech</name>
+	<name>leechcrawler</name>
 	<url>http://leechcrawler.github.com/leech/</url>
 
 	<developers>
