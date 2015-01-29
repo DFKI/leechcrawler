@@ -48,7 +48,6 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.search.FlagTerm;
 
 import org.apache.tika.exception.TikaException;
-import org.apache.tika.metadata.DublinCore;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MediaType;
 import org.apache.tika.parser.ParseContext;
@@ -56,6 +55,8 @@ import org.apache.tika.parser.Parser;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
+import de.dfki.inquisition.collections.MultiValueHashMap;
+import de.dfki.inquisition.text.StringUtils;
 import de.dfki.km.leech.Leech;
 import de.dfki.km.leech.config.CrawlerContext;
 import de.dfki.km.leech.config.ImapCrawlerContext;
@@ -64,8 +65,6 @@ import de.dfki.km.leech.io.ImapURLStreamProvider;
 import de.dfki.km.leech.io.URLStreamProvider;
 import de.dfki.km.leech.parser.incremental.IncrementalCrawlingHistory;
 import de.dfki.km.leech.util.ExceptionUtils;
-import de.dfki.km.leech.util.MultiValueHashMap;
-import de.dfki.km.leech.util.StringUtils;
 import de.dfki.km.leech.util.certificates.CertificateIgnoringSocketFactory;
 
 

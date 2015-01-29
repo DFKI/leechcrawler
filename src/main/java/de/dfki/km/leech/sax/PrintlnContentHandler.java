@@ -3,11 +3,11 @@
  * 
  * Copyright (C) 2012 DFKI GmbH, Author: Christian Reuschling
  * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation,
+ * either version 3 of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  * 
@@ -22,7 +22,6 @@ package de.dfki.km.leech.sax;
 
 import java.util.logging.Logger;
 
-import org.apache.tika.metadata.DublinCore;
 import org.apache.tika.metadata.Metadata;
 
 import de.dfki.km.leech.parser.incremental.IncrementalCrawlingHistory;
@@ -30,8 +29,8 @@ import de.dfki.km.leech.parser.incremental.IncrementalCrawlingHistory;
 
 
 /**
- * A DataSinkContentHandler that simply prints out the data she recieves. You can also optionally specify another contentHandler that should be
- * wrapped - in this case the data will be printed out and then everything will be delegated to the wrapped contentHandler
+ * A DataSinkContentHandler that simply prints out the data she recieves. You can also optionally specify another contentHandler that should be wrapped - in this case the
+ * data will be printed out and then everything will be delegated to the wrapped contentHandler
  * 
  * @author Christian Reuschling, Dipl.Ing.(BA)
  */
@@ -162,8 +161,7 @@ public class PrintlnContentHandler extends DataSinkContentHandler
 
         if(m_verbosity != Verbosity.nothing) strbMessage.append("## PrintlnContentHandler ERROR data ##########################\n");
 
-        if(m_verbosity == Verbosity.all || m_verbosity == Verbosity.title || m_verbosity == Verbosity.titlePlusMetadata
-                || m_verbosity == Verbosity.titlePlusFulltext)
+        if(m_verbosity == Verbosity.all || m_verbosity == Verbosity.title || m_verbosity == Verbosity.titlePlusMetadata || m_verbosity == Verbosity.titlePlusFulltext)
         {
             String strInfo = metadata.get(IncrementalCrawlingHistory.dataEntityExistsID);
             if(strInfo == null) strInfo = metadata.get(Metadata.SOURCE);
@@ -213,8 +211,7 @@ public class PrintlnContentHandler extends DataSinkContentHandler
 
             if(m_verbosity != Verbosity.nothing) strbMessage.append("## PrintlnContentHandler MODIFIED data ##########################\n");
 
-            if(m_verbosity == Verbosity.all || m_verbosity == Verbosity.title || m_verbosity == Verbosity.titlePlusMetadata
-                    || m_verbosity == Verbosity.titlePlusFulltext)
+            if(m_verbosity == Verbosity.all || m_verbosity == Verbosity.title || m_verbosity == Verbosity.titlePlusMetadata || m_verbosity == Verbosity.titlePlusFulltext)
             {
                 String strInfo = metadata.get(IncrementalCrawlingHistory.dataEntityExistsID);
                 if(strInfo == null) strInfo = metadata.get(Metadata.SOURCE);
@@ -265,8 +262,7 @@ public class PrintlnContentHandler extends DataSinkContentHandler
 
             if(m_verbosity != Verbosity.nothing) strbMessage.append("## PrintlnContentHandler - NEW data ##########################\n");
 
-            if(m_verbosity == Verbosity.all || m_verbosity == Verbosity.title || m_verbosity == Verbosity.titlePlusMetadata
-                    || m_verbosity == Verbosity.titlePlusFulltext)
+            if(m_verbosity == Verbosity.all || m_verbosity == Verbosity.title || m_verbosity == Verbosity.titlePlusMetadata || m_verbosity == Verbosity.titlePlusFulltext)
             {
                 String strInfo = metadata.get(IncrementalCrawlingHistory.dataEntityExistsID);
                 if(strInfo == null) strInfo = metadata.get(Metadata.SOURCE);
@@ -307,6 +303,14 @@ public class PrintlnContentHandler extends DataSinkContentHandler
 
 
     @Override
+    public void processProcessedData(Metadata metadata)
+    {
+        // NOP
+    }
+
+
+
+    @Override
     public void processRemovedData(Metadata metadata)
     {
         if(!m_showOnlyErrors)
@@ -316,8 +320,7 @@ public class PrintlnContentHandler extends DataSinkContentHandler
 
             if(m_verbosity != Verbosity.nothing) strbMessage.append("## PrintlnContentHandler REMOVED data ##########################\n");
 
-            if(m_verbosity == Verbosity.all || m_verbosity == Verbosity.title || m_verbosity == Verbosity.titlePlusMetadata
-                    || m_verbosity == Verbosity.titlePlusFulltext)
+            if(m_verbosity == Verbosity.all || m_verbosity == Verbosity.title || m_verbosity == Verbosity.titlePlusMetadata || m_verbosity == Verbosity.titlePlusFulltext)
             {
                 String strInfo = metadata.get(IncrementalCrawlingHistory.dataEntityExistsID);
                 if(strInfo == null) strInfo = metadata.get(Metadata.SOURCE);
@@ -347,6 +350,15 @@ public class PrintlnContentHandler extends DataSinkContentHandler
         }
 
         if(m_wrappedDataSinkContentHandler != null) m_wrappedDataSinkContentHandler.processRemovedData(metadata);
+    }
+
+
+
+    @Override
+    public void processUnmodifiedData(Metadata metadata)
+    {
+        // NOP
+
     }
 
 

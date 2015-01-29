@@ -46,7 +46,7 @@ import de.dfki.km.leech.parser.DirectoryCrawlerParser;
 public class DirectoryCrawlerContext
 {
 
-    protected boolean m_followSymbolicLinks = false;
+    protected boolean m_followSymbolicLinks = true;
 
     protected boolean m_ignoreHiddenFiles = true;
 

@@ -1,23 +1,18 @@
 /*
-    Leech - crawling capabilities for Apache Tika
-    
-    Copyright (C) 2012 DFKI GmbH, Author: Christian Reuschling
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-    Contact us by mail: christian.reuschling@dfki.de
-*/
+ * Leech - crawling capabilities for Apache Tika
+ * 
+ * Copyright (C) 2012 DFKI GmbH, Author: Christian Reuschling
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation,
+ * either version 3 of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * Contact us by mail: christian.reuschling@dfki.de
+ */
 
 package de.dfki.km.leech.parser.incremental;
 
@@ -29,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
@@ -50,19 +46,18 @@ import de.dfki.km.leech.util.TikaUtils;
 
 
 /**
- * A Parser decorator which enables incremental indexing during the crawl. For this, {@link IncrementalCrawlingParser} needs two entries inside the
- * metadata given from the parse method:<br>
+ * A Parser decorator which enables incremental indexing during the crawl. For this, {@link IncrementalCrawlingParser} needs two entries inside the metadata given from
+ * the parse method:<br>
  * <br>
- * <li>{@link IncrementalCrawlingHistory}.dataEntityExistsID: an identifier for a data entity that is independent from the content of this entity. It
- * is only for identifying the occurence, not to check whether it has changed (e.g. a filename) <li>
+ * <li>{@link IncrementalCrawlingHistory}.dataEntityExistsID: an identifier for a data entity that is independent from the content of this entity. It is only for
+ * identifying the occurence, not to check whether it has changed (e.g. a filename) <li>
  * <br>
- * {@link IncrementalCrawlingHistory}.dataEntityContentFingerprint: some fingerprint/identifier that gives the hint whether the content of the data
- * entity has changed, e.g. the modifed date of a file These entries depends on the type of the datasource, which will considered by creating the
- * InputStream for the parse method. Thus, both metadata entries will be performed in {@link TikaUtils} during stream creation.<br>
+ * {@link IncrementalCrawlingHistory}.dataEntityContentFingerprint: some fingerprint/identifier that gives the hint whether the content of the data entity has changed,
+ * e.g. the modifed date of a file These entries depends on the type of the datasource, which will considered by creating the InputStream for the parse method. Thus, both
+ * metadata entries will be performed in {@link TikaUtils} during stream creation.<br>
  * <br>
- * Dependent on these entries this decorator writes a data entity modification state (new, modified, unmodified, removed) into the metadata before
- * delegating to the wrapped parser. In the case of a cycle during a crawl (when a data entity comes a second time during a crawl), nothing will be
- * delegated.
+ * Dependent on these entries this decorator writes a data entity modification state (new, modified, unmodified, removed) into the metadata before delegating to the
+ * wrapped parser. In the case of a cycle during a crawl (when a data entity comes a second time during a crawl), nothing will be delegated.
  * 
  * 
  * 
@@ -76,6 +71,8 @@ public class IncrementalCrawlingParser extends ParserDecorator
     static public final String MODIFIED = "modified";
 
     static public final String NEW = "new";
+
+    static public final String PROCESSED = "processed";
 
     static public final String REMOVED = "removed";
 
@@ -99,8 +96,7 @@ public class IncrementalCrawlingParser extends ParserDecorator
 
 
     @Override
-    public void parse(InputStream stream, ContentHandler handler, Metadata metadata, ParseContext context) throws IOException, SAXException,
-            TikaException
+    public void parse(InputStream stream, ContentHandler handler, Metadata metadata, ParseContext context) throws IOException, SAXException, TikaException
     {
 
         // wir machen hier das ganze inkrementelle history-Zeugs, dann parsen wir des Teil wie gewohnt, die entsprechenden crawlerParser werten u.U.
@@ -114,7 +110,11 @@ public class IncrementalCrawlingParser extends ParserDecorator
         try
         {
             CrawlerContext crawlerContext = context.get(CrawlerContext.class);
-            if(crawlerContext == null) crawlerContext = new CrawlerContext();
+            if(crawlerContext == null)
+            {
+                crawlerContext = new CrawlerContext();
+                context.set(CrawlerContext.class, crawlerContext);
+            }
 
 
             // die momentane crawlingdepth brauchen wir um festzustellen, wann ein kompletter crawlingVorgang abgeschlossen ist. Ein CrawlerParser
@@ -129,8 +129,8 @@ public class IncrementalCrawlingParser extends ParserDecorator
             if(crawlingHistory == null && crawlerContext.getDetectCycles() && iCurrentCrawlingDepth == 0)
             {
                 // wir erstellen eine temporäre crawlerhistory, die am Schluß des Crawls auch wieder gelöscht wird
-                File parentDir = new File( System.getProperty("java.io.tmpdir"));
-                
+                File parentDir = new File(System.getProperty("java.io.tmpdir"));
+
                 File fTmpHistory = new File(parentDir.getAbsolutePath() + "/leechTmp/" + UUID.randomUUID().toString().replaceAll("\\W", "_"));
                 fTmpHistory.mkdirs();
 
@@ -167,6 +167,20 @@ public class IncrementalCrawlingParser extends ParserDecorator
                 {
                     getWrappedParser().parse(stream, handler, metadata, context);
                 }
+                else
+                {
+                    // das Teil ist unmodified, wir machen nix
+                    // Logger.getLogger(IncrementalCrawlingParser.class.getName()).info("unmodified entity, will skip it. " + metadata);
+                    InputStream dummyStream = new ByteArrayInputStream("leech sucks - hopefully :)".getBytes("UTF-8"));
+                    EmptyParser.INSTANCE.parse(dummyStream, handler, metadata, context);
+                }
+            }
+            else
+            {
+                // das Teil war in diesem run schon mal dran - Zykel oder ein einfaches Duplikat
+                // Logger.getLogger(IncrementalCrawlingParser.class.getName()).info("entity was processed this crawl yet, will skip it. " + metadata);
+                InputStream dummyStream = new ByteArrayInputStream("leech sucks - hopefully :)".getBytes("UTF-8"));
+                EmptyParser.INSTANCE.parse(dummyStream, handler, metadata, context);
             }
 
 
@@ -241,9 +255,8 @@ public class IncrementalCrawlingParser extends ParserDecorator
 
 
     /**
-     * Performs the entries into the incremental crawling history and put the data entity modification state into the metadata object. In the case
-     * this data entity was processed during this crawl yet (when we have a cycle), the method will return false which means that it don't have to
-     * processed again.
+     * Performs the entries into the incremental crawling history and put the data entity modification state into the metadata object. In the case this data entity was
+     * processed during this crawl yet (when we have a cycle or double entry), the method will return false which means that it don't have to be processed again.
      * 
      * @param crawlingHistory the crawling history. Can be null, in this case the data entity will be flagged as NEW in any case
      * @param metadata the metadata of the data entity. The method will put the data entity modification state into
@@ -275,6 +288,8 @@ public class IncrementalCrawlingParser extends ParserDecorator
             // weiter. Dann haben wir einen Zykel.
             if(exist.equals(Exist.YES_PROCESSED))
             {
+                metadata.set(DATA_ENTITY_MODIFICATION_STATE, PROCESSED);
+
                 return false;
             }
 

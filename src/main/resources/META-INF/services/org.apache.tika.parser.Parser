@@ -2,3 +2,4 @@
 
 de.dfki.km.leech.parser.wikipedia.WikipediaDumpParser
 de.dfki.km.leech.parser.rss.FeedParser2
+de.dfki.km.leech.parser.UrlListCrawlerParser

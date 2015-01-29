@@ -3,9 +3,12 @@ package de.dfki.km.leech.util;
 
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -14,10 +17,18 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
 import org.apache.lucene.store.SimpleFSDirectory;
 import org.apache.lucene.util.Version;
+import org.apache.tika.exception.TikaException;
+import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
+import org.xml.sax.SAXException;
 
+import de.dfki.inquisition.collections.MultiValueHashMap;
+import de.dfki.inquisition.lucene.FieldConfig;
+import de.dfki.inquisition.processes.StopWatch;
+import de.dfki.inquisition.text.StringUtils;
 import de.dfki.km.leech.Leech;
-import de.dfki.km.leech.lucene.FieldConfig;
+import de.dfki.km.leech.config.CrawlerContext;
+import de.dfki.km.leech.lucene.LeechDefaultFieldConfig;
 import de.dfki.km.leech.lucene.ToLuceneContentHandler;
 import de.dfki.km.leech.parser.wikipedia.WikipediaDumpParser;
 import de.dfki.km.leech.parser.wikipedia.WikipediaDumpParser.WikipediaDumpParserConfig;
@@ -28,14 +39,159 @@ import de.dfki.km.leech.sax.PrintlnContentHandler.Verbosity;
 
 
 /**
- * A very simple Lucene Index creator. FieldConfig is from {@link WikipediaDumpParser#getFieldConfig4ParserAttributes()}, currently you can only
- * specify the source dir/file and the target dir for the lucene index
+ * A very simple Lucene Index creator. FieldConfig is from {@link WikipediaDumpParser#getFieldConfig4ParserAttributes()}, currently you can only specify the source
+ * dir/file and the target dir for the lucene index
  * 
  * @author Christian Reuschling, Dipl.Ing.(BA)
  * 
  */
 public class LuceneIndexCreator
 {
+
+    public static boolean printErrors = true;
+
+    public static long cyclicReportTime = 1000 * 60;
+
+
+
+    public static void createIndex(List<String> lUrls2Crawl, String strLuceneIndexPath, LinkedList<String> llLookupIndexPaths, String strBuzzwordAttName,
+            int iBuzzwordCount, boolean bCalculatePageCounts, String strFrequencyClassAttName, MultiValueHashMap<String, String> hsStaticAttValuePairs)
+            throws IOException, Exception, SAXException, TikaException
+    {
+        createIndex(lUrls2Crawl, strLuceneIndexPath, llLookupIndexPaths, strBuzzwordAttName, iBuzzwordCount, bCalculatePageCounts, strFrequencyClassAttName,
+                hsStaticAttValuePairs, null);
+
+    }
+
+
+
+    public static void createIndex(List<String> lUrls2Crawl, String strLuceneIndexPath, LinkedList<String> llLookupIndexPaths, String strBuzzwordAttName,
+            int iBuzzwordCount, boolean bCalculatePageCounts, String strFrequencyClassAttName, MultiValueHashMap<String, String> hsStaticAttValuePairs,
+            ParseContext context) throws IOException, Exception, SAXException, TikaException
+    {
+
+        if(context == null) context = new ParseContext();
+        if(llLookupIndexPaths == null) llLookupIndexPaths = new LinkedList<>();
+        if(hsStaticAttValuePairs == null) hsStaticAttValuePairs = new MultiValueHashMap<>();
+
+
+        boolean bOnlyPostProcessing = false;
+        if(strLuceneIndexPath == null)
+        {
+            strLuceneIndexPath = lUrls2Crawl.iterator().next();
+            lUrls2Crawl = null;
+
+            bOnlyPostProcessing = true;
+            Logger.getLogger(LuceneIndexCreator.class.getName()).info(
+                    "Will perform only postprocessing (buzzwords and/or calculated page counts, as configured) on " + strLuceneIndexPath);
+
+        }
+        else
+        {
+            Logger.getLogger(LuceneIndexCreator.class.getName()).info("Crawling " + lUrls2Crawl);
+
+            if(hsStaticAttValuePairs.keySize() > 0)
+                Logger.getLogger(LuceneIndexCreator.class.getName()).info("Will add static attribute value pairs to each document: " + hsStaticAttValuePairs);
+
+
+
+
+            Leech leech = new Leech();
+
+            long startTime = StopWatch.startAndLogTime(Level.INFO);
+
+
+            CrawlReportContentHandler reportContentHandler;
+            IndexWriter indexWriter = null;
+            SimpleFSDirectory directory = new SimpleFSDirectory(new File(strLuceneIndexPath));
+            FieldConfig fieldConfig = new LeechDefaultFieldConfig();
+
+
+
+
+            @SuppressWarnings("deprecation")
+            IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_CURRENT, fieldConfig.createAnalyzer());
+
+            config.setOpenMode(OpenMode.CREATE_OR_APPEND);
+
+
+            indexWriter = new IndexWriter(directory, config);
+
+
+
+            Map<String, String> hsFieldName2FieldValue = new HashMap<String, String>();
+
+            // hsFieldName2FieldValue.put("infobox", "[Bb]and");
+            ToLuceneContentHandler toLuceneContentHandler =
+                    new ToLuceneContentHandler(fieldConfig, indexWriter).setIgnoreAllDocsWithout(hsFieldName2FieldValue).setStaticAttributeValuePairs(
+                            hsStaticAttValuePairs);
+
+            if(printErrors)
+                reportContentHandler = new CrawlReportContentHandler(new PrintlnContentHandler(Verbosity.nothing, toLuceneContentHandler).setShowOnlyErrors(true));
+            else
+                reportContentHandler = new CrawlReportContentHandler(toLuceneContentHandler);
+
+
+
+
+
+            leech.parse(lUrls2Crawl.toArray(new String[0]), reportContentHandler.setCyclicReportPrintln(cyclicReportTime), context);
+
+
+            if(indexWriter != null)
+            {
+                Logger.getLogger(LuceneIndexCreator.class.getName()).info("Will commit and merge");
+                indexWriter.commit();
+                indexWriter.forceMerge(1, true);
+                indexWriter.close(true);
+
+                StopWatch.stopAndLogDistance(startTime, Level.INFO);
+
+                Logger.getLogger(LuceneIndexCreator.class.getName()).info("..finished crawling " + lUrls2Crawl);
+            }
+        }
+
+
+
+
+
+
+
+        // das postprocessing
+
+        IndexPostprocessor postprocessor = new IndexPostprocessor();
+
+        boolean bPerformPostProcessing = false;
+        // wenn die Werte null sind, ist das Teil disabled
+        if(!StringUtils.nullOrWhitespace(strBuzzwordAttName))
+        {
+            postprocessor.enableBuzzwordGeneration(strBuzzwordAttName, iBuzzwordCount, true);
+            bPerformPostProcessing = true;
+        }
+        if(bCalculatePageCounts)
+        {
+            postprocessor.enablePageCountEstimation();
+            bPerformPostProcessing = true;
+        }
+        if(!StringUtils.nullOrWhitespace(strFrequencyClassAttName))
+        {
+            postprocessor.enableFrequencyClassCalculation(strFrequencyClassAttName);
+            bPerformPostProcessing = true;
+        }
+        if(bOnlyPostProcessing && hsStaticAttValuePairs.keySize() > 0)
+        {
+            Metadata staticAtts2Values = new Metadata();
+            for (Entry<String, String> att2Value : hsStaticAttValuePairs.entryList())
+                staticAtts2Values.add(att2Value.getKey(), att2Value.getValue());
+
+            postprocessor.enableStaticAttributeValuePairs(staticAtts2Values);
+            bPerformPostProcessing = true;
+        }
+
+        if(bPerformPostProcessing) postprocessor.postprocessIndex(strLuceneIndexPath, new LeechDefaultFieldConfig(), llLookupIndexPaths.toArray(new String[0]));
+    }
+
+
 
     /**
      * @param args args[0] is the source dir/file, args[1] the lucene target directory
@@ -50,30 +206,33 @@ public class LuceneIndexCreator
 
             System.out.println("Usage: LuceneIndexCreator [-noPageRedirects] [-noParseGeoCoordinates] [-parseInfoBoxes] [-parseLinksAndCategories]\n"
                     + " [-<staticAttName>=<staticAttValue>] [-buzzwordAttName=<attName>] [-buzzwordCount=<count>] [-calculatePageCounts]\n"
-                    + "[-li <readonlyLookupIndexPath>]"
-                    + " <fileOrDir2CrawlPath> <targetLuceneIndexPath>\n\nComments: - you can specify several static attribute value pairs.\n"
-                    + "- if you leave <fileOrDir2CrawlPath>, only postprocessing will be performed.\n"
-                    + "- you can add several lookup indices (-li).");
+                    + "[-frequencyClassAttName=<attName>] [-li <readonlyLookupIndexPath>] [-crawlingDepth=<depth>]"
+                    + " <fileOrDir2CrawlPath1> .. <fileOrDir2CrawlPathN> <targetLuceneIndexPath>\n\nComments: - you can specify several static attribute value pairs.\n"
+                    + "- if you leave <fileOrDir2CrawlPath>, only postprocessing will be performed.\n" + "- you can add several lookup indices (-li).\n"
+                    + "- if you leave the buzzword attName or the frequency class attName, these processing steps will be skiped.");
             System.out.println();
 
             return;
         }
 
 
-        String strFile2CrawlPath = null;
+        LinkedList<String> llFile2CrawlPath = new LinkedList<>();
         String strLuceneIndexPath = null;
         String strBuzzwordAttName = null;
+        String strFrequencyClassAttName = null;
+
         int iBuzzwordCount = 7;
         boolean bCalculatePageCounts = false;
         LinkedList<String> llLookupIndexPaths = new LinkedList<String>();
+
+        int iCrawlingDepth = 1;
 
 
 
 
         ParseContext context = new ParseContext();
         WikipediaDumpParserConfig wikipediaDumpParserConfig =
-                new WikipediaDumpParserConfig().setDeterminePageRedirects(true).setParseGeoCoordinates(true).setParseInfoBoxes(false)
-                        .setParseLinksAndCategories(false);
+                new WikipediaDumpParserConfig().setDeterminePageRedirects(true).setParseGeoCoordinates(true).setParseInfoBoxes(false).setParseLinksAndCategories(false);
         context.set(WikipediaDumpParserConfig.class, wikipediaDumpParserConfig);
 
 
@@ -108,6 +267,15 @@ public class LuceneIndexCreator
             {
                 iBuzzwordCount = Integer.valueOf(strArg.replace("-buzzwordCount=", ""));
             }
+
+            else if(strArg.startsWith("-crawlingDepth="))
+            {
+                iCrawlingDepth = Integer.valueOf(strArg.replace("-crawlingDepth=", ""));
+            }
+            else if(strArg.startsWith("-frequencyClassAttName="))
+            {
+                strFrequencyClassAttName = strArg.replace("-frequencyClassAttName=", "").trim();
+            }
             else if(strArg.startsWith("-calculatePageCounts"))
             {
                 bCalculatePageCounts = true;
@@ -123,106 +291,20 @@ public class LuceneIndexCreator
                 String[] split = strArg.split("=");
                 hsStaticAttValuePairs.add(split[0], split[1]);
             }
-            else if(strFile2CrawlPath == null)
+            else if(llFile2CrawlPath.size() == 0 || i != (args.length - 1))
             {
-                strFile2CrawlPath = args[i];
+                llFile2CrawlPath.add(args[i]);
             }
             else
                 strLuceneIndexPath = args[i];
 
         }
 
-        if(strLuceneIndexPath == null)
-        {
-            strLuceneIndexPath = strFile2CrawlPath;
-            strFile2CrawlPath = null;
-            Logger.getLogger(LuceneIndexCreator.class.getName()).info(
-                    "Will perform only postprocessing (buzzwords and/or calculated page counts, as configured) on " + strLuceneIndexPath);
 
-        }
-        else
-        {
-            Logger.getLogger(LuceneIndexCreator.class.getName()).info("Crawling " + strFile2CrawlPath);
+        CrawlerContext crawlerContext = new CrawlerContext().setCrawlingDepth(iCrawlingDepth);
 
-            if(hsStaticAttValuePairs.keySize() > 0)
-                Logger.getLogger(LuceneIndexCreator.class.getName()).info(
-                        "Will add static attribute value pairs to each document: " + hsStaticAttValuePairs);
-
-
-
-
-            Leech leech = new Leech();
-
-            long startTime = StopWatch.startAndLogTime(Level.INFO);
-
-
-            CrawlReportContentHandler reportContentHandler;
-            IndexWriter indexWriter = null;
-            SimpleFSDirectory directory = new SimpleFSDirectory(new File(strLuceneIndexPath));
-            FieldConfig fieldConfig4Wikipedia = WikipediaDumpParser.getFieldConfig4ParserAttributes();
-
-
-
-
-            IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_CURRENT, fieldConfig4Wikipedia.createAnalyzer());
-
-            config.setOpenMode(OpenMode.CREATE_OR_APPEND);
-
-
-            indexWriter = new IndexWriter(directory, config);
-
-
-
-            Map<String, String> hsFieldName2FieldValue = new HashMap<String, String>();
-
-            // hsFieldName2FieldValue.put("infobox", "[Bb]and");
-            ToLuceneContentHandler toLuceneContentHandler =
-                    new ToLuceneContentHandler(fieldConfig4Wikipedia, indexWriter).setIgnoreAllDocsWithout(hsFieldName2FieldValue)
-                            .setStaticAttributeValuePairs(hsStaticAttValuePairs);
-
-            reportContentHandler =
-                    new CrawlReportContentHandler(new PrintlnContentHandler(Verbosity.all, toLuceneContentHandler).setShowOnlyErrors(true));
-
-
-
-
-
-            File fFile2Crawl = new File(strFile2CrawlPath);
-
-            leech.parse(fFile2Crawl, reportContentHandler.setCyclicReportPrintln(7000), context);
-
-
-            if(indexWriter != null)
-            {
-                Logger.getLogger(LuceneIndexCreator.class.getName()).info("Will commit and merge");
-                indexWriter.commit();
-                indexWriter.forceMerge(1, true);
-                indexWriter.close(true);
-
-                StopWatch.stopAndLogDistance(startTime, Level.INFO);
-
-                Logger.getLogger(LuceneIndexCreator.class.getName()).info("..finished crawling " + strFile2CrawlPath);
-            }
-        }
-
-
-
-
-
-
-
-        // das postprocessing
-
-
-        if(StringUtils.nullOrWhitespace(strBuzzwordAttName) && !bCalculatePageCounts) return;
-
-        IndexPostprocessor postprocessor = new IndexPostprocessor();
-
-        postprocessor.enableBuzzwordGeneration(strBuzzwordAttName, iBuzzwordCount, true);
-        postprocessor.enablePageCountEstimation();
-
-        postprocessor.postprocessIndex(strLuceneIndexPath, WikipediaDumpParser.getFieldConfig4ParserAttributes(),
-                llLookupIndexPaths.toArray(new String[0]));
+        createIndex(llFile2CrawlPath, strLuceneIndexPath, llLookupIndexPaths, strBuzzwordAttName, iBuzzwordCount, bCalculatePageCounts, strFrequencyClassAttName,
+                hsStaticAttValuePairs, context);
 
 
     }

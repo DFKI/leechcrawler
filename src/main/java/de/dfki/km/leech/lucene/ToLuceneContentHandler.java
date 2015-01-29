@@ -3,11 +3,11 @@
  * 
  * Copyright (C) 2012 DFKI GmbH, Author: Christian Reuschling
  * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation,
+ * either version 3 of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  * 
@@ -50,37 +50,29 @@ import org.apache.lucene.store.SimpleFSDirectory;
 import org.apache.lucene.util.Version;
 import org.apache.tika.metadata.Metadata;
 
+import de.dfki.inquisition.collections.MultiValueHashMap;
+import de.dfki.inquisition.file.FileUtils;
+import de.dfki.inquisition.lucene.FieldConfig;
 import de.dfki.km.leech.Leech;
 import de.dfki.km.leech.metadata.LeechMetadata;
 import de.dfki.km.leech.parser.incremental.IncrementalCrawlingHistory;
 import de.dfki.km.leech.sax.DataSinkContentHandler;
-import de.dfki.km.leech.util.FileUtils;
-import de.dfki.km.leech.util.MultiValueHashMap;
 
 
 
 /**
- * This is a content handler that allows to store crawled data into a Lucene index. You are able to configure the field types and the analyzers that
- * should be used. Further, blockindexing with {@link IndexWriter#addDocuments(java.util.Collection, Analyzer)} is supported, you can enable it with
+ * This is a content handler that allows to store crawled data into a Lucene index. You are able to configure the field types and the analyzers that should be used.
+ * Further, blockindexing with {@link IndexWriter#addDocuments(java.util.Collection, Analyzer)} is supported, you can enable it with
  * {@link ToLuceneContentHandler#setBlockIndexing(boolean)}. If it is enabled, {@link ToLuceneContentHandler} checks whether inside the metadata is a
- * {@link LeechMetadata#childId} or a {@link LeechMetadata#parentId} key. Documents with a {@link LeechMetadata#childId} entry will appear as parent
- * documents, docs with an {@link LeechMetadata#parentId} as childs. {@link ToLuceneContentHandler} collects the child documents if they appear at a
- * processXXX method, and writes them as block at the time a succeeding parent document appears. In the case a non-parent doc appears, all collected
- * docs will be indexed normally, not as block.
+ * {@link LeechMetadata#childId} or a {@link LeechMetadata#parentId} key. Documents with a {@link LeechMetadata#childId} entry will appear as parent documents, docs with
+ * an {@link LeechMetadata#parentId} as childs. {@link ToLuceneContentHandler} collects the child documents if they appear at a processXXX method, and writes them as
+ * block at the time a succeeding parent document appears. In the case a non-parent doc appears, all collected docs will be indexed normally, not as block.
  * 
  * @author Christian Reuschling, Dipl.Ing.(BA)
  * 
  */
 public class ToLuceneContentHandler extends DataSinkContentHandler
 {
-
-
-    protected class InterruptThreadList extends LinkedList<Document>
-    {
-        private static final long serialVersionUID = 196832081918659203L;
-    }
-
-
 
 
     protected class DocConsumer implements Runnable
@@ -99,17 +91,34 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
                 {
                     List<Document> llDocs = m_addDocsQueue.take();
 
-                    if(llDocs instanceof InterruptThreadList) break;
-
-
-
-                    if(llDocs.size() == 1)
+                    // TODO check!!!
+                    // if(llDocs instanceof InterruptThreadList) break;
+                    if(llDocs instanceof InterruptThreadList)
                     {
-                        getCurrentWriter().addDocument(llDocs.get(0));
+                        m_cyclicBarrier4DocConsumerThreads.await();
+                        continue;
                     }
-                    else if(llDocs.size() > 1)
+
+                    try
                     {
-                        getCurrentWriter().addDocuments(llDocs);
+
+
+                        if(llDocs.size() == 1)
+                        {
+                            getCurrentWriter().addDocument(llDocs.get(0));
+                        }
+                        else if(llDocs.size() > 1)
+                        {
+                            getCurrentWriter().addDocuments(llDocs);
+                        }
+
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.getLogger(ToLuceneContentHandler.DocConsumer.class.getName()).log(
+                                Level.WARNING,
+                                "Error during writing a document to the index (lucene exception while addDocument) - will ignore it. This is a hint to a lucene bug."
+                                        + llDocs);
                     }
 
                 }
@@ -139,6 +148,14 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
 
 
+
+    protected class InterruptThreadList extends LinkedList<Document>
+    {
+        private static final long serialVersionUID = 196832081918659203L;
+    }
+
+
+
     protected final BlockingQueue<List<Document>> m_addDocsQueue = new LinkedBlockingQueue<List<Document>>(23);
 
 
@@ -147,11 +164,15 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
 
 
+    protected CyclicBarrier m_cyclicBarrier4DocConsumerThreads;
+
+
+
+
+
+
+
     protected FieldConfig m_fieldConfig = new FieldConfig();
-
-
-
-
 
 
 
@@ -159,38 +180,38 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
 
 
+
+
     protected Map<String, String> m_hsFieldName2FieldValueConstraint;
-
-
-
-
 
     protected MultiValueHashMap<String, String> m_hsSource2TargetFieldnames = new MultiValueHashMap<String, String>();
 
     protected MultiValueHashMap<String, String> m_hsStaticAttValuePairs = new MultiValueHashMap<String, String>();
 
+
     protected MultiValueHashMap<String, String> m_hsTarget2SourcesFieldnames = new MultiValueHashMap<String, String>();
-
-
-    protected IndexWriter m_initialLuceneWriter;
-
-
-
-    protected int m_iSplitIndexDocumentCount = 500000;
-
-
-    protected LinkedList<Thread> m_llConsumerThreads = new LinkedList<Thread>();
-
-    protected CyclicBarrier m_cyclicBarrier4DocConsumerThreads;
-
-
-
-    protected LinkedList<Document> m_llLastChildDocuments = new LinkedList<Document>();
-
 
 
 
     protected HashSet<String> m_hsTmpLuceneWriterPaths2Merge = new HashSet<String>();
+
+
+    protected IndexWriter m_initialLuceneWriter;
+
+    protected int m_iSplitIndexDocumentCount = 500000;
+
+
+
+    protected LinkedList<Thread> m_llConsumerThreads = new LinkedList<Thread>();
+
+
+
+
+    protected LinkedList<IndexWriter> m_llIndexWriter2Close = new LinkedList<IndexWriter>();
+
+
+
+    protected LinkedList<Document> m_llLastChildDocuments = new LinkedList<Document>();
 
 
 
@@ -250,7 +271,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
     {
         for (Entry<String, String> fieldName2Value : getStaticAttributeValuePairs().entryList())
         {
-            IndexableField field = FieldFactory.createField(fieldName2Value.getKey(), fieldName2Value.getValue(), m_fieldConfig);
+            IndexableField field = m_fieldConfig.createField(fieldName2Value.getKey(), fieldName2Value.getValue());
             if(field != null)
                 doc.add(field);
             else
@@ -262,8 +283,8 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
 
     /**
-     * Will merge all temporar indices together into the initial indexWriter index. This is only necessary if SplitAndMerge is enabled. Otherwise you
-     * don't have to invoke this method.
+     * Will merge all temporar indices together into the initial indexWriter index. This is only necessary if SplitAndMerge is enabled. Otherwise you don't have to invoke
+     * this method.
      */
     @Override
     public void crawlFinished()
@@ -275,6 +296,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
                 m_addDocsQueue.put(new InterruptThreadList());
 
             m_cyclicBarrier4DocConsumerThreads.await();
+            m_cyclicBarrier4DocConsumerThreads = new CyclicBarrier(m_cyclicBarrier4DocConsumerThreads.getParties());
 
             if(getSplitAndMergeIndex() <= 0) return;
 
@@ -295,8 +317,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
             if(llIndicesDirs2Merge.size() == 0) return;
 
-            Logger.getLogger(ToLuceneContentHandler.class.getName()).info(
-                    "Will merge " + llIndicesDirs2Merge.size() + " temporary indices to the final one.");
+            Logger.getLogger(ToLuceneContentHandler.class.getName()).info("Will merge " + llIndicesDirs2Merge.size() + " temporary indices to the final one.");
 
 
             m_initialLuceneWriter.addIndexes(llIndicesDirs2Merge.toArray(new Directory[0]));
@@ -359,12 +380,11 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
         // übergibt
 
         // eine eindeutige ID muß da sein
-        if(metadata.getValues(LeechMetadata.id).length == 0)
-            doc.add(FieldFactory.createField(LeechMetadata.id, new UID().toString(), m_fieldConfig));
-        if(!getFields2Ignore().contains(LeechMetadata.body)) doc.add(FieldFactory.createField(LeechMetadata.body, strFulltext, m_fieldConfig));
+        if(metadata.getValues(LeechMetadata.id).length == 0) doc.add(m_fieldConfig.createField(LeechMetadata.id, new UID().toString()));
+        if(!getFields2Ignore().contains(LeechMetadata.body)) doc.add(m_fieldConfig.createField(LeechMetadata.body, strFulltext));
         // die kopien
         for (String strFieldCopy : getFieldCopyMap().get(LeechMetadata.body))
-            if(!getFields2Ignore().contains(strFieldCopy)) doc.add(FieldFactory.createField(strFieldCopy, strFulltext, m_fieldConfig));
+            if(!getFields2Ignore().contains(strFieldCopy)) doc.add(m_fieldConfig.createField(strFieldCopy, strFulltext));
 
 
         // die restlichen metadaten
@@ -374,7 +394,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
             {
                 for (String strValue : metadata.getValues(strFieldName))
                 {
-                    IndexableField field = FieldFactory.createField(strFieldName, strValue, m_fieldConfig);
+                    IndexableField field = m_fieldConfig.createField(strFieldName, strValue);
                     if(field != null)
                         doc.add(field);
                     else
@@ -390,7 +410,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
                 {
                     for (String strValue : metadata.getValues(strFieldName))
                     {
-                        IndexableField field = FieldFactory.createField(strFieldCopy, strValue, m_fieldConfig);
+                        IndexableField field = m_fieldConfig.createField(strFieldCopy, strValue);
                         if(field != null)
                             doc.add(field);
                         else
@@ -418,7 +438,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
                 if(strNewValue != null)
                 {
-                    IndexableField field = FieldFactory.createField(strTargetAtt, strNewValue, m_fieldConfig);
+                    IndexableField field = m_fieldConfig.createField(strTargetAtt, strNewValue);
                     if(field != null)
                         doc.add(field);
                     else
@@ -461,9 +481,6 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
     }
 
 
-    protected LinkedList<IndexWriter> m_llIndexWriter2Close = new LinkedList<IndexWriter>();
-
-
 
     synchronized protected IndexWriter getCurrentWriter() throws CorruptIndexException, LockObtainFailedException, IOException
     {
@@ -498,6 +515,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
                 "Current index exceeds " + m_iSplitIndexDocumentCount + " documents. Will create another temporary one under " + fOurTmpDir);
 
 
+        @SuppressWarnings("deprecation")
         IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_CURRENT, m_initialLuceneWriter.getConfig().getAnalyzer());
         config.setOpenMode(OpenMode.CREATE);
 
@@ -510,9 +528,9 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
 
     /**
-     * Gets the field aggregation map. This means that you want to generate a field entry, whereby its value should be copied from another, existing
-     * metadata entry. You can specify a list of these source-attributes, the first who have an entry wins and appears as new attribute, so the source
-     * field name list is in fact a priorized list.
+     * Gets the field aggregation map. This means that you want to generate a field entry, whereby its value should be copied from another, existing metadata entry. You
+     * can specify a list of these source-attributes, the first who have an entry wins and appears as new attribute, so the source field name list is in fact a priorized
+     * list.
      * 
      * @return the current field aggregation map
      */
@@ -524,10 +542,9 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
 
     /**
-     * Gets the field copy mappings. This means that the content of every metadata key that is specified as key inside hsSource2TargetFieldnames will
-     * be copied into several other fields. The field names of these fields are specified as corresponding value inside hsSource2TargetFieldnames. In
-     * the case you want to rename attribute names, specify a field mapping and ignore the source field name with
-     * {@link #setFieldNames2Ignore(HashSet)}
+     * Gets the field copy mappings. This means that the content of every metadata key that is specified as key inside hsSource2TargetFieldnames will be copied into
+     * several other fields. The field names of these fields are specified as corresponding value inside hsSource2TargetFieldnames. In the case you want to rename
+     * attribute names, specify a field mapping and ignore the source field name with {@link #setFieldNames2Ignore(HashSet)}
      * 
      * @return the current field mappings
      */
@@ -563,11 +580,11 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
 
     /**
-     * If split and merge is enabled, {@link ToLuceneContentHandler} will check at each {@link #processNewData(Metadata, String)} invocation whether
-     * the current indexWriter has more than iSplitIndexDocumentCount documents. In the case it has more, {@link ToLuceneContentHandler} will create
-     * an entirely new index for writing, until this one also gets 'overfilled'. In the case your crawl is finished, {@link Leech} invokes
-     * {@link ToLuceneContentHandler#crawlFinished()}. This will merge all temporary indices into the initial indexWriter object. This is for
-     * performance reasons because writing into a Lucene index tends to get slow after a certain size. Splitting and merging afterwards is faster.
+     * If split and merge is enabled, {@link ToLuceneContentHandler} will check at each {@link #processNewData(Metadata, String)} invocation whether the current
+     * indexWriter has more than iSplitIndexDocumentCount documents. In the case it has more, {@link ToLuceneContentHandler} will create an entirely new index for
+     * writing, until this one also gets 'overfilled'. In the case your crawl is finished, {@link Leech} invokes {@link ToLuceneContentHandler#crawlFinished()}. This will
+     * merge all temporary indices into the initial indexWriter object. This is for performance reasons because writing into a Lucene index tends to get slow after a
+     * certain size. Splitting and merging afterwards is faster.
      * 
      * @return the document count a new index will be created
      */
@@ -599,7 +616,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
         int iThreadCount = (int) Math.round(iCoreCount / 2d);
         iThreadCount = Math.max(iThreadCount, 1);
 
-        m_cyclicBarrier4DocConsumerThreads = new CyclicBarrier(iThreadCount +1);
+        m_cyclicBarrier4DocConsumerThreads = new CyclicBarrier(iThreadCount + 1);
         for (int i = 0; i < iThreadCount; i++)
         {
             Thread consumerThread = new Thread(new DocConsumer(), "ToLuceneContentHandlerDocConsumer " + i);
@@ -635,8 +652,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
 
             // TODO: was passiert hier mit block-indexierten Dokumenten?
-            m_initialLuceneWriter.updateDocument(
-                    new Term(IncrementalCrawlingHistory.dataEntityExistsID, metadata.get(IncrementalCrawlingHistory.dataEntityExistsID)),
+            m_initialLuceneWriter.updateDocument(new Term(IncrementalCrawlingHistory.dataEntityExistsID, metadata.get(IncrementalCrawlingHistory.dataEntityExistsID)),
                     luceneDocument);
 
         }
@@ -792,6 +808,14 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
 
     @Override
+    public void processProcessedData(Metadata metadata)
+    {
+        // NOP
+    }
+
+
+
+    @Override
     public void processRemovedData(Metadata metadata)
     {
         // da kann man ja mit den inkremental-Ids spielen, die stehen ja evtl. noch in den Metadaten drin :) :)
@@ -800,8 +824,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
         {
 
             // TODO: was passiert hier mit block-indexierten Dokumenten?
-            m_initialLuceneWriter.deleteDocuments(new Term(IncrementalCrawlingHistory.dataEntityExistsID, metadata
-                    .get(IncrementalCrawlingHistory.dataEntityExistsID)));
+            m_initialLuceneWriter.deleteDocuments(new Term(IncrementalCrawlingHistory.dataEntityExistsID, metadata.get(IncrementalCrawlingHistory.dataEntityExistsID)));
 
         }
         catch (Exception e)
@@ -813,12 +836,21 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
 
 
+    @Override
+    public void processUnmodifiedData(Metadata metadata)
+    {
+        // NOP
+    }
+
+
+
+
     /**
      * Sets whether block indexing with {@link IndexWriter#addDocuments(java.util.Collection, Analyzer)} is enabled or not. If it is enabled,
-     * {@link ToLuceneContentHandler} checks whether inside the metadata is a {@link LeechMetadata#childId} or a {@link LeechMetadata#parentId} key.
-     * Documents with a {@link LeechMetadata#childId} entry will appear as parent documents, docs with an {@link LeechMetadata#parentId} as childs.
-     * {@link ToLuceneContentHandler} collects the child documents if they appear at a processXXX method, and writes them as block at the time a
-     * succeeding parent document appears. In the case a non-parent doc appears, all collected docs will be indexed normally, not as block.
+     * {@link ToLuceneContentHandler} checks whether inside the metadata is a {@link LeechMetadata#childId} or a {@link LeechMetadata#parentId} key. Documents with a
+     * {@link LeechMetadata#childId} entry will appear as parent documents, docs with an {@link LeechMetadata#parentId} as childs. {@link ToLuceneContentHandler} collects
+     * the child documents if they appear at a processXXX method, and writes them as block at the time a succeeding parent document appears. In the case a non-parent doc
+     * appears, all collected docs will be indexed normally, not as block.
      * 
      * @param blockIndexing true in the case blockindexing should be inabled, false otherwise.
      */
@@ -830,9 +862,9 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
 
     /**
-     * Sets the field aggregation map. This means that you want to generate a field entry, whereby its value should be copied from another, existing
-     * metadata entry. You can specify a list of these source-attributes, the first who have an entry wins and appears as new attribute, so the source
-     * field name list is in fact a priorized list.
+     * Sets the field aggregation map. This means that you want to generate a field entry, whereby its value should be copied from another, existing metadata entry. You
+     * can specify a list of these source-attributes, the first who have an entry wins and appears as new attribute, so the source field name list is in fact a priorized
+     * list.
      * 
      * @param hsTarget2SourcesFieldnames the field aggregation map
      */
@@ -843,20 +875,19 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
 
 
-
     /**
-     * Sets the field copy mappings. This means that the content of every metadata key that is specified as key inside hsSource2TargetFieldnames will
-     * be copied into several other fields. The field names of these fields are specified as corresponding value inside hsSource2TargetFieldnames. In
-     * the case you want to rename attribute names, specify a field mapping and ignore the source field name with
-     * {@link #setFieldNames2Ignore(HashSet)}
+     * Sets the field copy mappings. This means that the content of every metadata key that is specified as key inside hsSource2TargetFieldnames will be copied into
+     * several other fields. The field names of these fields are specified as corresponding value inside hsSource2TargetFieldnames. In the case you want to rename
+     * attribute names, specify a field mapping and ignore the source field name with {@link #setFieldNames2Ignore(HashSet)}
      * 
-     * @param hsSource2TargetFieldnames keys: source field names, given as metadata keys. values: target field names - the content will also appear
-     *            under these fields inside a lucene document
+     * @param hsSource2TargetFieldnames keys: source field names, given as metadata keys. values: target field names - the content will also appear under these fields
+     *            inside a lucene document
      */
     public void setFieldCopyMap(MultiValueHashMap<String, String> hsSource2TargetFieldnames)
     {
         m_hsSource2TargetFieldnames = hsSource2TargetFieldnames;
     }
+
 
 
 
@@ -870,6 +901,10 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
     {
         m_hsAttNamesNot2Store = hsAttNamesNot2Store;
     }
+
+
+
+
 
 
 
@@ -889,17 +924,15 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
 
 
-
     /**
-     * If split and merge is enabled, {@link ToLuceneContentHandler} will check at each {@link #processNewData(Metadata, String)} invocation whether
-     * the current indexWriter has more than iSplitIndexDocumentCount documents. In the case it has more, {@link ToLuceneContentHandler} will create
-     * an entirely new index for writing, until this one also gets 'overfilled'. In the case your crawl is finished, invoking
-     * {@link ToLuceneContentHandler#crawlFinished()} merges all temporary indices into the initial indexWriter object. This invocation will be done
-     * automatically by the {@link Leech} class. This is for performance reasons because writing into a Lucene index tends to get slow after a certain
-     * size. Splitting and merging afterwards is faster.
+     * If split and merge is enabled, {@link ToLuceneContentHandler} will check at each {@link #processNewData(Metadata, String)} invocation whether the current
+     * indexWriter has more than iSplitIndexDocumentCount documents. In the case it has more, {@link ToLuceneContentHandler} will create an entirely new index for
+     * writing, until this one also gets 'overfilled'. In the case your crawl is finished, invoking {@link ToLuceneContentHandler#crawlFinished()} merges all temporary
+     * indices into the initial indexWriter object. This invocation will be done automatically by the {@link Leech} class. This is for performance reasons because writing
+     * into a Lucene index tends to get slow after a certain size. Splitting and merging afterwards is faster.
      * 
-     * @param iSplitIndexDocumentCount the document count a new index will be created. A good size is 500 000 (from my stomach feeling, this is the
-     *            default). -1 in the case you want to disable SplitAndMerge.
+     * @param iSplitIndexDocumentCount the document count a new index will be created. A good size is 500 000 (from my stomach feeling, this is the default). -1 in the
+     *            case you want to disable SplitAndMerge.
      * 
      * @return this
      */
@@ -909,10 +942,6 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
         return this;
     }
-
-
-
-
 
 
 

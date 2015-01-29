@@ -1,23 +1,18 @@
 /*
-    Leech - crawling capabilities for Apache Tika
-    
-    Copyright (C) 2012 DFKI GmbH, Author: Christian Reuschling
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-    Contact us by mail: christian.reuschling@dfki.de
-*/
+ * Leech - crawling capabilities for Apache Tika
+ * 
+ * Copyright (C) 2012 DFKI GmbH, Author: Christian Reuschling
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation,
+ * either version 3 of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * Contact us by mail: christian.reuschling@dfki.de
+ */
 
 package de.dfki.km.leech.parser;
 
@@ -36,23 +31,22 @@ import org.apache.tika.parser.Parser;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
+import de.dfki.inquisition.collections.MultiValueHashMap;
 import de.dfki.km.leech.config.CrawlerContext;
 import de.dfki.km.leech.parser.incremental.IncrementalCrawlingParser;
 import de.dfki.km.leech.sax.DataSinkContentHandler;
 import de.dfki.km.leech.util.ExceptionUtils;
-import de.dfki.km.leech.util.MultiValueHashMap;
 import de.dfki.km.leech.util.TikaUtils;
 
 
 
 /**
  * This is the upper class for all crawling parsers. If you want to write a crawling parser, implement this class. CrawlerParser will first invoke
- * {@link #processCurrentDataEntity(InputStream, Metadata, ContentHandler, ParseContext)} to process the input stream and pushing it to a
- * ContentHandler, simply the standard Tika parsing way. Next, it will call
- * {@link #getSubDataEntitiesInformation(InputStream, ContentHandler, Metadata, ParseContext)} to determine all succeeding sub data entities from this
- * data entity. CrawlerParser then iterates over these entries and give them to
- * {@link #processSubDataEntity(MultiValueHashMap, Metadata, ContentHandler, ParseContext)} in order to further process the sub data entities
- * individually. This is the recursive call, which starts the whole parsing process again with a new entity. <br>
+ * {@link #processCurrentDataEntity(InputStream, Metadata, ContentHandler, ParseContext)} to process the input stream and pushing it to a ContentHandler, simply the
+ * standard Tika parsing way. Next, it will call {@link #getSubDataEntitiesInformation(InputStream, ContentHandler, Metadata, ParseContext)} to determine all succeeding
+ * sub data entities from this data entity. CrawlerParser then iterates over these entries and give them to
+ * {@link #processSubDataEntity(MultiValueHashMap, Metadata, ContentHandler, ParseContext)} in order to further process the sub data entities individually. This is the
+ * recursive call, which starts the whole parsing process again with a new entity. <br>
  * <br>
  * The crawling process can be configured with specific context classes, have a look into the 'config' package, especially {@link CrawlerContext}.
  * 
@@ -63,11 +57,12 @@ public abstract class CrawlerParser implements Parser
 
 
 
-    
+
 
     private static final long serialVersionUID = -6707880965147815349L;
 
     static public final String CURRENT_CRAWLING_DEPTH = "currentCrawlingDepth";
+
     static public final String SOURCEID = "sourceId";
 
 
@@ -77,36 +72,32 @@ public abstract class CrawlerParser implements Parser
 
 
     /**
-     * Gets information about all data entities that should be (sub)crawled by this crawler instance. This e.g. could be all files and directories
-     * inside the current directory. You can return arbritrary information about a data entity - it will be offered as-is at the invocation of
+     * Gets information about all data entities that should be (sub)crawled by this crawler instance. This e.g. could be all files and directories inside the current
+     * directory. You can return arbritrary information about a data entity - it will be offered as-is at the invocation of
      * {@link #processSubDataEntity(MultiValueHashMap, Metadata, ContentHandler, ParseContext)} in order to deal with it. <br>
      * <br>
-     * To consider constraints given from the user for Url/datasource string filtering, use the potential CrawlerContext Object inside the
-     * ParseContext and use the URLFilter. Same is for the stop request, which is also offered by the CrawlerContext. Leech deals automatically with
-     * stop requests and data entity filtering, but you can enhance the performance when you filter subentities early in this class. This is because
-     * otherwise there will be a stream initialization or established connection before filtering. <br>
+     * To consider constraints given from the user for Url/datasource string filtering, use the potential CrawlerContext Object inside the ParseContext and use the
+     * URLFilter. Same is for the stop request, which is also offered by the CrawlerContext. Leech deals automatically with stop requests and data entity filtering, but
+     * you can enhance the performance when you filter subentities early in this class. This is because otherwise there will be a stream initialization or established
+     * connection before filtering. <br>
      * <br>
-     * While creating the information Map for a (sub) data entity, it is recommended to put at least one key entry with CrawlerParser.SOURCEID for use
-     * in potential error messages, to identify a problematic data entity. In the case you do so, you can simply throw all Exceptions inside your
-     * implementation of processSubDataEntity, the super class will deal with it.<br>
+     * While creating the information Map for a (sub) data entity, it is recommended to put at least one key entry with CrawlerParser.SOURCEID for use in potential error
+     * messages, to identify a problematic data entity. In the case you do so, you can simply throw all Exceptions inside your implementation of processSubDataEntity, the
+     * super class will deal with it.<br>
      * <br>
      * 
-     * @param stream the stream-parameter from the Parser.parse(InputStream stream, ContentHandler handler, Metadata metadata, ParseContext context)
+     * @param stream the stream-parameter from the Parser.parse(InputStream stream, ContentHandler handler, Metadata metadata, ParseContext context) invocation
+     * @param handler the handler-parameter from the Parser.parse(InputStream stream, ContentHandler handler, Metadata metadata, ParseContext context) invocation
+     * @param metadata a copy of the metadata-parameter from the Parser.parse(InputStream stream, ContentHandler handler, Metadata metadata, ParseContext context)
      *            invocation
-     * @param handler the handler-parameter from the Parser.parse(InputStream stream, ContentHandler handler, Metadata metadata, ParseContext context)
-     *            invocation
-     * @param metadata a copy of the metadata-parameter from the Parser.parse(InputStream stream, ContentHandler handler, Metadata metadata,
-     *            ParseContext context) invocation
-     * @param context the context-parameter from the Parser.parse(InputStream stream, ContentHandler handler, Metadata metadata, ParseContext context)
-     *            invocation
+     * @param context the context-parameter from the Parser.parse(InputStream stream, ContentHandler handler, Metadata metadata, ParseContext context) invocation
      * 
-     * @return an iterator with all information about a data entity that should be crawled, that is enough to deal with it inside the other method
-     *         implementations
+     * @return an iterator with all information about a data entity that should be crawled, that is enough to deal with it inside the other method implementations
      * 
      * @throws Exception
      */
-    abstract protected Iterator<MultiValueHashMap<String, Object>> getSubDataEntitiesInformation(InputStream stream, ContentHandler handler,
-            Metadata metadata, ParseContext context) throws Exception;
+    abstract protected Iterator<MultiValueHashMap<String, Object>> getSubDataEntitiesInformation(InputStream stream, ContentHandler handler, Metadata metadata,
+            ParseContext context) throws Exception;
 
 
 
@@ -114,8 +105,7 @@ public abstract class CrawlerParser implements Parser
 
 
     @Override
-    public void parse(InputStream stream, ContentHandler handler, Metadata metadata, ParseContext context) throws IOException, SAXException,
-            TikaException
+    public void parse(InputStream stream, ContentHandler handler, Metadata metadata, ParseContext context) throws IOException, SAXException, TikaException
     {
 
 
@@ -124,7 +114,7 @@ public abstract class CrawlerParser implements Parser
 
 
 
-        String strSourceURL = "";
+        String strSourceURL = metadata.get(Metadata.SOURCE);
         int iCurrentCrawlingDepth = 0;
         TikaInputStream tmpStream = null;
 
@@ -146,7 +136,7 @@ public abstract class CrawlerParser implements Parser
                 // hier ist es vermutlich besser, auf das tmp-file-Angebot vom TikaStream einzugehen - die Platte wird vermutlich schneller sein als
                 // eine durchschnittliche Internetverbindung.Auch schreibend. Sollte kein File hinter dem stream stecken (z.B. bei einer
                 // http-connection) wird Tika automatisch ein temporäres File erzeugen.
-                tmpStream = TikaInputStream.get(((TikaInputStream) stream).getFile());
+                tmpStream = TikaInputStream.get((TikaInputStream.get(stream).getFile()));
 
                 ContentHandler handler2use4recursiveCall = TikaUtils.createContentHandler4SubCrawl(crawlerContext);
 
@@ -203,9 +193,10 @@ public abstract class CrawlerParser implements Parser
                 }
                 catch (Throwable e)
                 {
-                    String strSourceID = subDataEntityInfo.getFirst(SOURCEID).toString();
+                    Object sourceId = subDataEntityInfo.getFirst(SOURCEID);
 
-                    ExceptionUtils.handleException(e, strSourceID, metadata, crawlerContext, context, iCurrentCrawlingDepth, handler2use4recursiveCall);
+                    ExceptionUtils.handleException(e, sourceId == null ? "noSourceId" : sourceId.toString(), metadata, crawlerContext, context, iCurrentCrawlingDepth,
+                            handler2use4recursiveCall);
                 }
 
 
@@ -236,7 +227,7 @@ public abstract class CrawlerParser implements Parser
         catch (Exception e)
         {
             if(e instanceof TikaException) throw (TikaException) e;
-            throw new TikaException("Error while crawling " + strSourceURL, e);
+            throw new TikaException("Error while crawling '" + strSourceURL + "'", e);
         }
         finally
         {
@@ -258,44 +249,40 @@ public abstract class CrawlerParser implements Parser
 
 
     /**
-     * Processes the current data entity that should be parsed. This method extracts the content by e.g. delegating the stream to a specific Parser in
-     * order to push the content to the ContentHandler, whereby the
-     * {@link #getSubDataEntitiesInformation(InputStream, ContentHandler, Metadata, ParseContext)} method extracts all the links to other data entites
-     * out of this content, for further processing them individually. <br>
+     * Processes the current data entity that should be parsed. This method extracts the content by e.g. delegating the stream to a specific Parser in order to push the
+     * content to the ContentHandler, whereby the {@link #getSubDataEntitiesInformation(InputStream, ContentHandler, Metadata, ParseContext)} method extracts all the
+     * links to other data entites out of this content, for further processing them individually. <br>
      * <br>
-     * For example, the {@link HtmlCrawlerParser} simply delegates the parameters to a Tika HtmlParser Object when its unmodified (this info is inside
-     * the metadata possibly generated by {@link IncrementalCrawlingParser}).
+     * For example, the {@link HtmlCrawlerParser} simply delegates the parameters to a Tika HtmlParser Object when its unmodified (this info is inside the metadata
+     * possibly generated by {@link IncrementalCrawlingParser}).
      * 
      * @param stream a 'cloned' stream from the stream given from the parse method
      * @param metadata the metadata given from the parse method
-     * @param handler the origin content handler instance from the parse method, OR an instance created newly at every data entity as configured
-     *            inside CrawlerContext
+     * @param handler the origin content handler instance from the parse method, OR an instance created newly at every data entity as configured inside CrawlerContext
      * @param context the ParseContext Object given from the parse method
      * 
      * @throws Exception
      */
-    abstract protected void processCurrentDataEntity(InputStream stream, Metadata metadata, ContentHandler handler, ParseContext context)
-            throws Exception;
+    abstract protected void processCurrentDataEntity(InputStream stream, Metadata metadata, ContentHandler handler, ParseContext context) throws Exception;
 
 
 
     /**
-     * Processes a sub data entity from this parsed 'container' data entity - this is finally the recursive call, normally you invoke some kind of
-     * Leech.parse(...) method here, e.g.<br>
+     * Processes a sub data entity from this parsed 'container' data entity - this is finally the recursive call, normally you invoke some kind of Leech.parse(...) method
+     * here, e.g.<br>
      * <br>
      * <code>
      * Parser parser = m_leech.getParser();<br>
      * parser.parse(stream, handler2use4recursiveCall, metadata, context);<br>
      * <br>
-     * </code> The stream and possible additional metadata entries you create or get out of information inside the subDataEntityInformation. Make sure
-     * that you reuse the metadata Object for the case that the handler has also an internal metadata member that must be the same object (as inside
-     * {@link DataSinkContentHandler})
+     * </code> The stream and possible additional metadata entries you create or get out of information inside the subDataEntityInformation. Make sure that you reuse the
+     * metadata Object for the case that the handler has also an internal metadata member that must be the same object (as inside {@link DataSinkContentHandler})
      * 
      * @param subDataEntityInformation one entry out of the formerly returned iterator from
      *            {@link #getSubDataEntitiesInformation(InputStream, ContentHandler, Metadata, ParseContext)}
      * @param metadata2use4recursiveCall the metadata object that should be used for recursive calls
-     * @param handler2use4recursiveCall the origin content handler instance from the root crawl invocation, OR an instance created newly at every data
-     *            entity as configured inside CrawlerContext
+     * @param handler2use4recursiveCall the origin content handler instance from the root crawl invocation, OR an instance created newly at every data entity as
+     *            configured inside CrawlerContext
      * @param context the origin ParseContext instance given from the parse method
      * 
      * @throws Exception

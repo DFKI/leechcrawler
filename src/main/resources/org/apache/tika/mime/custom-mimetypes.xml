@@ -10,4 +10,15 @@
 			<match value="mediawiki xmlns=" type="string" offset="1" />
 		</magic>
 	</mime-type>
+	
+	
+	
+	<mime-type type="application/leechUrlList">
+		<sub-class-of type="text/plain" />
+		<acronym>leechUrlList</acronym>
+		<_comment>plain text file with a list of Urls that should be crawled</_comment>
+		<glob pattern="*.urlList" />
+	</mime-type>
+	
+	
 </mime-info>

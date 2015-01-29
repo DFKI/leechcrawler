@@ -51,8 +51,8 @@ import org.apache.lucene.store.SimpleFSDirectory;
 import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.Version;
 
+import de.dfki.inquisition.text.StringUtils;
 import de.dfki.km.leech.config.CrawlerContext;
-import de.dfki.km.leech.util.StringUtils;
 
 
 

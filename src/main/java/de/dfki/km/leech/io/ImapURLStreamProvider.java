@@ -34,7 +34,6 @@ import javax.mail.Store;
 import javax.mail.URLName;
 
 import org.apache.tika.io.TikaInputStream;
-import org.apache.tika.metadata.DublinCore;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
 

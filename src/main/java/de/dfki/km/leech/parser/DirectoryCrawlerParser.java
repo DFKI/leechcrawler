@@ -38,19 +38,18 @@ import java.util.logging.Logger;
 
 import javax.mail.URLName;
 
-import org.apache.tika.metadata.DublinCore;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MediaType;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
 import org.xml.sax.ContentHandler;
 
+import de.dfki.inquisition.collections.MultiValueHashMap;
 import de.dfki.km.leech.Leech;
 import de.dfki.km.leech.config.CrawlerContext;
 import de.dfki.km.leech.config.DirectoryCrawlerContext;
 import de.dfki.km.leech.detect.DatasourceMediaTypes;
 import de.dfki.km.leech.io.URLStreamProvider;
-import de.dfki.km.leech.util.MultiValueHashMap;
 import de.dfki.km.leech.util.OSUtils;
 
 

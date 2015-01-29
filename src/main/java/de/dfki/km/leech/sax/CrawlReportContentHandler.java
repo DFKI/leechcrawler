@@ -3,11 +3,11 @@
  * 
  * Copyright (C) 2012 DFKI GmbH, Author: Christian Reuschling
  * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation,
+ * either version 3 of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  * 
@@ -26,13 +26,14 @@ import java.util.logging.Logger;
 
 import org.apache.tika.metadata.Metadata;
 
-import de.dfki.km.leech.util.StopWatch;
+import de.dfki.inquisition.processes.StopWatch;
+import de.dfki.inquisition.text.StringUtils;
 
 
 
 /**
- * A ContentHandler wrapper/decorator that counts the new, modified removed and error entities during a crawl. For new, modified and error entities
- * she also counts the according content types as detail information.<br>
+ * A ContentHandler wrapper/decorator that counts the new, modified removed and error entities during a crawl. For new, modified and error entities she also counts the
+ * according content types as detail information.<br>
  * <br>
  * Usage:<br>
  * <code>
@@ -64,7 +65,11 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
 
         public int iNewEntities = 0;
 
+        public int iProcessedEntities = 0;
+
         public int iRemovedEntities = 0;
+
+        public int iUnModifiedEntities = 0;
 
         public long lastModifiedEntityProcessingTime;
 
@@ -91,10 +96,9 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
 
             strbReport.append("Report: ");
             if(lfirstEntityStartTime != -1)
-                strbReport.append("First handled data entity at ").append(new SimpleDateFormat().format(new Date(lfirstEntityStartTime)))
-                        .append(", ");
+                strbReport.append("First handled data entity at ").append(new SimpleDateFormat().format(new Date(lfirstEntityStartTime))).append(", ");
             int iEntities = iModifiedEntities + iNewEntities + iRemovedEntities + iErrorEntities;
-            strbReport.append(iEntities).append(" processed entities");
+            strbReport.append(StringUtils.beautifyNumber(iEntities)).append(" processed entities");
             if(lfirstEntityStartTime != -1)
             {
                 long lDuration = lLastEntityEndTime - lfirstEntityStartTime;
@@ -106,10 +110,10 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
                     strbReport.append(", ").append(StopWatch.formatTimeDistance(lMilliSecondsPerEntity)).append("/entity");
 
                     double dEntitiesPerMilliSecond = (double) iEntities / (double) lDuration;
-                    strbReport.append(", ").append(Math.round(dEntitiesPerMilliSecond * 1000)).append("/s");
-                    strbReport.append(", ").append(Math.round(dEntitiesPerMilliSecond * 1000 * 60)).append("/m");
-                    strbReport.append(", ").append(Math.round(dEntitiesPerMilliSecond * 1000 * 60 * 60)).append("/h");
-                    strbReport.append(", ").append(Math.round(dEntitiesPerMilliSecond * 1000 * 60 * 60 * 24)).append("/d");
+                    strbReport.append(", ").append(StringUtils.beautifyNumber(Math.round(dEntitiesPerMilliSecond * 1000))).append("/s");
+                    strbReport.append(", ").append(StringUtils.beautifyNumber(Math.round(dEntitiesPerMilliSecond * 1000 * 60))).append("/m");
+                    strbReport.append(", ").append(StringUtils.beautifyNumber(Math.round(dEntitiesPerMilliSecond * 1000 * 60 * 60))).append("/h");
+                    strbReport.append(", ").append(StringUtils.beautifyNumber(Math.round(dEntitiesPerMilliSecond * 1000 * 60 * 60 * 24))).append("/d");
                 }
 
             }
@@ -119,7 +123,7 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
             strbReport.append("\n");
 
 
-            strbReport.append("New data entities: ").append(iNewEntities);
+            strbReport.append("New data entities: ").append(StringUtils.beautifyNumber(iNewEntities));
             if(iNewEntities > 0)
                 strbReport.append(" (in average ").append(StopWatch.formatTimeDistance(lNewEntitiesProcessingTime / iNewEntities))
                         .append(" to handle. Last entity took " + StopWatch.formatTimeDistance(lastNewEntityProcessingTime) + ")");
@@ -127,12 +131,12 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
             TreeSet<String> sortedTypes = new TreeSet<String>(hsNewType2EntityCount.keySet());
             StringBuilder strbTmp = new StringBuilder();
             for (String strNewType : sortedTypes)
-                strbTmp.append(", ").append(strNewType).append(":").append(hsNewType2EntityCount.get(strNewType));
+                strbTmp.append(", ").append(strNewType).append(":").append(StringUtils.beautifyNumber(hsNewType2EntityCount.get(strNewType)));
             strbTmp.replace(0, 1, "");
             strbReport.append(strbTmp);
             if(strbTmp.length() > 0) strbReport.append("\n");
 
-            strbReport.append("Modified data entities: ").append(iModifiedEntities);
+            strbReport.append("Modified data entities: ").append(StringUtils.beautifyNumber(iModifiedEntities));
             if(iModifiedEntities > 0)
                 strbReport.append(" (in average ").append(StopWatch.formatTimeDistance(lModifiedEntitiesProcessingTime / iModifiedEntities))
                         .append(" to handle. Last entity took " + StopWatch.formatTimeDistance(lastModifiedEntityProcessingTime) + ")");
@@ -140,22 +144,28 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
             sortedTypes = new TreeSet<String>(hsModifiedType2EntityCount.keySet());
             strbTmp = new StringBuilder();
             for (String strModifiedType : sortedTypes)
-                strbTmp.append(", ").append(strModifiedType).append(":").append(hsModifiedType2EntityCount.get(strModifiedType));
+                strbTmp.append(", ").append(strModifiedType).append(":").append(StringUtils.beautifyNumber(hsModifiedType2EntityCount.get(strModifiedType)));
             strbTmp.replace(0, 1, "");
             strbReport.append(strbTmp);
             if(strbTmp.length() > 0) strbReport.append("\n");
 
-            strbReport.append("Removed data entities: ").append(iRemovedEntities);
+            strbReport.append("Removed data entities: ").append(StringUtils.beautifyNumber(iRemovedEntities));
             if(iRemovedEntities > 0)
                 strbReport.append(" (in average ").append(StopWatch.formatTimeDistance(lRemovedEntitiesProcessingTime / iRemovedEntities))
                         .append(" to handle. Last entity took " + StopWatch.formatTimeDistance(lastRemovedEntityProcessingTime) + ")");
             strbReport.append("\n");
 
-            strbReport.append("Error data entities: ").append(iErrorEntities).append("\n");
+            strbReport.append("Unmodified data entities: ").append(StringUtils.beautifyNumber(iUnModifiedEntities));
+            strbReport.append("\n");
+
+            strbReport.append("Double data entities: ").append(StringUtils.beautifyNumber(iProcessedEntities));
+            strbReport.append("\n");
+
+            strbReport.append("Error data entities: ").append(StringUtils.beautifyNumber(iErrorEntities)).append("\n");
             sortedTypes = new TreeSet<String>(hsErrorType2EntityCount.keySet());
             strbTmp = new StringBuilder();
             for (String strErrorType : sortedTypes)
-                strbTmp.append(", ").append(strErrorType).append(":").append(hsErrorType2EntityCount.get(strErrorType));
+                strbTmp.append(", ").append(strErrorType).append(":").append(StringUtils.beautifyNumber(hsErrorType2EntityCount.get(strErrorType)));
             strbTmp.replace(0, 1, "");
             strbReport.append(strbTmp);
             if(strbTmp.length() > 0) strbReport.append("\n");
@@ -334,6 +344,18 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
 
 
     @Override
+    public void processProcessedData(Metadata metadata)
+    {
+        m_crawlReport.iProcessedEntities++;
+
+        m_wrappedDataSinkContentHandler.processProcessedData(metadata);
+
+        printReportIfItsTime();
+    }
+
+
+
+    @Override
     public void processRemovedData(Metadata metadata)
     {
         if(m_crawlReport.lfirstEntityStartTime == -1 || m_crawlReport.bSomeHandled == false)
@@ -358,6 +380,18 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
 
 
 
+    @Override
+    public void processUnmodifiedData(Metadata metadata)
+    {
+        m_crawlReport.iUnModifiedEntities++;
+
+        m_wrappedDataSinkContentHandler.processUnmodifiedData(metadata);
+
+        printReportIfItsTime();
+    }
+
+
+
     /**
      * Sets everything counted yet to zero. Then you can use this object for another crawl
      */
@@ -369,11 +403,11 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
 
 
     /**
-     * Sets whether or not a time-based cyclic report will be generated. The time is not a hard criteria, the method will print the report when new
-     * content arrives and the last report was longer ago than everMilliseconds
+     * Sets whether or not a time-based cyclic report will be generated. The time is not a hard criteria, the method will print the report when new content arrives and
+     * the last report was longer ago than everMilliseconds
      * 
-     * @param everyMilliseconds in the case this value is <0, cyclic report printing will be disabled. Otherwise, every <everyMilliseconds>
-     *            milliseconds a report will be println'd
+     * @param everyMilliseconds in the case this value is <0, cyclic report printing will be disabled. Otherwise, every <everyMilliseconds> milliseconds a report will be
+     *            println'd
      * 
      * @return this
      */

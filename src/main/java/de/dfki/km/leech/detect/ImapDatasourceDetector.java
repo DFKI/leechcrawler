@@ -29,7 +29,6 @@ import java.io.InputStream;
 import javax.mail.URLName;
 
 import org.apache.tika.detect.Detector;
-import org.apache.tika.metadata.DublinCore;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MediaType;
 

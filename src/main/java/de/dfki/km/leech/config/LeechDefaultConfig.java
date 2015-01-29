@@ -85,12 +85,7 @@ public class LeechDefaultConfig extends TikaConfig
     protected CompositeParser m_parser;
 
 
-
-    private Logger m_pdfBoxLogger4PDFStreamEngine;
-
-
-
-    private Logger m_pdfBoxLogger4Encoding;
+    private LinkedList<Logger> m_llPdfBoxLogger = new LinkedList<>();
 
 
 
@@ -153,12 +148,24 @@ public class LeechDefaultConfig extends TikaConfig
         m_parser = new CompositeParser(this.getMediaTypeRegistry(), llParsers);
         m_detector = new LeechDefaultDetector(m_parser);
 
-        // das sind fields, da die Einstellung wohl nur so lange gültig ist, wie es noch eine gültige Referenz zu diesen Objekten gibt
-        m_pdfBoxLogger4PDFStreamEngine = Logger.getLogger("org.apache.pdfbox.util.PDFStreamEngine");
-        m_pdfBoxLogger4PDFStreamEngine.setLevel(Level.OFF);
-        m_pdfBoxLogger4Encoding = Logger.getLogger("org.apache.pdfbox.encoding.Encoding");
-        m_pdfBoxLogger4Encoding.setLevel(Level.OFF);
-
+        
+        // die kommen in ein field, da die Einstellung wohl nur so lange gültig ist, wie es noch eine gültige Referenz zu diesen Objekten gibt
+        m_llPdfBoxLogger.add(Logger.getLogger("org.apache.pdfbox.util.PDFStreamEngine"));
+        m_llPdfBoxLogger.add(Logger.getLogger("org.apache.pdfbox.encoding.Encoding"));
+        m_llPdfBoxLogger.add(Logger.getLogger("org.apache.pdfbox.pdfparser.BaseParser"));
+        m_llPdfBoxLogger.add(Logger.getLogger("org.apache.pdfbox.pdmodel.font.PDSimpleFont"));
+        m_llPdfBoxLogger.add(Logger.getLogger("org.apache.pdfbox.pdfparser.XrefTrailerResolver"));
+        m_llPdfBoxLogger.add(Logger.getLogger("org.apache.pdfbox.filter.FlateFilter"));
+        m_llPdfBoxLogger.add(Logger.getLogger("org.apache.pdfbox.pdfparser.PDFParser"));
+        m_llPdfBoxLogger.add(Logger.getLogger("org.apache.pdfbox.util.operator.SetTextFont"));
+        m_llPdfBoxLogger.add(Logger.getLogger("org.apache.pdfbox.*"));
+        
+        
+        
+        
+        
+        for(Logger logger : m_llPdfBoxLogger)
+            logger.setLevel(Level.OFF);
 
     }
 

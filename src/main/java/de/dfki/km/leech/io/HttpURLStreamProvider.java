@@ -32,12 +32,12 @@ import java.util.zip.GZIPInputStream;
 import javax.mail.URLName;
 
 import org.apache.tika.io.TikaInputStream;
-import org.apache.tika.metadata.DublinCore;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
 
 import de.dfki.km.leech.config.CrawlerContext;
 import de.dfki.km.leech.parser.incremental.IncrementalCrawlingHistory;
+import de.dfki.km.leech.util.CookieManager;
 import de.dfki.km.leech.util.LeechException;
 import de.dfki.km.leech.util.UrlUtil;
 
@@ -51,7 +51,6 @@ public class HttpURLStreamProvider extends URLStreamProvider
     protected static final int MAX_REDIRECTIONS = 20;
 
     protected static final int readTimeout = 20000;
-
 
 
 
@@ -133,6 +132,9 @@ public class HttpURLStreamProvider extends URLStreamProvider
         int nrRedirections = 0;
 
         String strCurrentUrl = url2getMetadata.toString();
+        
+        CookieManager cookies = new CookieManager();
+        
         // We're going to loop, accessing urls until we arrive at a url that is not redirected. The
         // redirection is followed manually rather than automatically, which is HttpURLConnection's
         // default behaviour, so that we know the actual url we arrive at.
@@ -154,13 +156,17 @@ public class HttpURLStreamProvider extends URLStreamProvider
             if(crawlingHistory != null)
             {
                 String lastIfModifiedSinceDate = crawlingHistory.getDataEntityContentFingerprint(strCurrentUrl);
-                if(lastIfModifiedSinceDate != null) ifModifiedSinceDate = new Date(Long.valueOf(lastIfModifiedSinceDate));
+                if(lastIfModifiedSinceDate != null && lastIfModifiedSinceDate.matches("\\d+")) ifModifiedSinceDate = new Date(Long.valueOf(lastIfModifiedSinceDate));
             }
 
             try
             {
                 // maybe there exists other connections as http - in this case we want to fall back zu standard Tika behaviour
                 connection = currentUrl.openConnection();
+                connection.connect();
+                cookies.storeCookies(connection);
+                connection = currentUrl.openConnection();
+                cookies.setCookies(connection);
 
                 if(!(connection instanceof HttpURLConnection)) break;
 
@@ -175,6 +181,7 @@ public class HttpURLStreamProvider extends URLStreamProvider
 
                 // send the request to the server
                 connection.connect();
+                
             }
             catch (Exception e)
             {
@@ -281,7 +288,14 @@ public class HttpURLStreamProvider extends URLStreamProvider
             @Override
             protected InputStream initBeforeFirstStreamDataAccess() throws Exception
             {
+                CookieManager cookies = new CookieManager();
+                
                 URLConnection connection = asUrl.openConnection();
+                connection.connect();
+                cookies.storeCookies(connection);
+                
+                connection = asUrl.openConnection();
+                cookies.setCookies(connection);
 
                 connection.setConnectTimeout(connectTimeout);
                 connection.setReadTimeout(readTimeout);
