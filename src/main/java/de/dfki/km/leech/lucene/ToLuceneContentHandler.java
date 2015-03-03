@@ -78,9 +78,6 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
     protected class DocConsumer implements Runnable
     {
 
-        protected boolean m_bInterrupted = false;
-
-
 
         @Override
         public void run()
@@ -130,18 +127,16 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
             catch (Exception e)
             {
                 Logger.getLogger(ToLuceneContentHandler.DocConsumer.class.getName()).log(Level.SEVERE, "Error", e);
+//                try
+//                {
+//                    m_cyclicBarrier4DocConsumerThreads.await();
+//                }
+//                catch (Exception e2)
+//                {
+//                    Logger.getLogger(ToLuceneContentHandler.DocConsumer.class.getName()).log(Level.SEVERE, "Error", e2);
+//                }
             }
-            finally
-            {
-                try
-                {
-                    m_cyclicBarrier4DocConsumerThreads.await();
-                }
-                catch (Exception e)
-                {
-                    Logger.getLogger(ToLuceneContentHandler.DocConsumer.class.getName()).log(Level.SEVERE, "Error", e);
-                }
-            }
+            
 
         }
     }

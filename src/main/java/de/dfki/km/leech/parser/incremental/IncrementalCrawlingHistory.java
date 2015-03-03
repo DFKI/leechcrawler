@@ -440,6 +440,8 @@ public class IncrementalCrawlingHistory
      */
     public boolean existsWithContent(String strDataEntityExistsID, String strDataEntityContentFingerprint) throws IOException
     {
+        if(StringUtils.nullOrWhitespace(strDataEntityExistsID)) return false;
+        
         BooleanQuery query = new BooleanQuery();
         query.add(new TermQuery(new Term(dataEntityExistsID, strDataEntityExistsID)), Occur.MUST);
         query.add(new TermQuery(new Term(dataEntityContentFingerprint, strDataEntityContentFingerprint)), Occur.MUST);
@@ -469,6 +471,8 @@ public class IncrementalCrawlingHistory
      */
     public String getDataEntityContentFingerprint(String strDataEntityExistsID) throws IOException
     {
+        if(StringUtils.nullOrWhitespace(strDataEntityExistsID)) return null;
+        
         Term termId = new Term(dataEntityExistsID, strDataEntityExistsID);
 
         refreshIndexReaderz();
@@ -496,6 +500,8 @@ public class IncrementalCrawlingHistory
      */
     public Long getDataEntityLastCrawledTime(String strDataEntityExistsID) throws IOException
     {
+        if(StringUtils.nullOrWhitespace(strDataEntityExistsID)) return null;
+        
         Term termId = new Term(dataEntityExistsID, strDataEntityExistsID);
 
         refreshIndexReaderz();
