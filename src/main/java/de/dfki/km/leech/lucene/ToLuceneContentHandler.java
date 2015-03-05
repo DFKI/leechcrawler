@@ -88,12 +88,9 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
                 {
                     List<Document> llDocs = m_addDocsQueue.take();
 
-                    // TODO check!!!
-                    // if(llDocs instanceof InterruptThreadList) break;
                     if(llDocs instanceof InterruptThreadList)
                     {
-                        m_cyclicBarrier4DocConsumerThreads.await();
-                        continue;
+                        break;
                     }
 
                     try
@@ -127,16 +124,20 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
             catch (Exception e)
             {
                 Logger.getLogger(ToLuceneContentHandler.DocConsumer.class.getName()).log(Level.SEVERE, "Error", e);
-//                try
-//                {
-//                    m_cyclicBarrier4DocConsumerThreads.await();
-//                }
-//                catch (Exception e2)
-//                {
-//                    Logger.getLogger(ToLuceneContentHandler.DocConsumer.class.getName()).log(Level.SEVERE, "Error", e2);
-//                }
+
             }
-            
+            finally
+            {
+                try
+                {
+                    m_cyclicBarrier4DocConsumerThreads.await();
+                }
+                catch (Exception e2)
+                {
+                    Logger.getLogger(ToLuceneContentHandler.DocConsumer.class.getName()).log(Level.SEVERE, "Error", e2);
+                }
+            }
+
 
         }
     }
@@ -193,7 +194,8 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
     protected IndexWriter m_initialLuceneWriter;
 
-    protected int m_iSplitIndexDocumentCount = 500000;
+
+    protected int m_iSplitIndexDocumentCount = -1;
 
 
 
@@ -291,7 +293,8 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
                 m_addDocsQueue.put(new InterruptThreadList());
 
             m_cyclicBarrier4DocConsumerThreads.await();
-            m_cyclicBarrier4DocConsumerThreads = new CyclicBarrier(m_cyclicBarrier4DocConsumerThreads.getParties());
+
+            m_llConsumerThreads.clear();
 
             if(getSplitAndMergeIndex() <= 0) return;
 
@@ -607,6 +610,15 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
     {
         Logger.getLogger(ToLuceneContentHandler.class.getName()).info("Will write crawled data into " + m_luceneWriter.getDirectory().toString());
 
+        ensureConsumerThreadsRunning();
+    }
+
+
+
+    protected void ensureConsumerThreadsRunning()
+    {
+        if(m_llConsumerThreads.size() != 0) return;
+
         int iCoreCount = Runtime.getRuntime().availableProcessors();
         int iThreadCount = (int) Math.round(iCoreCount / 2d);
         iThreadCount = Math.max(iThreadCount, 1);
@@ -670,6 +682,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
             m_luceneWriter = getCurrentWriter();
 
+            ensureConsumerThreadsRunning();
 
 
             Document doc = createAndFillLuceneDocument(metadata, strFulltext);
@@ -740,6 +753,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
             m_luceneWriter = getCurrentWriter();
 
+            ensureConsumerThreadsRunning();
 
             if(doc == null) return;
 
@@ -924,10 +938,11 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
      * indexWriter has more than iSplitIndexDocumentCount documents. In the case it has more, {@link ToLuceneContentHandler} will create an entirely new index for
      * writing, until this one also gets 'overfilled'. In the case your crawl is finished, invoking {@link ToLuceneContentHandler#crawlFinished()} merges all temporary
      * indices into the initial indexWriter object. This invocation will be done automatically by the {@link Leech} class. This is for performance reasons because writing
-     * into a Lucene index tends to get slow after a certain size. Splitting and merging afterwards is faster.
+     * into a Lucene index tends to get slow after a certain size. Splitting and merging afterwards is faster. Update: this behaviour depends on the Lucene version used,
+     * currently this seems to be not a problem. Thus, this functionality is disabled per default.
      * 
-     * @param iSplitIndexDocumentCount the document count a new index will be created. A good size is 500 000 (from my stomach feeling, this is the default). -1 in the
-     *            case you want to disable SplitAndMerge.
+     * @param iSplitIndexDocumentCount the document count a new index will be created. A good size is 500 000 (from my stomach feeling, if it is necessary). -1 in the
+     *            case you want to disable SplitAndMerge, which is the default.
      * 
      * @return this
      */

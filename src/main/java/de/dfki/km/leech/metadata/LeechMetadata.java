@@ -14,5 +14,10 @@ public interface LeechMetadata
     public static final String body = "body";
     
     public static final String isHeuristicPageCount = "isHeuristicPageCount";
+    
+    public static final String containerSource = "containerSource";
+    
+    public static final String containerSourceContentType = "containerSourceContentType";
+    
 
 }
