@@ -48,18 +48,16 @@ import de.dfki.km.leech.sax.PrintlnContentHandler.Verbosity;
 public class LuceneIndexCreator
 {
 
-    public static boolean printErrors = true;
-
     public static long cyclicReportTime = 1000 * 60;
 
 
 
     public static void createIndex(List<String> lUrls2Crawl, String strLuceneIndexPath, LinkedList<String> llLookupIndexPaths, String strBuzzwordAttName,
-            int iBuzzwordCount, boolean bCalculatePageCounts, String strFrequencyClassAttName, MultiValueHashMap<String, String> hsStaticAttValuePairs)
-            throws IOException, Exception, SAXException, TikaException
+            int iBuzzwordCount, boolean bCalculatePageCounts, String strFrequencyClassAttName, MultiValueHashMap<String, String> hsStaticAttValuePairs,
+            boolean bPrintErrors) throws IOException, Exception, SAXException, TikaException
     {
         createIndex(lUrls2Crawl, strLuceneIndexPath, llLookupIndexPaths, strBuzzwordAttName, iBuzzwordCount, bCalculatePageCounts, strFrequencyClassAttName,
-                hsStaticAttValuePairs, null);
+                hsStaticAttValuePairs, bPrintErrors, null);
 
     }
 
@@ -67,7 +65,7 @@ public class LuceneIndexCreator
 
     public static void createIndex(List<String> lUrls2Crawl, String strLuceneIndexPath, LinkedList<String> llLookupIndexPaths, String strBuzzwordAttName,
             int iBuzzwordCount, boolean bCalculatePageCounts, String strFrequencyClassAttName, MultiValueHashMap<String, String> hsStaticAttValuePairs,
-            ParseContext context) throws IOException, Exception, SAXException, TikaException
+            boolean bPrintErrors, ParseContext context) throws IOException, Exception, SAXException, TikaException
     {
 
         if(context == null) context = new ParseContext();
@@ -126,8 +124,8 @@ public class LuceneIndexCreator
                     new ToLuceneContentHandler(fieldConfig, indexWriter).setIgnoreAllDocsWithout(hsFieldName2FieldValue).setStaticAttributeValuePairs(
                             hsStaticAttValuePairs);
 
-            if(printErrors)
-                reportContentHandler = new CrawlReportContentHandler(new PrintlnContentHandler(Verbosity.nothing, toLuceneContentHandler).setShowOnlyErrors(true));
+            if(bPrintErrors)
+                reportContentHandler = new CrawlReportContentHandler(new PrintlnContentHandler(Verbosity.all, toLuceneContentHandler).setShowOnlyErrors(true));
             else
                 reportContentHandler = new CrawlReportContentHandler(toLuceneContentHandler);
 
@@ -208,7 +206,7 @@ public class LuceneIndexCreator
         {
 
             System.out.println("Usage: LuceneIndexCreator [-noPageRedirects] [-noParseGeoCoordinates] [-parseInfoBoxes] [-parseLinksAndCategories]\n"
-                    + " [-<staticAttName>=<staticAttValue>] [-buzzwordAttName=<attName>] [-buzzwordCount=<count>] [-calculatePageCounts]\n"
+                    + " [-<staticAttName>=<staticAttValue>] [-buzzwordAttName=<attName>] [-buzzwordCount=<count>] [-calculatePageCounts] [-printErrors]\n"
                     + "[-frequencyClassAttName=<attName>] [-li <readonlyLookupIndexPath>] [-crawlingDepth=<depth>]"
                     + " <fileOrDir2CrawlPath1> .. <fileOrDir2CrawlPathN> <targetLuceneIndexPath>\n\nComments: - you can specify several static attribute value pairs.\n"
                     + "- if you leave <fileOrDir2CrawlPath>, only postprocessing will be performed.\n" + "- you can add several lookup indices (-li).\n"
@@ -229,6 +227,7 @@ public class LuceneIndexCreator
         LinkedList<String> llLookupIndexPaths = new LinkedList<String>();
 
         int iCrawlingDepth = Integer.MAX_VALUE;
+        boolean bPrintErrors = false;
 
 
 
@@ -270,7 +269,6 @@ public class LuceneIndexCreator
             {
                 iBuzzwordCount = Integer.valueOf(strArg.replace("-buzzwordCount=", ""));
             }
-
             else if(strArg.startsWith("-crawlingDepth="))
             {
                 iCrawlingDepth = Integer.valueOf(strArg.replace("-crawlingDepth=", ""));
@@ -282,6 +280,10 @@ public class LuceneIndexCreator
             else if(strArg.startsWith("-calculatePageCounts"))
             {
                 bCalculatePageCounts = true;
+            }
+            else if(strArg.startsWith("-printErrors"))
+            {
+                bPrintErrors = true;
             }
             else if(strArg.startsWith("-li"))
             {
@@ -302,7 +304,7 @@ public class LuceneIndexCreator
                 strLuceneIndexPath = args[i];
 
         }
-        
+
         Logger.getLogger(LuceneIndexCreator.class.getName()).info("crawling depth is " + iCrawlingDepth);
 
 
@@ -310,7 +312,7 @@ public class LuceneIndexCreator
         context.set(CrawlerContext.class, crawlerContext);
 
         createIndex(llFile2CrawlPath, strLuceneIndexPath, llLookupIndexPaths, strBuzzwordAttName, iBuzzwordCount, bCalculatePageCounts, strFrequencyClassAttName,
-                hsStaticAttValuePairs, context);
+                hsStaticAttValuePairs, bPrintErrors, context);
 
 
     }
