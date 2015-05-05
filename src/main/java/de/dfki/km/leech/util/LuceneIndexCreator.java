@@ -188,7 +188,10 @@ public class LuceneIndexCreator
             bPerformPostProcessing = true;
         }
 
-        if(bPerformPostProcessing) postprocessor.postprocessIndex(strLuceneIndexPath, new LeechDefaultFieldConfig(), llLookupIndexPaths.toArray(new String[0]));
+        if(bPerformPostProcessing)
+            postprocessor.postprocessIndex(strLuceneIndexPath, new LeechDefaultFieldConfig(), llLookupIndexPaths.toArray(new String[0]));
+        else
+            Logger.getLogger(LuceneIndexCreator.class.getName()).info("no postprocessing necessary");
     }
 
 
@@ -225,7 +228,7 @@ public class LuceneIndexCreator
         boolean bCalculatePageCounts = false;
         LinkedList<String> llLookupIndexPaths = new LinkedList<String>();
 
-        int iCrawlingDepth = 1;
+        int iCrawlingDepth = Integer.MAX_VALUE;
 
 
 
@@ -299,9 +302,12 @@ public class LuceneIndexCreator
                 strLuceneIndexPath = args[i];
 
         }
+        
+        Logger.getLogger(LuceneIndexCreator.class.getName()).info("crawling depth is " + iCrawlingDepth);
 
 
         CrawlerContext crawlerContext = new CrawlerContext().setCrawlingDepth(iCrawlingDepth);
+        context.set(CrawlerContext.class, crawlerContext);
 
         createIndex(llFile2CrawlPath, strLuceneIndexPath, llLookupIndexPaths, strBuzzwordAttName, iBuzzwordCount, bCalculatePageCounts, strFrequencyClassAttName,
                 hsStaticAttValuePairs, context);
