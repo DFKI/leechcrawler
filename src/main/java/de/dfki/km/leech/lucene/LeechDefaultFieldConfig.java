@@ -29,7 +29,18 @@ public class LeechDefaultFieldConfig extends FieldConfig
         this.fieldName2FieldType.put("dataEntityContentFingerprint", DynamicFieldType.keywordFieldType);
         this.fieldName2FieldType.put("dataEntityExistsID", DynamicFieldType.keywordFieldType);
         this.fieldName2FieldType.put("masterDataEntityExistsID", DynamicFieldType.keywordFieldType);
+        this.fieldName2FieldType.put("id", DynamicFieldType.keywordFieldType);
         
+        
+        this.fieldName2FieldType.put("domain", DynamicFieldType.keywordFieldType);
+        this.fieldName2FieldType.put("authorContinent", DynamicFieldType.keywordFieldType);
+        this.fieldName2FieldType.put("country", DynamicFieldType.keywordFieldType);
+        this.fieldName2FieldType.put("source", DynamicFieldType.keywordFieldType);
+        this.fieldName2FieldType.put("continentCode", DynamicFieldType.keywordFieldType);
+        this.fieldName2FieldType.put("countryCode", DynamicFieldType.keywordFieldType);
+        this.fieldName2FieldType.put("steep", DynamicFieldType.keywordFieldType);
+        this.fieldName2FieldType.put("topic1", DynamicFieldType.keywordFieldType);
+        this.fieldName2FieldType.put("queryName", DynamicFieldType.keywordFieldType);
         
         
         

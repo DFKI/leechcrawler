@@ -104,6 +104,7 @@ public class LuceneIndexCreator
             SimpleFSDirectory directory = new SimpleFSDirectory(new File(strLuceneIndexPath));
             FieldConfig fieldConfig = new LeechDefaultFieldConfig();
 
+            context.set(FieldConfig.class, fieldConfig);
 
 
 

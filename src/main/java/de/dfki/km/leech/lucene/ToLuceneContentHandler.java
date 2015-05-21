@@ -264,21 +264,6 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
 
 
-    protected void addStaticAttValuePairs(Document doc) throws Exception
-    {
-        for (Entry<String, String> fieldName2Value : getStaticAttributeValuePairs().entryList())
-        {
-            IndexableField field = m_fieldConfig.createField(fieldName2Value.getKey(), fieldName2Value.getValue());
-            if(field != null)
-                doc.add(field);
-            else
-                Logger.getLogger(ToLuceneContentHandler.class.getName()).warning(
-                        "Could not create lucene field for " + fieldName2Value.getKey() + ":" + fieldName2Value.getValue() + ". Will ignore it.");
-        }
-    }
-
-
-
     /**
      * Will merge all temporar indices together into the initial indexWriter index. This is only necessary if SplitAndMerge is enabled. Otherwise you don't have to invoke
      * this method.
@@ -336,191 +321,9 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
 
 
-    /**
-     * Returns null in the case the documents should be ignored according the given constraints (given with {@link #setIgnoreAllDocsWithout(Map)})
-     * 
-     * @param metadata
-     * @param strFulltext
-     * 
-     * @return null in the case the documents should be ignored according the given constraints (given with {@link #setIgnoreAllDocsWithout(Map)})
-     * 
-     * @throws Exception
-     */
-    protected Document createAndFillLuceneDocument(Metadata metadata, String strFulltext) throws Exception
-    {
-        // // wir erstellen kein Document-Object neu, wenn es nicht unbedingt nötig ist - dazu merken wir uns die Referenzen auf die schon allokierten
-        // // Document Objekte
-        // // Document Object reuse
-        // Document doc = null;
-        // for (Document preAllocatedDoc : m_llAllocatedDocuments)
-        // {
-        // if(!m_llLastChildDocuments.contains(preAllocatedDoc))
-        // {
-        // doc = preAllocatedDoc;
-        // LinkedList<String> llFieldNames = new
-        // for (Fieldable field : doc.getFields())
-        // doc.removeFields(field.name());
-        //
-        // break;
-        // }
-        // }
-        // if(doc == null)
-        // {
-        // doc = new Document();
-        // m_llAllocatedDocuments.add(doc);
-        // }
-
-        Document doc = new Document();
-
-
-
-        // Das man kein Field aus einem reader machen kann ist der Grund, warum processNewMetaData den Fulltext als String und nicht als reader
-        // übergibt
-
-        // eine eindeutige ID muß da sein
-        if(metadata.getValues(LeechMetadata.id).length == 0) doc.add(m_fieldConfig.createField(LeechMetadata.id, new UID().toString()));
-        if(!getFields2Ignore().contains(LeechMetadata.body)) doc.add(m_fieldConfig.createField(LeechMetadata.body, strFulltext));
-        // die kopien
-        for (String strFieldCopy : getFieldCopyMap().get(LeechMetadata.body))
-            if(!getFields2Ignore().contains(strFieldCopy)) doc.add(m_fieldConfig.createField(strFieldCopy, strFulltext));
-
-
-        // die restlichen metadaten
-        for (String strFieldName : metadata.names())
-        {
-            if(!getFields2Ignore().contains(strFieldName))
-            {
-                for (String strValue : metadata.getValues(strFieldName))
-                {
-                    IndexableField field = m_fieldConfig.createField(strFieldName, strValue);
-                    if(field != null)
-                        doc.add(field);
-                    else
-                        Logger.getLogger(ToLuceneContentHandler.class.getName()).warning(
-                                "Could not create lucene field for " + strFieldName + ":" + strValue + ". Will ignore it.");
-                }
-
-            }
-
-            // die kopien
-            for (String strFieldCopy : getFieldCopyMap().get(strFieldName))
-                if(!getFields2Ignore().contains(strFieldCopy))
-                {
-                    for (String strValue : metadata.getValues(strFieldName))
-                    {
-                        IndexableField field = m_fieldConfig.createField(strFieldCopy, strValue);
-                        if(field != null)
-                            doc.add(field);
-                        else
-                            Logger.getLogger(ToLuceneContentHandler.class.getName()).warning(
-                                    "Could not create lucene field for " + strFieldCopy + ":" + strValue + ". Will ignore it.");
-                    }
-                }
-        }
-
-        // die statischen Attribut-Value-Paare
-        addStaticAttValuePairs(doc);
-
-        // und jetzt aggregieren wir noch
-        for (String strTargetAtt : getFieldAggregationMap().keySet())
-        {
-            // wenn es das TargetAtt schon im doc gibt, dann aggregieren wir nix
-            if(doc.get(strTargetAtt) != null) continue;
-
-            Collection<String> colSourceAtts = getFieldAggregationMap().get(strTargetAtt);
-
-            for (String strSourceAtt : colSourceAtts)
-            {
-                String strNewValue = metadata.get(strSourceAtt);
-                if(strNewValue == null) strNewValue = getStaticAttributeValuePairs().getFirst(strSourceAtt);
-
-                if(strNewValue != null)
-                {
-                    IndexableField field = m_fieldConfig.createField(strTargetAtt, strNewValue);
-                    if(field != null)
-                        doc.add(field);
-                    else
-                        Logger.getLogger(ToLuceneContentHandler.class.getName()).warning(
-                                "Could not create lucene field for " + strTargetAtt + ":" + strNewValue + ". Will ignore it.");
-
-                    break;
-                }
-            }
-        }
-
-
-
-        // wenn ein Doc nicht unseren constraints entspricht, dann ignorieren wir das hier, indem wir null zurück geben
-        if(m_hsFieldName2FieldValueConstraint == null || m_hsFieldName2FieldValueConstraint.size() == 0) return doc;
-
-        for (Entry<String, String> fieldname2fieldValRegEx : m_hsFieldName2FieldValueConstraint.entrySet())
-        {
-            IndexableField[] fieldables = doc.getFields(fieldname2fieldValRegEx.getKey());
-            for (IndexableField fieldable : fieldables)
-            {
-                String strVal = fieldable.stringValue();
-                if(strVal.matches(fieldname2fieldValRegEx.getValue()))
-                {
-                    // wir haben einen Treffer
-                    return doc;
-                }
-            }
-        }
-
-
-        return null;
-    }
-
-
-
     public boolean getBlockIndexing()
     {
         return m_bBlockIndexing;
-    }
-
-
-
-    synchronized protected IndexWriter getCurrentWriter() throws CorruptIndexException, LockObtainFailedException, IOException
-    {
-
-
-        if(getSplitAndMergeIndex() <= 0) return m_initialLuceneWriter;
-
-        if(m_luceneWriter.maxDoc() < getSplitAndMergeIndex()) return m_luceneWriter;
-
-
-        Directory directory = m_initialLuceneWriter.getDirectory();
-
-        File fOurTmpDir = null;
-        if(directory instanceof FSDirectory)
-        {
-            if(m_luceneWriter != m_initialLuceneWriter) m_llIndexWriter2Close.add(m_luceneWriter);
-
-            String strTmpPath = ((FSDirectory) directory).getDirectory().getAbsolutePath();
-            // if(strTmpPath.charAt(strTmpPath.length() - 1) == '/' || strTmpPath.charAt(strTmpPath.length() - 1) == '\\')
-            // strTmpPath = strTmpPath.substring(0, strTmpPath.length() - 1);
-            strTmpPath += "_" + (m_hsTmpLuceneWriterPaths2Merge.size() + 1);
-            fOurTmpDir = new File(strTmpPath);
-        }
-        else
-        {
-            // wir brauchen was temporäres
-            File parentDir = new File(System.getProperty("java.io.tmpdir"));
-            fOurTmpDir = new File(parentDir.getAbsolutePath() + "/leechTmp/" + UUID.randomUUID().toString().replaceAll("\\W", "_"));
-        }
-
-        Logger.getLogger(ToLuceneContentHandler.class.getName()).info(
-                "Current index exceeds " + m_iSplitIndexDocumentCount + " documents. Will create another temporary one under " + fOurTmpDir);
-
-
-        @SuppressWarnings("deprecation")
-        IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_CURRENT, m_initialLuceneWriter.getConfig().getAnalyzer());
-        config.setOpenMode(OpenMode.CREATE);
-
-        m_luceneWriter = new IndexWriter(new SimpleFSDirectory(fOurTmpDir), config);
-        m_hsTmpLuceneWriterPaths2Merge.add(fOurTmpDir.getAbsolutePath());
-
-        return m_luceneWriter;
     }
 
 
@@ -535,6 +338,18 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
     public MultiValueHashMap<String, String> getFieldAggregationMap()
     {
         return m_hsTarget2SourcesFieldnames;
+    }
+
+
+
+    /**
+     * Gets the field config
+     * 
+     * @return the field config
+     */
+    public FieldConfig getFieldConfig()
+    {
+        return m_fieldConfig;
     }
 
 
@@ -606,42 +421,10 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
 
     @Override
-    protected void init()
-    {
-        Logger.getLogger(ToLuceneContentHandler.class.getName()).info("Will write crawled data into " + m_luceneWriter.getDirectory().toString());
-
-        ensureConsumerThreadsRunning();
-    }
-
-
-
-    protected void ensureConsumerThreadsRunning()
-    {
-        if(m_llConsumerThreads.size() != 0) return;
-
-        int iCoreCount = Runtime.getRuntime().availableProcessors();
-        int iThreadCount = (int) Math.round(iCoreCount / 2d);
-        iThreadCount = Math.max(iThreadCount, 1);
-
-        m_cyclicBarrier4DocConsumerThreads = new CyclicBarrier(iThreadCount + 1);
-        for (int i = 0; i < iThreadCount; i++)
-        {
-            Thread consumerThread = new Thread(new DocConsumer(), "ToLuceneContentHandlerDocConsumer " + i);
-            m_llConsumerThreads.add(consumerThread);
-            consumerThread.setDaemon(true);
-
-            consumerThread.start();
-        }
-    }
-
-
-
-    @Override
     public void processErrorData(Metadata metadata)
     {
         // NOP
     }
-
 
 
 
@@ -813,9 +596,6 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
 
 
-
-
-
     @Override
     public void processProcessedData(Metadata metadata)
     {
@@ -845,12 +625,12 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
 
 
+
     @Override
     public void processUnmodifiedData(Metadata metadata)
     {
         // NOP
     }
-
 
 
 
@@ -884,6 +664,9 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
 
 
+
+
+
     /**
      * Sets the field copy mappings. This means that the content of every metadata key that is specified as key inside hsSource2TargetFieldnames will be copied into
      * several other fields. The field names of these fields are specified as corresponding value inside hsSource2TargetFieldnames. In the case you want to rename
@@ -896,7 +679,6 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
     {
         m_hsSource2TargetFieldnames = hsSource2TargetFieldnames;
     }
-
 
 
 
@@ -913,10 +695,6 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
 
 
-
-
-
-
     /**
      * All docs without at least one of the given fieldname-value pairs will be ignored. You can specif regular expressions as field values
      * 
@@ -930,6 +708,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
         return this;
     }
+
 
 
 
@@ -967,6 +746,239 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
         m_hsStaticAttValuePairs = hsStaticAttValuePairs;
 
         return this;
+    }
+
+
+
+    protected void addStaticAttValuePairs(Document doc) throws Exception
+    {
+        for (Entry<String, String> fieldName2Value : getStaticAttributeValuePairs().entryList())
+        {
+            IndexableField field = m_fieldConfig.createField(fieldName2Value.getKey(), fieldName2Value.getValue());
+            if(field != null)
+                doc.add(field);
+            else
+                Logger.getLogger(ToLuceneContentHandler.class.getName()).warning(
+                        "Could not create lucene field for " + fieldName2Value.getKey() + ":" + fieldName2Value.getValue() + ". Will ignore it.");
+        }
+    }
+
+
+
+
+    /**
+     * Returns null in the case the documents should be ignored according the given constraints (given with {@link #setIgnoreAllDocsWithout(Map)})
+     * 
+     * @param metadata
+     * @param strFulltext
+     * 
+     * @return null in the case the documents should be ignored according the given constraints (given with {@link #setIgnoreAllDocsWithout(Map)})
+     * 
+     * @throws Exception
+     */
+    protected Document createAndFillLuceneDocument(Metadata metadata, String strFulltext) throws Exception
+    {
+        // // wir erstellen kein Document-Object neu, wenn es nicht unbedingt nötig ist - dazu merken wir uns die Referenzen auf die schon allokierten
+        // // Document Objekte
+        // // Document Object reuse
+        // Document doc = null;
+        // for (Document preAllocatedDoc : m_llAllocatedDocuments)
+        // {
+        // if(!m_llLastChildDocuments.contains(preAllocatedDoc))
+        // {
+        // doc = preAllocatedDoc;
+        // LinkedList<String> llFieldNames = new
+        // for (Fieldable field : doc.getFields())
+        // doc.removeFields(field.name());
+        //
+        // break;
+        // }
+        // }
+        // if(doc == null)
+        // {
+        // doc = new Document();
+        // m_llAllocatedDocuments.add(doc);
+        // }
+
+        Document doc = new Document();
+
+
+
+        // Das man kein Field aus einem reader machen kann ist der Grund, warum processNewMetaData den Fulltext als String und nicht als reader
+        // übergibt
+
+        // eine eindeutige ID muß da sein
+        if(metadata.getValues(LeechMetadata.id).length == 0) doc.add(m_fieldConfig.createField(LeechMetadata.id, new UID().toString()));
+        if(!getFields2Ignore().contains(LeechMetadata.body)) doc.add(m_fieldConfig.createField(LeechMetadata.body, strFulltext));
+        // die kopien
+        for (String strFieldCopy : getFieldCopyMap().get(LeechMetadata.body))
+            if(!getFields2Ignore().contains(strFieldCopy)) doc.add(m_fieldConfig.createField(strFieldCopy, strFulltext));
+
+
+        // die restlichen metadaten
+        for (String strFieldName : metadata.names())
+        {
+            if(!getFields2Ignore().contains(strFieldName))
+            {
+                for (String strValue : metadata.getValues(strFieldName))
+                {
+                    IndexableField field = m_fieldConfig.createField(strFieldName, strValue);
+                    if(field != null)
+                        doc.add(field);
+                    else
+                        Logger.getLogger(ToLuceneContentHandler.class.getName()).warning(
+                                "Could not create lucene field for " + strFieldName + ":" + strValue + ". Will ignore it.");
+                }
+
+            }
+
+            // die kopien
+            for (String strFieldCopy : getFieldCopyMap().get(strFieldName))
+                if(!getFields2Ignore().contains(strFieldCopy))
+                {
+                    for (String strValue : metadata.getValues(strFieldName))
+                    {
+                        IndexableField field = m_fieldConfig.createField(strFieldCopy, strValue);
+                        if(field != null)
+                            doc.add(field);
+                        else
+                            Logger.getLogger(ToLuceneContentHandler.class.getName()).warning(
+                                    "Could not create lucene field for " + strFieldCopy + ":" + strValue + ". Will ignore it.");
+                    }
+                }
+        }
+
+        // die statischen Attribut-Value-Paare
+        addStaticAttValuePairs(doc);
+
+        // und jetzt aggregieren wir noch
+        for (String strTargetAtt : getFieldAggregationMap().keySet())
+        {
+            // wenn es das TargetAtt schon im doc gibt, dann aggregieren wir nix
+            if(doc.get(strTargetAtt) != null) continue;
+
+            Collection<String> colSourceAtts = getFieldAggregationMap().get(strTargetAtt);
+
+            for (String strSourceAtt : colSourceAtts)
+            {
+                String strNewValue = metadata.get(strSourceAtt);
+                if(strNewValue == null) strNewValue = getStaticAttributeValuePairs().getFirst(strSourceAtt);
+
+                if(strNewValue != null)
+                {
+                    IndexableField field = m_fieldConfig.createField(strTargetAtt, strNewValue);
+                    if(field != null)
+                        doc.add(field);
+                    else
+                        Logger.getLogger(ToLuceneContentHandler.class.getName()).warning(
+                                "Could not create lucene field for " + strTargetAtt + ":" + strNewValue + ". Will ignore it.");
+
+                    break;
+                }
+            }
+        }
+
+
+
+        // wenn ein Doc nicht unseren constraints entspricht, dann ignorieren wir das hier, indem wir null zurück geben
+        if(m_hsFieldName2FieldValueConstraint == null || m_hsFieldName2FieldValueConstraint.size() == 0) return doc;
+
+        for (Entry<String, String> fieldname2fieldValRegEx : m_hsFieldName2FieldValueConstraint.entrySet())
+        {
+            IndexableField[] fieldables = doc.getFields(fieldname2fieldValRegEx.getKey());
+            for (IndexableField fieldable : fieldables)
+            {
+                String strVal = fieldable.stringValue();
+                if(strVal.matches(fieldname2fieldValRegEx.getValue()))
+                {
+                    // wir haben einen Treffer
+                    return doc;
+                }
+            }
+        }
+
+
+        return null;
+    }
+
+
+
+
+
+
+
+    protected void ensureConsumerThreadsRunning()
+    {
+        if(m_llConsumerThreads.size() != 0) return;
+
+        int iCoreCount = Runtime.getRuntime().availableProcessors();
+        int iThreadCount = (int) Math.round(iCoreCount / 2d);
+        iThreadCount = Math.max(iThreadCount, 1);
+
+        m_cyclicBarrier4DocConsumerThreads = new CyclicBarrier(iThreadCount + 1);
+        for (int i = 0; i < iThreadCount; i++)
+        {
+            Thread consumerThread = new Thread(new DocConsumer(), "ToLuceneContentHandlerDocConsumer " + i);
+            m_llConsumerThreads.add(consumerThread);
+            consumerThread.setDaemon(true);
+
+            consumerThread.start();
+        }
+    }
+
+
+
+    synchronized protected IndexWriter getCurrentWriter() throws CorruptIndexException, LockObtainFailedException, IOException
+    {
+
+
+        if(getSplitAndMergeIndex() <= 0) return m_initialLuceneWriter;
+
+        if(m_luceneWriter.maxDoc() < getSplitAndMergeIndex()) return m_luceneWriter;
+
+
+        Directory directory = m_initialLuceneWriter.getDirectory();
+
+        File fOurTmpDir = null;
+        if(directory instanceof FSDirectory)
+        {
+            if(m_luceneWriter != m_initialLuceneWriter) m_llIndexWriter2Close.add(m_luceneWriter);
+
+            String strTmpPath = ((FSDirectory) directory).getDirectory().getAbsolutePath();
+            // if(strTmpPath.charAt(strTmpPath.length() - 1) == '/' || strTmpPath.charAt(strTmpPath.length() - 1) == '\\')
+            // strTmpPath = strTmpPath.substring(0, strTmpPath.length() - 1);
+            strTmpPath += "_" + (m_hsTmpLuceneWriterPaths2Merge.size() + 1);
+            fOurTmpDir = new File(strTmpPath);
+        }
+        else
+        {
+            // wir brauchen was temporäres
+            File parentDir = new File(System.getProperty("java.io.tmpdir"));
+            fOurTmpDir = new File(parentDir.getAbsolutePath() + "/leechTmp/" + UUID.randomUUID().toString().replaceAll("\\W", "_"));
+        }
+
+        Logger.getLogger(ToLuceneContentHandler.class.getName()).info(
+                "Current index exceeds " + m_iSplitIndexDocumentCount + " documents. Will create another temporary one under " + fOurTmpDir);
+
+
+        @SuppressWarnings("deprecation")
+        IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_CURRENT, m_initialLuceneWriter.getConfig().getAnalyzer());
+        config.setOpenMode(OpenMode.CREATE);
+
+        m_luceneWriter = new IndexWriter(new SimpleFSDirectory(fOurTmpDir), config);
+        m_hsTmpLuceneWriterPaths2Merge.add(fOurTmpDir.getAbsolutePath());
+
+        return m_luceneWriter;
+    }
+
+
+
+    @Override
+    protected void init()
+    {
+        Logger.getLogger(ToLuceneContentHandler.class.getName()).info("Will write crawled data into " + m_luceneWriter.getDirectory().toString());
+
+        ensureConsumerThreadsRunning();
     }
 
 
