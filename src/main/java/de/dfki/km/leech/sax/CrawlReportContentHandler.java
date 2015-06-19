@@ -19,13 +19,17 @@ package de.dfki.km.leech.sax;
 
 
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.TreeSet;
+import java.util.LinkedList;
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import org.apache.tika.metadata.Metadata;
 
+import de.dfki.inquisition.collections.CollectionUtilz;
+import de.dfki.inquisition.collections.MultiValueTreeMap;
 import de.dfki.inquisition.processes.StopWatch;
 import de.dfki.inquisition.text.StringUtils;
 
@@ -128,10 +132,14 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
                 strbReport.append(" (in average ").append(StopWatch.formatTimeDistance(lNewEntitiesProcessingTime / iNewEntities))
                         .append(" to handle. Last entity took " + StopWatch.formatTimeDistance(lastNewEntityProcessingTime) + ")");
             strbReport.append("\n");
-            TreeSet<String> sortedTypes = new TreeSet<String>(hsNewType2EntityCount.keySet());
+            
+            MultiValueTreeMap<Integer, String> tmEntityCount2Type = new MultiValueTreeMap<>(Collections.reverseOrder(), LinkedList.class);
+            for(Entry<String, Integer> newType2EntityCount : hsNewType2EntityCount.entrySet())
+                tmEntityCount2Type.add(newType2EntityCount.getValue(), newType2EntityCount.getKey());
+            
             StringBuilder strbTmp = new StringBuilder();
-            for (String strNewType : sortedTypes)
-                strbTmp.append(", ").append(strNewType).append(":").append(StringUtils.beautifyNumber(hsNewType2EntityCount.get(strNewType)));
+            for (Entry<Integer, String> entityCount2Type : tmEntityCount2Type.entryList())
+                strbTmp.append(", ").append(entityCount2Type.getValue()).append(":").append(StringUtils.beautifyNumber(entityCount2Type.getKey()));
             strbTmp.replace(0, 1, "");
             strbReport.append(strbTmp);
             if(strbTmp.length() > 0) strbReport.append("\n");
@@ -141,10 +149,14 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
                 strbReport.append(" (in average ").append(StopWatch.formatTimeDistance(lModifiedEntitiesProcessingTime / iModifiedEntities))
                         .append(" to handle. Last entity took " + StopWatch.formatTimeDistance(lastModifiedEntityProcessingTime) + ")");
             strbReport.append("\n");
-            sortedTypes = new TreeSet<String>(hsModifiedType2EntityCount.keySet());
+            
+            tmEntityCount2Type = new MultiValueTreeMap<>(Collections.reverseOrder(), LinkedList.class);
+            for(Entry<String, Integer> modifiedType2EntityCount : hsModifiedType2EntityCount.entrySet())
+                tmEntityCount2Type.add(modifiedType2EntityCount.getValue(), modifiedType2EntityCount.getKey());
+            
             strbTmp = new StringBuilder();
-            for (String strModifiedType : sortedTypes)
-                strbTmp.append(", ").append(strModifiedType).append(":").append(StringUtils.beautifyNumber(hsModifiedType2EntityCount.get(strModifiedType)));
+            for (Entry<Integer, String> entityCount2Type : tmEntityCount2Type.entryList())
+                strbTmp.append(", ").append(entityCount2Type.getValue()).append(":").append(StringUtils.beautifyNumber(entityCount2Type.getKey()));
             strbTmp.replace(0, 1, "");
             strbReport.append(strbTmp);
             if(strbTmp.length() > 0) strbReport.append("\n");
@@ -162,10 +174,14 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
             strbReport.append("\n");
 
             strbReport.append("Error data entities: ").append(StringUtils.beautifyNumber(iErrorEntities)).append("\n");
-            sortedTypes = new TreeSet<String>(hsErrorType2EntityCount.keySet());
+            
+            tmEntityCount2Type = new MultiValueTreeMap<>(Collections.reverseOrder(), LinkedList.class);
+            for(Entry<String, Integer> errorType2EntityCount : hsErrorType2EntityCount.entrySet())
+                tmEntityCount2Type.add(errorType2EntityCount.getValue(), errorType2EntityCount.getKey());
+            
             strbTmp = new StringBuilder();
-            for (String strErrorType : sortedTypes)
-                strbTmp.append(", ").append(strErrorType).append(":").append(StringUtils.beautifyNumber(hsErrorType2EntityCount.get(strErrorType)));
+            for (Entry<Integer, String> entityCount2Type : tmEntityCount2Type.entryList())
+                strbTmp.append(", ").append(entityCount2Type.getValue()).append(":").append(StringUtils.beautifyNumber(entityCount2Type.getKey()));
             strbTmp.replace(0, 1, "");
             strbReport.append(strbTmp);
             if(strbTmp.length() > 0) strbReport.append("\n");
@@ -252,16 +268,19 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
 
         m_crawlReport.iErrorEntities++;
 
-        String strType = metadata.get("Content-Type");
-        if(strType == null) strType = "unknown";
+        String[] strTypes = metadata.getValues("Content-Type");
+        if(strTypes == null || strTypes.length == 0) strTypes = CollectionUtilz.createArray("unknown");
 
-        int iIndex = strType.indexOf(";");
-        if(iIndex != -1) strType = strType.substring(0, iIndex);
-        Integer iCount4Type = m_crawlReport.hsErrorType2EntityCount.get(strType);
-        if(iCount4Type == null) iCount4Type = 0;
-        iCount4Type++;
+        for (String strType : strTypes)
+        {
+            int iIndex = strType.indexOf(";");
+            if(iIndex != -1) strType = strType.substring(0, iIndex);
+            Integer iCount4Type = m_crawlReport.hsErrorType2EntityCount.get(strType);
+            if(iCount4Type == null) iCount4Type = 0;
+            iCount4Type++;
 
-        m_crawlReport.hsErrorType2EntityCount.put(strType, iCount4Type);
+            m_crawlReport.hsErrorType2EntityCount.put(strType, iCount4Type);
+        }
 
 
         m_wrappedDataSinkContentHandler.processErrorData(metadata);
@@ -285,14 +304,19 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
 
         m_crawlReport.iModifiedEntities++;
 
-        String strType = metadata.get("Content-Type");
-        int iIndex = strType.indexOf(";");
-        if(iIndex != -1) strType = strType.substring(0, iIndex);
-        Integer iCount4Type = m_crawlReport.hsModifiedType2EntityCount.get(strType);
-        if(iCount4Type == null) iCount4Type = 0;
-        iCount4Type++;
+        String[] strTypes = metadata.getValues("Content-Type");
+        if(strTypes == null || strTypes.length == 0) strTypes = CollectionUtilz.createArray("unknown");
 
-        m_crawlReport.hsModifiedType2EntityCount.put(strType, iCount4Type);
+        for (String strType : strTypes)
+        {
+            int iIndex = strType.indexOf(";");
+            if(iIndex != -1) strType = strType.substring(0, iIndex);
+            Integer iCount4Type = m_crawlReport.hsModifiedType2EntityCount.get(strType);
+            if(iCount4Type == null) iCount4Type = 0;
+            iCount4Type++;
+
+            m_crawlReport.hsModifiedType2EntityCount.put(strType, iCount4Type);
+        }
 
 
         long lStart = System.currentTimeMillis();
@@ -320,14 +344,20 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
 
         m_crawlReport.iNewEntities++;
 
-        String strType = metadata.get("Content-Type");
-        int iIndex = strType.indexOf(";");
-        if(iIndex != -1) strType = strType.substring(0, iIndex);
-        Integer iCount4Type = m_crawlReport.hsNewType2EntityCount.get(strType);
-        if(iCount4Type == null) iCount4Type = 0;
-        iCount4Type++;
+        String[] strTypes = metadata.getValues("Content-Type");
+        if(strTypes == null || strTypes.length == 0) strTypes = CollectionUtilz.createArray("unknown");
 
-        m_crawlReport.hsNewType2EntityCount.put(strType, iCount4Type);
+        for (String strType : strTypes)
+        {
+            int iIndex = strType.indexOf(";");
+            if(iIndex != -1) strType = strType.substring(0, iIndex);
+            Integer iCount4Type = m_crawlReport.hsNewType2EntityCount.get(strType);
+            if(iCount4Type == null) iCount4Type = 0;
+            iCount4Type++;
+
+            m_crawlReport.hsNewType2EntityCount.put(strType, iCount4Type);
+        }
+        
 
         long lStart = System.currentTimeMillis();
 

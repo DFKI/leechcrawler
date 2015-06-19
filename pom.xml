@@ -4,7 +4,7 @@
 	<groupId>de.dfki.km</groupId>
 	<artifactId>leechcrawler</artifactId>
 	<packaging>jar</packaging>
-	<version>1.8.1</version>
+	<version>1.8.2</version>
 	<name>leechcrawler</name>
 	<url>http://leechcrawler.github.com/leech/</url>
 
@@ -111,7 +111,7 @@
 		<dependency>
 			<groupId>de.dfki.km</groupId>
 			<artifactId>inquisition</artifactId>
-			<version>20141024-SNAPSHOT</version>
+			<version>20150619</version>
 		</dependency>
 
 	</dependencies>
