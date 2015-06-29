@@ -31,7 +31,7 @@
 
 	<files>
 		<file>
-			<source>gpl_v3.txt</source>
+			<source>license.txt</source>
 			<outputDirectory>/</outputDirectory>
 		</file>
 	</files>
