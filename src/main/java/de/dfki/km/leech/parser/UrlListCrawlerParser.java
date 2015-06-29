@@ -50,6 +50,9 @@ public class UrlListCrawlerParser extends CrawlerParser
                 String strUrl = s.next();
 
                 if(strUrl.startsWith("//")) continue;
+
+                if(!strUrl.contains("://") && !strUrl.startsWith("file:")) strUrl = "file:" + strUrl;
+
                 MultiValueHashMap<String, Object> hsData4Entity = new MultiValueHashMap<>();
                 hsData4Entity.add("url", strUrl);
 
