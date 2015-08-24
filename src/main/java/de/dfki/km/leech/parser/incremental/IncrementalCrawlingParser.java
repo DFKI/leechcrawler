@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 import java.util.UUID;
-import java.util.logging.Logger;
 
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
@@ -49,7 +48,7 @@ import de.dfki.km.leech.util.TikaUtils;
  * A Parser decorator which enables incremental indexing during the crawl. For this, {@link IncrementalCrawlingParser} needs two entries inside the metadata given from
  * the parse method:<br>
  * <br>
- * <li>{@link IncrementalCrawlingHistory}.dataEntityExistsID: an identifier for a data entity that is independent from the content of this entity. It is only for
+ * <li>{@link IncrementalCrawlingHistory}.dataEntityId: an identifier for a data entity that is independent from the content of this entity. It is only for
  * identifying the occurence, not to check whether it has changed (e.g. a filename) <li>
  * <br>
  * {@link IncrementalCrawlingHistory}.dataEntityContentFingerprint: some fingerprint/identifier that gives the hint whether the content of the data entity has changed,
@@ -208,7 +207,7 @@ public class IncrementalCrawlingParser extends ParserDecorator
                 metadata.set(DATA_ENTITY_MODIFICATION_STATE, REMOVED);
 
                 String strDataEntityId2Remove = itRemovedDataEntitiesIDs.next();
-                metadata.set(IncrementalCrawlingHistory.dataEntityExistsID, strDataEntityId2Remove);
+                metadata.set(IncrementalCrawlingHistory.dataEntityId, strDataEntityId2Remove);
 
                 InputStream dummyStream = new ByteArrayInputStream("leech sucks - hopefully :)".getBytes("UTF-8"));
 
@@ -224,7 +223,7 @@ public class IncrementalCrawlingParser extends ParserDecorator
         {
             String strUrlOrSource = metadata.get(Metadata.SOURCE);
             if(strUrlOrSource == null) strUrlOrSource = metadata.get(Metadata.RESOURCE_NAME_KEY);
-            if(strUrlOrSource == null) strUrlOrSource = metadata.get(IncrementalCrawlingHistory.dataEntityExistsID);
+            if(strUrlOrSource == null) strUrlOrSource = metadata.get(IncrementalCrawlingHistory.dataEntityId);
             if(strUrlOrSource == null) strUrlOrSource = "no entity id known in metadata";
 
             if(e instanceof TikaException) throw (TikaException) e;
@@ -278,11 +277,11 @@ public class IncrementalCrawlingParser extends ParserDecorator
         {
             // wir wollen inkrementelles indexieren - war das Teil schon mal da?
 
-            String strDataEntityExistsID = metadata.get(IncrementalCrawlingHistory.dataEntityExistsID);
-            String strMasterDataEntityExistsID = metadata.get(IncrementalCrawlingHistory.masterDataEntityExistsID);
+            String strDataEntityId = metadata.get(IncrementalCrawlingHistory.dataEntityId);
+            String strMasterDataEntityId = metadata.get(IncrementalCrawlingHistory.masterDataEntityId);
 
 
-            Exist exist = crawlingHistory.exists(strDataEntityExistsID);
+            Exist exist = crawlingHistory.exists(strDataEntityId);
 
             // wenn wir es in diesem Crawl schon mal prozessiert haben, dann machen wir gar nix - und verfolgen auch keine Links mehr
             // weiter. Dann haben wir einen Zykel.
@@ -300,20 +299,20 @@ public class IncrementalCrawlingParser extends ParserDecorator
             {
                 metadata.set(DATA_ENTITY_MODIFICATION_STATE, NEW);
 
-                crawlingHistory.addDataEntity(strDataEntityExistsID, strDataEntityContentFingerprint, strMasterDataEntityExistsID);
+                crawlingHistory.addDataEntity(strDataEntityId, strDataEntityContentFingerprint, strMasterDataEntityId);
 
                 return true;
             }
 
 
             // es war schon mal da - hat es sich verändert?
-            boolean bExistsWithContent = crawlingHistory.existsWithContent(strDataEntityExistsID, strDataEntityContentFingerprint);
+            boolean bExistsWithContent = crawlingHistory.existsWithContent(strDataEntityId, strDataEntityContentFingerprint);
             if(bExistsWithContent)
             {
                 // nicht verändert - wir merken uns, daß es bei diesem crawl immer noch dabei war
                 metadata.set(DATA_ENTITY_MODIFICATION_STATE, UNMODIFIED);
 
-                crawlingHistory.updateDataEntityLastCrawledTime(strDataEntityExistsID);
+                crawlingHistory.updateDataEntityLastCrawledTime(strDataEntityId);
 
                 return true;
             }
@@ -322,7 +321,7 @@ public class IncrementalCrawlingParser extends ParserDecorator
             // verändert
             metadata.set(DATA_ENTITY_MODIFICATION_STATE, MODIFIED);
 
-            crawlingHistory.updateDataEntity(strDataEntityExistsID, strDataEntityContentFingerprint, strMasterDataEntityExistsID);
+            crawlingHistory.updateDataEntity(strDataEntityId, strDataEntityContentFingerprint, strMasterDataEntityId);
 
             return true;
         }

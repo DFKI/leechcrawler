@@ -50,19 +50,19 @@ import de.dfki.km.leech.util.UrlUtil;
 public class ImapURLStreamProvider extends URLStreamProvider
 {
 
-    public static String getDataEntityContentFingerprint(String strEntityExistsId)
+    public static String getDataEntityContentFingerprint(String strEntityId)
     {
         // XXX wir gehen hier davon aus, daß eine message nicht modifiziert werden kann - allerdings kann man sehr wohl z.B. ein attachment
         // löschen. Man könnte hier noch die attachment-Liste mit reinpacken (ich weiß nur gerade nicht wie^^)
 
-        return strEntityExistsId;
+        return strEntityId;
     }
 
 
 
 
 
-    public static String getEntityExistsId(String strFolderOfMessage, String strMessageId)
+    public static String getEntityId(String strFolderOfMessage, String strMessageId)
     {
         if(strMessageId == null) return strFolderOfMessage;
 
@@ -80,7 +80,7 @@ public class ImapURLStreamProvider extends URLStreamProvider
 
 
         // wenn das Teil schon gefüllt ist, dann machen wir gar nix
-        if(!(metadata2fill.get(Metadata.SOURCE) == null || metadata2fill.get(IncrementalCrawlingHistory.dataEntityExistsID) == null
+        if(!(metadata2fill.get(Metadata.SOURCE) == null || metadata2fill.get(IncrementalCrawlingHistory.dataEntityId) == null
                 || metadata2fill.get(IncrementalCrawlingHistory.dataEntityContentFingerprint) == null
                 || metadata2fill.get(Metadata.RESOURCE_NAME_KEY) == null || metadata2fill.get("Content-Type") == null))
         {
@@ -107,13 +107,13 @@ public class ImapURLStreamProvider extends URLStreamProvider
         {
 
             // folder+messageId, damit sich die uid auch zwischen den crawls ändern darf
-            String strEntityExistsId = null;
+            String strEntityId = null;
             String strDataEntityContentFingerprint = null;
             if(folder != null && folder.exists())
             {
                 // das Teil ist ein Folder
-                strEntityExistsId = url2getMetadata.getFile();
-                strDataEntityContentFingerprint = strEntityExistsId;
+                strEntityId = url2getMetadata.getFile();
+                strDataEntityContentFingerprint = strEntityId;
 
                 metadata2fill.set("Content-Type", DatasourceMediaTypes.IMAPFOLDER.toString());
             }
@@ -145,8 +145,8 @@ public class ImapURLStreamProvider extends URLStreamProvider
                 }
 
 
-                strEntityExistsId = getEntityExistsId(strFolder, strMessageId);
-                strDataEntityContentFingerprint = getDataEntityContentFingerprint(strEntityExistsId);
+                strEntityId = getEntityId(strFolder, strMessageId);
+                strDataEntityContentFingerprint = getDataEntityContentFingerprint(strEntityId);
 
                 metadata2fill.set("Content-Type", "message/rfc822");
 
@@ -160,7 +160,7 @@ public class ImapURLStreamProvider extends URLStreamProvider
 
 
 
-            metadata2fill.set(IncrementalCrawlingHistory.dataEntityExistsID, strEntityExistsId);
+            metadata2fill.set(IncrementalCrawlingHistory.dataEntityId, strEntityId);
             metadata2fill.set(IncrementalCrawlingHistory.dataEntityContentFingerprint, strDataEntityContentFingerprint);
 
 

@@ -141,7 +141,7 @@ public abstract class DataSinkContentHandler extends ContentHandlerDecorator
         m_metadata.remove(CrawlerParser.CURRENT_CRAWLING_DEPTH);
 
         // und passen auf, daß nicht noch Passwörter in einer URL stehen
-        String strBadAttName = IncrementalCrawlingHistory.dataEntityExistsID;
+        String strBadAttName = IncrementalCrawlingHistory.dataEntityId;
         String[] straUrlsWithPwd = m_metadata.getValues(strBadAttName);
         m_metadata.remove(strBadAttName);
         for (String strPossiblePwdUrlString : straUrlsWithPwd)
@@ -204,10 +204,22 @@ public abstract class DataSinkContentHandler extends ContentHandlerDecorator
 
 
 
+    /**
+     * This is invoked if we have an entity that was crawled at another crawl in the past, according to the crawling history, and was not modified, according to the
+     * dataEntityContentFingerprint.
+     * 
+     * @param metadata some metadata (at least an identifying Id) to deal with the entity
+     */
     abstract public void processUnmodifiedData(Metadata metadata);
 
 
 
+    /**
+     * This is invoked if we have an entity that was processed in this crawl yet. This is if we have somehow a double entry, or if we have cycles, e.g. during a web
+     * crawl, where we sometimes come back to a link we started from.
+     * 
+     * @param metadata some metadata (at least an identifying Id) to deal with the entity
+     */
     abstract public void processProcessedData(Metadata metadata);
 
 

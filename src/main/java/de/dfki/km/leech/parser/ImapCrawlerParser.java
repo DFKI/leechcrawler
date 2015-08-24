@@ -436,14 +436,14 @@ public class ImapCrawlerParser extends CrawlerParser
         String strMessageId = (String) subDataEntityInformation.getFirst("Message-ID");
         String strMessageFolder = (String) subDataEntityInformation.getFirst("folder");
 
-        String strEntityExistsId = ImapURLStreamProvider.getEntityExistsId(strMessageFolder, strMessageId);
+        String strEntityId = ImapURLStreamProvider.getEntityId(strMessageFolder, strMessageId);
 
         // wir setzten die hier schon mal - die Daten haben wir in einem prefetching-Schritt schon effizient geladen. Wenn diese hier schon im
         // Metadata-Objekt stehen, werden sie von der addFirstMetadata nicht nochmal geladen
         metadata.set(Metadata.SOURCE, urlNameWithPassword.toString());
-        metadata.set(IncrementalCrawlingHistory.dataEntityExistsID, strEntityExistsId);
+        metadata.set(IncrementalCrawlingHistory.dataEntityId, strEntityId);
         metadata.set(IncrementalCrawlingHistory.dataEntityContentFingerprint,
-                ImapURLStreamProvider.getDataEntityContentFingerprint(strEntityExistsId));
+                ImapURLStreamProvider.getDataEntityContentFingerprint(strEntityId));
         URLName urlNameWithoutPassword =
                 new URLName(urlNameWithPassword.getProtocol(), urlNameWithPassword.getHost(), urlNameWithPassword.getPort(),
                         urlNameWithPassword.getFile(), urlNameWithPassword.getUsername(), "");

@@ -703,7 +703,7 @@ public class Leech extends Tika
             String strUid = new UID().toString();
             metadata.add(Metadata.RESOURCE_NAME_KEY, "leechUrlList " + strUid);
             metadata.add(DublinCore.SOURCE, strUid + "_leechUrlList.urlList");
-            metadata.add(IncrementalCrawlingHistory.dataEntityExistsID, strUid + "_leechUrlList.urlList");
+            metadata.add(IncrementalCrawlingHistory.dataEntityId, strUid + "_leechUrlList.urlList");
             metadata.add(IncrementalCrawlingHistory.dataEntityContentFingerprint, strUid + "_leechUrlList.urlList");
             metadata.add(Metadata.CONTENT_TYPE, "application/leechUrlList");
 

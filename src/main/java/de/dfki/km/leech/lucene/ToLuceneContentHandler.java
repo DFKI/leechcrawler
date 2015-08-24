@@ -442,8 +442,8 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
 
             // TODO: was passiert hier mit block-indexierten Dokumenten?
-            m_initialLuceneWriter.updateDocument(new Term(IncrementalCrawlingHistory.dataEntityExistsID, metadata.get(IncrementalCrawlingHistory.dataEntityExistsID)),
-                    luceneDocument);
+            m_initialLuceneWriter
+                    .updateDocument(new Term(IncrementalCrawlingHistory.dataEntityId, metadata.get(IncrementalCrawlingHistory.dataEntityId)), luceneDocument);
 
         }
         catch (Exception e)
@@ -613,7 +613,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
         {
 
             // TODO: was passiert hier mit block-indexierten Dokumenten?
-            m_initialLuceneWriter.deleteDocuments(new Term(IncrementalCrawlingHistory.dataEntityExistsID, metadata.get(IncrementalCrawlingHistory.dataEntityExistsID)));
+            m_initialLuceneWriter.deleteDocuments(new Term(IncrementalCrawlingHistory.dataEntityId, metadata.get(IncrementalCrawlingHistory.dataEntityId)));
 
         }
         catch (Exception e)
@@ -696,7 +696,8 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
 
     /**
-     * All docs without at least one of the given fieldname-value pairs will be ignored. You can specif regular expressions as field values
+     * All docs without at least one of the given fieldname-value pairs will be ignored. You can specif regular expressions as field values. If this is set to null or to
+     * an empty map, all documents will be accepted.
      * 
      * @param hsFieldName2FieldValue the fieldname-value pairs. At least one have to match that a document will be written into the index
      * 

@@ -178,7 +178,7 @@ abstract public class URLStreamProvider
      * {@link Metadata#RESOURCE_NAME_KEY}: this entry is performed by Tika for giving a stream a name. Will be used by some parsers. e.g. 'myFileName'<br>
      * {@link DublinCore#SOURCE}: this is the URL as String, needed by leech for referencing the data entity that should be crawled. e.g.
      * 'file:///home/dir/myFileName'<br>
-     * {@link IncrementalCrawlingHistory#dataEntityExistsID}: an identifier for a data entity that is independent from the content of this entity. It
+     * {@link IncrementalCrawlingHistory#dataEntityId}: an identifier for a data entity that is independent from the content of this entity. It
      * is only for identifying the occurence, not to check whether it has changed (e.g. a filename). Needed by Leech in order to perform incremental
      * crawling.<br>
      * {@link IncrementalCrawlingHistory#dataEntityContentFingerprint} : some fingerprint/identifier that gives the hint whether the content of the

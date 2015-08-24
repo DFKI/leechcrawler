@@ -4,7 +4,7 @@
 	<groupId>de.dfki.km</groupId>
 	<artifactId>leechcrawler</artifactId>
 	<packaging>jar</packaging>
-	<version>1.8.2</version>
+	<version>1.8.3</version>
 	<name>leechcrawler</name>
 	<url>http://leechcrawler.github.com/leech/</url>
 
@@ -112,6 +112,13 @@
 			<groupId>de.dfki.km</groupId>
 			<artifactId>inquisition</artifactId>
 			<version>20150619</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.apache.solr</groupId>
+			<artifactId>solr-solrj</artifactId>
+			<version>5.2.1</version>
 		</dependency>
 
 	</dependencies>

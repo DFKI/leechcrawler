@@ -163,7 +163,7 @@ public class PrintlnContentHandler extends DataSinkContentHandler
 
         if(m_verbosity == Verbosity.all || m_verbosity == Verbosity.title || m_verbosity == Verbosity.titlePlusMetadata || m_verbosity == Verbosity.titlePlusFulltext)
         {
-            String strInfo = metadata.get(IncrementalCrawlingHistory.dataEntityExistsID);
+            String strInfo = metadata.get(IncrementalCrawlingHistory.dataEntityId);
             if(strInfo == null) strInfo = metadata.get(Metadata.SOURCE);
             if(strInfo == null) strInfo = metadata.get(Metadata.RESOURCE_NAME_KEY);
 
@@ -213,7 +213,7 @@ public class PrintlnContentHandler extends DataSinkContentHandler
 
             if(m_verbosity == Verbosity.all || m_verbosity == Verbosity.title || m_verbosity == Verbosity.titlePlusMetadata || m_verbosity == Verbosity.titlePlusFulltext)
             {
-                String strInfo = metadata.get(IncrementalCrawlingHistory.dataEntityExistsID);
+                String strInfo = metadata.get(IncrementalCrawlingHistory.dataEntityId);
                 if(strInfo == null) strInfo = metadata.get(Metadata.SOURCE);
                 if(strInfo == null) strInfo = metadata.get(Metadata.RESOURCE_NAME_KEY);
 
@@ -264,7 +264,7 @@ public class PrintlnContentHandler extends DataSinkContentHandler
 
             if(m_verbosity == Verbosity.all || m_verbosity == Verbosity.title || m_verbosity == Verbosity.titlePlusMetadata || m_verbosity == Verbosity.titlePlusFulltext)
             {
-                String strInfo = metadata.get(IncrementalCrawlingHistory.dataEntityExistsID);
+                String strInfo = metadata.get(IncrementalCrawlingHistory.dataEntityId);
                 if(strInfo == null) strInfo = metadata.get(Metadata.SOURCE);
                 if(strInfo == null) strInfo = metadata.get(Metadata.RESOURCE_NAME_KEY);
 
@@ -322,7 +322,7 @@ public class PrintlnContentHandler extends DataSinkContentHandler
 
             if(m_verbosity == Verbosity.all || m_verbosity == Verbosity.title || m_verbosity == Verbosity.titlePlusMetadata || m_verbosity == Verbosity.titlePlusFulltext)
             {
-                String strInfo = metadata.get(IncrementalCrawlingHistory.dataEntityExistsID);
+                String strInfo = metadata.get(IncrementalCrawlingHistory.dataEntityId);
                 if(strInfo == null) strInfo = metadata.get(Metadata.SOURCE);
                 if(strInfo == null) strInfo = metadata.get(Metadata.RESOURCE_NAME_KEY);
 

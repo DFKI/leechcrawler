@@ -50,7 +50,7 @@ public class FileURLStreamProvider extends URLStreamProvider
 
         // wenn das Teil schon gefüllt ist, dann machen wir gar nix
         if(!(metadata2fill.get(Metadata.SOURCE) == null || metadata2fill.get(Metadata.MODIFIED) == null
-                || metadata2fill.get(IncrementalCrawlingHistory.dataEntityExistsID) == null
+                || metadata2fill.get(IncrementalCrawlingHistory.dataEntityId) == null
                 || metadata2fill.get(IncrementalCrawlingHistory.dataEntityContentFingerprint) == null || metadata2fill
                     .get(Metadata.RESOURCE_NAME_KEY) == null))
         {
@@ -71,22 +71,22 @@ public class FileURLStreamProvider extends URLStreamProvider
                 new SimpleDateFormat("yyyy.MM.dd HH:mm:ss:SSS").format(new Date(file.lastModified())));
 
         // Für das inkrementelle indexieren
-        String strEntityExistsId;
+        String strEntityId;
         try
         {
-            strEntityExistsId = file.getCanonicalPath();
+            strEntityId = file.getCanonicalPath();
         }
         catch (IOException e)
         {
-            strEntityExistsId = file.getAbsolutePath();
+            strEntityId = file.getAbsolutePath();
         }
 
-        metadata2fill.set(IncrementalCrawlingHistory.dataEntityExistsID, strEntityExistsId);
+        metadata2fill.set(IncrementalCrawlingHistory.dataEntityId, strEntityId);
         metadata2fill.set(IncrementalCrawlingHistory.dataEntityContentFingerprint, String.valueOf(file.lastModified()));
 
 
         // Für Tika
-        metadata2fill.set(Metadata.RESOURCE_NAME_KEY, strEntityExistsId);
+        metadata2fill.set(Metadata.RESOURCE_NAME_KEY, strEntityId);
 
 
         return metadata2fill;

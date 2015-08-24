@@ -65,7 +65,7 @@ public class FeedParser2 extends AbstractParser
 
 
             IncrementalCrawlingHistory crawlingHistory = crawlerContext.getIncrementalCrawlingHistory();
-            String strMasterDataEntityExistsID = metadata.get(IncrementalCrawlingHistory.dataEntityExistsID);
+            String strMasterDataEntityId = metadata.get(IncrementalCrawlingHistory.dataEntityId);
 
 
             SyndFeed feed = new SyndFeedInput().build(new InputSource(new CloseShieldInputStream(stream)));
@@ -105,9 +105,9 @@ public class FeedParser2 extends AbstractParser
                         TikaUtils.clearMetadata(metadata);
 
                         // hier wollen wir mit unseren dataexistsID und contentFingerprint prüfen, ob dieser Entry schon mal indexiert wurde
-                        metadata.add(IncrementalCrawlingHistory.dataEntityExistsID, strLink);
+                        metadata.add(IncrementalCrawlingHistory.dataEntityId, strLink);
                         metadata.add(IncrementalCrawlingHistory.dataEntityContentFingerprint, entry.getPublishedDate().toString());
-                        metadata.add(IncrementalCrawlingHistory.masterDataEntityExistsID, strMasterDataEntityExistsID);
+                        metadata.add(IncrementalCrawlingHistory.masterDataEntityId, strMasterDataEntityId);
 
                         IncrementalCrawlingParser.performHistoryStuff(crawlingHistory, metadata);
 

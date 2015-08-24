@@ -82,7 +82,7 @@ public class HttpURLStreamProvider extends URLStreamProvider
      * @param url2getMetadata the url for which metadata should be extracte
      * @param metadata2fill the metadata object. The method will put several entries, as Metadata.SOURCE, Metadata.RESOURCE_NAME_KEY,
      *            Metadata.CONTENT_ENCODING, Metadata.CONTENT_TYPE, Metadata.CONTENT_LOCATION and, last but not least, the
-     *            {@link IncrementalCrawlingHistory#dataEntityExistsID} and {@link IncrementalCrawlingHistory#dataEntityContentFingerprint} to
+     *            {@link IncrementalCrawlingHistory#dataEntityId} and {@link IncrementalCrawlingHistory#dataEntityContentFingerprint} to
      *            determine whether the content behind the url was modified since the last crawl or not. The URL path entry for Metadata.SOURCE is
      *            the last URL behind potential previous redirects (in the case its an http connection). The origin URL will be written into an
      *            attribute "originalsource" in the case it differs from the one into Metadata.SOURCE. To determine whether an url was modified or
@@ -104,7 +104,7 @@ public class HttpURLStreamProvider extends URLStreamProvider
                 || metadata2fill.get(Metadata.CONTENT_ENCODING) == null || metadata2fill.get(Metadata.CONTENT_TYPE) == null
                 || metadata2fill.get(Metadata.CONTENT_LOCATION) == null
                 || metadata2fill.get(IncrementalCrawlingHistory.dataEntityContentFingerprint) == null || metadata2fill
-                    .get(IncrementalCrawlingHistory.dataEntityExistsID) == null))
+                    .get(IncrementalCrawlingHistory.dataEntityId) == null))
         {
             // alle sind bereits gesetzt
             return metadata2fill;
@@ -248,7 +248,7 @@ public class HttpURLStreamProvider extends URLStreamProvider
         metadata2fill.set(Metadata.RESOURCE_NAME_KEY, strCurrentUrl);
 
         metadata2fill.set(Metadata.SOURCE, strCurrentUrl);
-        metadata2fill.set(IncrementalCrawlingHistory.dataEntityExistsID, strCurrentUrl);
+        metadata2fill.set(IncrementalCrawlingHistory.dataEntityId, strCurrentUrl);
 
         if(strOriginalUrlString.indexOf(strCurrentUrl) == -1) metadata2fill.set("originalsource", strOriginalUrlString);
 

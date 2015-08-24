@@ -90,7 +90,7 @@ public class ExceptionUtils
 
     /**
      * Gets a throwable, create a string error message out of it (including the stacktrace), tries to create a {@link IncrementalCrawlingHistory}
-     * .dataEntityExistsID for identifying the entity, puts this all together into the metadata object, flag it as an error entity (with
+     * .dataEntityId for identifying the entity, puts this all together into the metadata object, flag it as an error entity (with
      * metadata.set(IncrementalCrawlingParser.DATA_ENTITY_MODIFICATION_STATE, IncrementalCrawlingParser.ERROR);), and finally delegates it to an
      * EmptyParser with the given content handler and a dummy stream.<br>
      * This is for processing errors/error entities that occur during a crawl also by implementing the {@link ContentHandler} interface - or even
@@ -133,7 +133,7 @@ public class ExceptionUtils
 
 
             metadata.set(IncrementalCrawlingParser.DATA_ENTITY_MODIFICATION_STATE, IncrementalCrawlingParser.ERROR);
-            metadata.set(IncrementalCrawlingHistory.dataEntityExistsID, strUrlOrSource4SubEntity);
+            metadata.set(IncrementalCrawlingHistory.dataEntityId, strUrlOrSource4SubEntity);
             metadata.set("errorMessage", e.getMessage());
             metadata.set("errorStacktrace", ExceptionUtils.createStackTraceString(e));
 
