@@ -8,11 +8,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.solr.client.solrj.SolrClient;
+import org.apache.solr.client.solrj.impl.CloudSolrClient;
 import org.apache.solr.client.solrj.impl.ConcurrentUpdateSolrClient;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.tika.metadata.Metadata;
 
 import de.dfki.inquisition.collections.MultiValueHashMap;
+import de.dfki.inquisition.text.StringUtils;
 import de.dfki.km.leech.metadata.LeechMetadata;
 import de.dfki.km.leech.parser.incremental.IncrementalCrawlingHistory;
 import de.dfki.km.leech.sax.DataSinkContentHandler;
@@ -27,6 +29,7 @@ public class ToSolrContentHandler extends DataSinkContentHandler
 
     }
 
+
     protected MultiValueHashMap<String, String> m_hsStaticAttValuePairs = new MultiValueHashMap<String, String>();
 
 
@@ -38,13 +41,67 @@ public class ToSolrContentHandler extends DataSinkContentHandler
     protected String m_strSolrUrl;
 
 
+
+    /**
+     * Creates a new instance, without a cloudSolrClient (default is ConcurrentUpdateSolrClient)
+     * 
+     * @param solrUrl
+     */
     public ToSolrContentHandler(String solrUrl)
+    {
+        this(solrUrl, false, null);
+    }
+
+
+
+    /**
+     * Creates a new instance
+     * 
+     * @param solrUrl the url(s) to the solr server. In the case cloudSolrClient is true, this is a list of zookeeper servers. In the case it is false, its the URL of the
+     *            solr server
+     * @param cloudSolrClient true: the class will create a CloudSolrClient instance. false: creation of ConcurrentUpdateSolrClient
+     * @param defaultCollection only necessary if the CloudSolrClient is used. If you use ConcurrentUpdateSolrClient, specify it either in the solrUrl OR here. Null or
+     *            empty values are possible.
+     */
+    public ToSolrContentHandler(String solrUrl, boolean cloudSolrClient, String defaultCollection)
     {
         this.m_strSolrUrl = solrUrl;
 
-        // hier besser einen ConcurrentUpdateSolrClient nehmen, der soll beim Indexieren besser performen
-        int iCores = Runtime.getRuntime().availableProcessors();
-        m_solrClient = new ConcurrentUpdateSolrClient(m_strSolrUrl, 2056, iCores / 2);
+        if(cloudSolrClient)
+        {
+            m_solrClient = new CloudSolrClient(solrUrl);
+            ((CloudSolrClient) m_solrClient).setDefaultCollection(defaultCollection);
+        }
+
+        else
+        {
+            if(!StringUtils.nullOrWhitespace(defaultCollection))
+            {
+                if(!solrUrl.endsWith("/")) solrUrl += "/";
+                solrUrl += defaultCollection;
+            }
+
+            // hier besser einen ConcurrentUpdateSolrClient nehmen, der soll beim Indexieren besser performen...ist ungefähr Faktor 10 schneller ^^ - allerdings muß man
+            // mit der Fehlermeldung aufpassen
+            
+            // alt: m_solrClient = new HttpSolrClient(solrUrl);
+            
+            int iCores = Runtime.getRuntime().availableProcessors();
+            m_solrClient = new ConcurrentUpdateSolrClient(solrUrl, 2056, iCores / 2)
+            {
+                private static final long serialVersionUID = -8653784811055510844L;
+
+
+
+                @Override
+                public void handleError(Throwable ex)
+                {
+                    Logger.getLogger(ToSolrContentHandler.class.getName()).log(Level.SEVERE, "Error", ex);
+                }
+            };
+        }
+
+
     }
 
 
@@ -101,6 +158,7 @@ public class ToSolrContentHandler extends DataSinkContentHandler
 
 
 
+
     @Override
     public void processNewData(Metadata metadata, String strFulltext)
     {
@@ -119,16 +177,15 @@ public class ToSolrContentHandler extends DataSinkContentHandler
                     doc.addField(strFieldName, strFieldValue);
                 }
             }
-            
-            //die statischen AttValue Paare
-            MultiValueHashMap<String,String> mhsStaticAttributeValuePairs = getStaticAttributeValuePairs();
-            
-            for(Entry<String, String> att2value : mhsStaticAttributeValuePairs.entryList())
+
+            // die statischen AttValue Paare
+            MultiValueHashMap<String, String> mhsStaticAttributeValuePairs = getStaticAttributeValuePairs();
+
+            for (Entry<String, String> att2value : mhsStaticAttributeValuePairs.entryList())
                 doc.addField(att2value.getKey(), att2value.getValue());
 
 
             m_solrClient.add(doc);
-
 
         }
         catch (Exception e)

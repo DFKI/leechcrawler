@@ -16,7 +16,6 @@ import de.dfki.inquisition.collections.MultiValueHashMap;
 import de.dfki.inquisition.processes.StopWatch;
 import de.dfki.km.leech.Leech;
 import de.dfki.km.leech.config.CrawlerContext;
-import de.dfki.km.leech.parser.wikipedia.WikipediaDumpParser;
 import de.dfki.km.leech.parser.wikipedia.WikipediaDumpParser.WikipediaDumpParserConfig;
 import de.dfki.km.leech.sax.CrawlReportContentHandler;
 import de.dfki.km.leech.sax.PrintlnContentHandler;
@@ -26,8 +25,7 @@ import de.dfki.km.leech.solr.ToSolrContentHandler;
 
 
 /**
- * A very simple Lucene Index creator. FieldConfig is from {@link WikipediaDumpParser#getFieldConfig4ParserAttributes()}, currently you can only specify the source
- * dir/file and the target dir for the lucene index
+ * A very simple data sink for a Solr server.
  * 
  * @author Christian Reuschling, Dipl.Ing.(BA)
  * 
@@ -39,17 +37,17 @@ public class SolrIndexCreator
 
 
 
-    public static void createIndex(List<String> lUrls2Crawl, String strSolrUrl, MultiValueHashMap<String, String> hsStaticAttValuePairs, boolean bPrintErrors)
-            throws IOException, Exception, SAXException, TikaException
+    public static void createIndex(List<String> lUrls2Crawl, String strSolrUrl, MultiValueHashMap<String, String> hsStaticAttValuePairs, boolean bPrintErrors,
+            boolean bCloudSolrClient, String defaultCollection) throws IOException, Exception, SAXException, TikaException
     {
-        createIndex(lUrls2Crawl, strSolrUrl, hsStaticAttValuePairs, bPrintErrors, null);
+        createIndex(lUrls2Crawl, strSolrUrl, hsStaticAttValuePairs, bPrintErrors, bCloudSolrClient, defaultCollection, null);
 
     }
 
 
 
     public static void createIndex(List<String> lUrls2Crawl, String strSolrUrl, MultiValueHashMap<String, String> hsStaticAttValuePairs, boolean bPrintErrors,
-            ParseContext context) throws IOException, Exception, SAXException, TikaException
+            boolean bCloudSolrClient, String defaultCollection, ParseContext context) throws IOException, Exception, SAXException, TikaException
     {
 
         if(context == null) context = new ParseContext();
@@ -72,7 +70,8 @@ public class SolrIndexCreator
         CrawlReportContentHandler reportContentHandler;
 
 
-        ToSolrContentHandler toSolrContentHandler = new ToSolrContentHandler(strSolrUrl).setStaticAttributeValuePairs(hsStaticAttValuePairs);
+        ToSolrContentHandler toSolrContentHandler =
+                new ToSolrContentHandler(strSolrUrl, bCloudSolrClient, defaultCollection).setStaticAttributeValuePairs(hsStaticAttValuePairs);
 
         if(bPrintErrors)
             reportContentHandler = new CrawlReportContentHandler(new PrintlnContentHandler(Verbosity.all, toSolrContentHandler).setShowOnlyErrors(true));
@@ -103,8 +102,10 @@ public class SolrIndexCreator
         {
 
             System.out.println("Usage: SolrIndexCreator [-noPageRedirects] [-noParseGeoCoordinates] [-parseInfoBoxes] [-parseLinksAndCategories]\n"
-                    + " [-<staticAttName>=<staticAttValue>] [-printErrors] [-crawlingDepth=<depth>]\n"
-                    + " <fileOrDir2CrawlPath1> .. <fileOrDir2CrawlPathN> <solrURL>\n\nComments: - you can specify several static attribute value pairs.\n");
+                    + " [-<staticAttName>=<staticAttValue>] [-printErrors] [-crawlingDepth=<depth>] [-cloudSolrClient] [-defaultCollection=<collectionName>]\n"
+                    + " <fileOrDir2CrawlPath1> .. <fileOrDir2CrawlPathN> <solrURL>\n\nComments:\n - you can specify several static attribute value pairs.\n"
+                    + " - in the case you use no CloudSolrClient, the default is ConcurrentUpdateSolrClient, which is much faster.\n"
+                    + "   In this case, you can specify the collection name either in the solrUrl OR as defaultCollection parameter.");
 
             System.out.println();
 
@@ -114,9 +115,11 @@ public class SolrIndexCreator
 
         LinkedList<String> llFile2CrawlPath = new LinkedList<>();
         String strSolrUrl = null;
+        String defaultCollection = null;
 
         int iCrawlingDepth = Integer.MAX_VALUE;
         boolean bPrintErrors = false;
+        boolean bCloudSolrClient = false;
 
 
 
@@ -154,9 +157,17 @@ public class SolrIndexCreator
             {
                 iCrawlingDepth = Integer.valueOf(strArg.replace("-crawlingDepth=", ""));
             }
+            else if(strArg.startsWith("-defaultCollection="))
+            {
+                defaultCollection = strArg.replace("-defaultCollection=", "");
+            }
             else if(strArg.startsWith("-printErrors"))
             {
                 bPrintErrors = true;
+            }
+            else if(strArg.startsWith("-cloudSolrClient"))
+            {
+                bCloudSolrClient = true;
             }
             else if(strArg.startsWith("-"))
             {
@@ -180,7 +191,7 @@ public class SolrIndexCreator
         CrawlerContext crawlerContext = new CrawlerContext().setCrawlingDepth(iCrawlingDepth);
         context.set(CrawlerContext.class, crawlerContext);
 
-        createIndex(llFile2CrawlPath, strSolrUrl, hsStaticAttValuePairs, bPrintErrors, context);
+        createIndex(llFile2CrawlPath, strSolrUrl, hsStaticAttValuePairs, bPrintErrors, bCloudSolrClient, defaultCollection, context);
 
 
     }
