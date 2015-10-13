@@ -70,6 +70,21 @@
     new Leech().parse("sourceUrl", reportContentHandler, new CrawlerContext().createParseContext());
 
     indexWriter.close(true);
+
+**Crawl into SOLR**
+
+    // the url(s) to the solr server. In the case cloudSolrClient is true, this is a list of zookeeper servers. In the case it is false, its the URL of the solr server
+    String solrUrl = "http://localhost:8014/solr/ourCollection";
+    // true: the class will create a CloudSolrClient instance. false: creation of ConcurrentUpdateSolrClient
+    bCloudSolrClient=false;
+    // only necessary if the CloudSolrClient is used. If you use ConcurrentUpdateSolrClient, specify it either in the solrUrl *OR* here (not both). Null or empty values are possible
+    collection=null;
+    
+    CrawlReportContentHandler reportContentHandler = new CrawlReportContentHandler(
+            new PrintlnContentHandler(Verbosity.all, 
+            new ToSolrContentHandler(solrUrl, bCloudSolrClient, collection)).setShowOnlyErrors(true));
+
+    new Leech().parse("sourceUrl", reportContentHandler, new CrawlerContext().createParseContext());
     
 
 **Stop current crawl**
