@@ -215,7 +215,7 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
     @Override
     public void crawlFinished()
     {
-        m_wrappedDataSinkContentHandler.crawlFinished();
+        if(m_wrappedDataSinkContentHandler != null) m_wrappedDataSinkContentHandler.crawlFinished();
 
         Logger.getLogger(CrawlReportContentHandler.class.getName()).info("Crawl finished:\n" + getReport().toString());
     }

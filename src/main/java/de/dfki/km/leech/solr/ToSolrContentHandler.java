@@ -3,6 +3,7 @@ package de.dfki.km.leech.solr;
 
 
 import java.rmi.server.UID;
+import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,6 +31,10 @@ public class ToSolrContentHandler extends DataSinkContentHandler
     }
 
 
+    protected HashMap<String, Integer> m_hsField2MultiValDocCount = new HashMap<>();
+
+
+
     protected MultiValueHashMap<String, String> m_hsStaticAttValuePairs = new MultiValueHashMap<String, String>();
 
 
@@ -39,6 +44,9 @@ public class ToSolrContentHandler extends DataSinkContentHandler
 
 
     protected String m_strSolrUrl;
+
+
+    protected int m_iErrorEntityCount = 0;
 
 
 
@@ -83,9 +91,9 @@ public class ToSolrContentHandler extends DataSinkContentHandler
 
             // hier besser einen ConcurrentUpdateSolrClient nehmen, der soll beim Indexieren besser performen...ist ungefähr Faktor 10 schneller ^^ - allerdings muß man
             // mit der Fehlermeldung aufpassen
-            
+
             // alt: m_solrClient = new HttpSolrClient(solrUrl);
-            
+
             int iCores = Runtime.getRuntime().availableProcessors();
             m_solrClient = new ConcurrentUpdateSolrClient(solrUrl, 2056, iCores / 2)
             {
@@ -96,7 +104,9 @@ public class ToSolrContentHandler extends DataSinkContentHandler
                 @Override
                 public void handleError(Throwable ex)
                 {
-                    Logger.getLogger(ToSolrContentHandler.class.getName()).log(Level.SEVERE, "Error", ex);
+                    m_iErrorEntityCount++;
+                    Logger.getLogger(ToSolrContentHandler.class.getName()).log(Level.SEVERE,
+                            "Error while insertion in to SOLR (" + m_iErrorEntityCount + " errors yet). Check the SOLR logs. Error message: " + ex.getMessage());
                 }
             };
         }
@@ -106,21 +116,32 @@ public class ToSolrContentHandler extends DataSinkContentHandler
 
 
 
+
+
     @Override
     public void crawlFinished()
     {
         try
         {
             m_solrClient.commit();
+            m_solrClient.optimize();
             m_solrClient.close();
+
+
+            if(m_hsField2MultiValDocCount.size() > 0)
+                Logger.getLogger(ToSolrContentHandler.class.getName()).info("Fields with according doc number with multivalued entries: " + m_hsField2MultiValDocCount);
+
+            if(m_iErrorEntityCount > 0)
+                Logger.getLogger(ToSolrContentHandler.class.getName()).warning(
+                        StringUtils.beautifyNumber(m_iErrorEntityCount) + " errors while inserting to SOLR. Check the SOLR logs.");
+            else
+                Logger.getLogger(ToSolrContentHandler.class.getName()).info(m_iErrorEntityCount + " errors while inserting to SOLR");
         }
         catch (Exception e)
         {
             Logger.getLogger(ToSolrContentHandler.class.getName()).log(Level.SEVERE, "Error", e);
         }
     }
-
-
 
 
 
@@ -158,7 +179,6 @@ public class ToSolrContentHandler extends DataSinkContentHandler
 
 
 
-
     @Override
     public void processNewData(Metadata metadata, String strFulltext)
     {
@@ -172,9 +192,23 @@ public class ToSolrContentHandler extends DataSinkContentHandler
 
             for (String strFieldName : metadata.names())
             {
-                for (String strFieldValue : metadata.getValues(strFieldName))
+
+
+                String[] values = metadata.getValues(strFieldName);
+                for (String strFieldValue : values)
                 {
                     doc.addField(strFieldName, strFieldValue);
+                }
+
+                if(values.length > 1)
+                {
+                    Integer iMulti4Field = m_hsField2MultiValDocCount.get(strFieldName);
+                    if(iMulti4Field == null)
+                        iMulti4Field = 1;
+                    else
+                        iMulti4Field++;
+
+                    m_hsField2MultiValDocCount.put(strFieldName, iMulti4Field);
                 }
             }
 
