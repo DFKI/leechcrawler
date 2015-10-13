@@ -1,8 +1,8 @@
 #How to start
 
-**Add Leech to your maven project**
+**Add LeechCrawler to your maven project**
 
-Leech is offered in our own repository. Add following entries to your pom.xml:
+LeechCrawler is offered in our own repository. Add following entries to your pom.xml:
 
     <repositories>
        <repository>
