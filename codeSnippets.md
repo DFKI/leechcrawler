@@ -70,6 +70,21 @@
     new Leech().parse("sourceUrl", reportContentHandler, new CrawlerContext().createParseContext());
 
     indexWriter.close(true);
+
+**Crawl into SOLR**
+
+    // the url(s) to the solr server. In the case cloudSolrClient is true, this is a list of zookeeper servers. In the case it is false, its the URL of the solr server
+    String solrUrl = "http://localhost:8014/solr/ourCollection";
+    // true: the class will create a CloudSolrClient instance. false: creation of ConcurrentUpdateSolrClient
+    bCloudSolrClient=false;
+    // only necessary if the CloudSolrClient is used. If you use ConcurrentUpdateSolrClient, specify it either in the solrUrl *OR* here (not both). Null or empty values are possible
+    collection=null;
+    
+    CrawlReportContentHandler reportContentHandler = new CrawlReportContentHandler(
+            new PrintlnContentHandler(Verbosity.all, 
+            new ToSolrContentHandler(solrUrl, bCloudSolrClient, collection)).setShowOnlyErrors(true));
+
+    new Leech().parse("sourceUrl", reportContentHandler, new CrawlerContext().createParseContext());
     
 
 **Stop current crawl**
@@ -98,3 +113,6 @@
     
     new Leech().parse("sourceUrl", new PrintlnContentHandler(Granularity.title), crawlerContext.createParseContext());
 
+***
+[How to start](https://github.com/leechcrawler/leech/blob/master/how2start.md) | [Code snippets / Examples](https://github.com/leechcrawler/leech/blob/master/codeSnippets.md) | [Extending LeechCrawler](https://github.com/leechcrawler/leech/blob/master/extending.md) | [Mailing list](https://github.com/leechcrawler/leech/blob/master/mailinglist.md) | [People / Contact] (https://github.com/leechcrawler/leech/blob/master/people.md) | [Supporters](https://github.com/leechcrawler/leech/blob/master/supporters.md)
+***
