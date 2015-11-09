@@ -155,6 +155,10 @@
 							<name>createLuceneIndex</name>
 						</program>
 						<program>
+							<mainClass>de.dfki.km.leech.util.SolrIndexCreator</mainClass>
+							<name>createSolrIndex</name>
+						</program>
+						<program>
 							<mainClass>de.dfki.km.leech.Leech</mainClass>
 							<name>leech</name>
 						</program>
