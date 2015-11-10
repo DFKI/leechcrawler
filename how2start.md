@@ -11,11 +11,11 @@ LeechCrawler is offered in our own repository. Add following entries to your pom
     <repositories>
        <repository>
           <id>dfki-km-libs-releases</id>
-          <url>http://www.dfki.uni-kl.de/artifactory2/libs-releases</url>
+          <url>http://www.dfki.uni-kl.de/artifactory/libs-releases</url>
        </repository>
        <repository>
           <id>dfki-km-libs-snapshots</id>
-          <url>http://www.dfki.uni-kl.de/artifactory2/libs-snapshots</url>
+          <url>http://www.dfki.uni-kl.de/artifactory/libs-snapshots</url>
        </repository>
 	</repositories>
 
