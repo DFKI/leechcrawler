@@ -48,6 +48,8 @@ public class LeechDefaultDetector extends CompositeDetector
 
     private static final long serialVersionUID = -4879286813440313595L;
 
+
+
     protected static List<Detector> getDefaultDetectors(MimeTypes types, ServiceLoader loader)
     {
         List<Detector> detectors = new ArrayList<Detector>();
@@ -57,7 +59,7 @@ public class LeechDefaultDetector extends CompositeDetector
 
         detectors.addAll(loader.loadServiceProviders(Detector.class));
         detectors.add(types);
-        
+
 
 
         return detectors;
@@ -107,6 +109,7 @@ public class LeechDefaultDetector extends CompositeDetector
     }
 
 
+
     public LeechDefaultDetector(MimeTypes types, ClassLoader loader)
     {
         this(types, new ServiceLoader(loader));
@@ -138,12 +141,12 @@ public class LeechDefaultDetector extends CompositeDetector
             if(registry != null)
             {
                 MediaType detectedType2check = super.detect(input, metadata);
-                
-                if(registry.isSpecializationOf(detectedType2check.getBaseType(), mediaType.getBaseType()))
+
+                if((mediaType == null && detectedType2check != null) || registry.isSpecializationOf(detectedType2check.getBaseType(), mediaType.getBaseType()))
                 {
                     metadata.remove(Metadata.CONTENT_TYPE);
                     metadata.set(Metadata.CONTENT_TYPE, detectedType2check.toString());
-                    
+
                     mediaType = detectedType2check;
                 }
             }
