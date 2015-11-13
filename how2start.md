@@ -24,7 +24,7 @@ and in the \<dependencies\> section
   	<dependency>
   	   <groupId>de.dfki.km</groupId>
   	   <artifactId>leechcrawler</artifactId>
-  	   <version>1.10.0</version>
+  	   <version>1.11</version>
   	</dependency>
 
 
