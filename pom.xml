@@ -4,7 +4,7 @@
 	<groupId>de.dfki.km</groupId>
 	<artifactId>leechcrawler</artifactId>
 	<packaging>jar</packaging>
-	<version>1.10.1</version>
+	<version>1.11</version>
 	<name>leechcrawler</name>
 	<url>http://leechcrawler.github.com/leech/</url>
 
@@ -60,7 +60,7 @@
 		<dependency>
 			<groupId>org.apache.tika</groupId>
 			<artifactId>tika-parsers</artifactId>
-			<version>1.10</version>
+			<version>1.11</version>
 		</dependency>
 
 		<dependency>
