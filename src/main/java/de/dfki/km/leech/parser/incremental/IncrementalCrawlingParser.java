@@ -20,8 +20,10 @@ package de.dfki.km.leech.parser.incremental;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.channels.FileLock;
 import java.util.Iterator;
 import java.util.UUID;
 
@@ -48,8 +50,8 @@ import de.dfki.km.leech.util.TikaUtils;
  * A Parser decorator which enables incremental indexing during the crawl. For this, {@link IncrementalCrawlingParser} needs two entries inside the metadata given from
  * the parse method:<br>
  * <br>
- * <li>{@link IncrementalCrawlingHistory}.dataEntityId: an identifier for a data entity that is independent from the content of this entity. It is only for
- * identifying the occurence, not to check whether it has changed (e.g. a filename) <li>
+ * <li>{@link IncrementalCrawlingHistory}.dataEntityId: an identifier for a data entity that is independent from the content of this entity. It is only for identifying
+ * the occurence, not to check whether it has changed (e.g. a filename) <li>
  * <br>
  * {@link IncrementalCrawlingHistory}.dataEntityContentFingerprint: some fingerprint/identifier that gives the hint whether the content of the data entity has changed,
  * e.g. the modifed date of a file These entries depends on the type of the datasource, which will considered by creating the InputStream for the parse method. Thus, both
@@ -104,6 +106,8 @@ public class IncrementalCrawlingParser extends ParserDecorator
 
         IncrementalCrawlingHistory crawlingHistory = null;
         boolean bIsTmpHistory = false;
+        FileLock tmpLock = null;
+        FileOutputStream fosTmpLock = null;
         int iCurrentCrawlingDepth = 0;
 
         try
@@ -132,6 +136,9 @@ public class IncrementalCrawlingParser extends ParserDecorator
 
                 File fTmpHistory = new File(parentDir.getAbsolutePath() + "/leechTmp/" + UUID.randomUUID().toString().replaceAll("\\W", "_"));
                 fTmpHistory.mkdirs();
+                // wir erstellen noch ein lock file, mit dem wir steuern, ob das temporöre Verzeichnis später gelöscht werden kann oder nicht
+                fosTmpLock = new FileOutputStream(fTmpHistory.getAbsolutePath() + "/lock");
+                tmpLock = fosTmpLock.getChannel().tryLock();
 
                 crawlerContext.setIncrementalCrawlingHistoryPath(fTmpHistory.getAbsolutePath());
                 crawlingHistory = crawlerContext.getIncrementalCrawlingHistory();
@@ -234,19 +241,40 @@ public class IncrementalCrawlingParser extends ParserDecorator
 
             if(crawlingHistory != null && iCurrentCrawlingDepth == 0) crawlingHistory.closeLuceneStuff();
 
+            if(tmpLock != null) tmpLock.release();
+            if(fosTmpLock != null) fosTmpLock.close();
             if(crawlingHistory != null && iCurrentCrawlingDepth == 0 && bIsTmpHistory)
             {
-                File fTmpHistory = new File(crawlingHistory.getHistoryPath());
-                for (File fSubFile : fTmpHistory.listFiles())
-                    fSubFile.delete();
-                fTmpHistory.delete();
+
+                // hier werden jetzt alle tmp-Verzeichnisse gelöscht, die nicht gelockt sind. Damit entfernen wir auch evtl. Leichen
+                File parentDir = new File(System.getProperty("java.io.tmpdir"));
+                File leechTmpDir = new File(parentDir.getAbsolutePath() + "/leechTmp");
+
+                for (File historyDir : leechTmpDir.listFiles())
+                {
+                    if(!historyDir.isDirectory()) continue;
+
+                    FileOutputStream fosLock = new FileOutputStream(historyDir.getAbsolutePath() + "/lock");
+                    FileLock lock = fosLock.getChannel().tryLock();
+
+                    if(lock != null)
+                    {
+                        // unlocked - we can delete the directory
+                        File fTmpHistory = new File(historyDir.getAbsolutePath());
+                        for (File fSubFile : fTmpHistory.listFiles())
+                            fSubFile.delete();
+                        fTmpHistory.delete();
+                        lock.release();
+                    }
+
+                    if(fosLock != null) fosLock.close();
+                }
             }
         }
 
 
 
     }
-
 
 
 
