@@ -136,7 +136,7 @@ public abstract class CrawlerParser implements Parser
                 // hier ist es vermutlich besser, auf das tmp-file-Angebot vom TikaStream einzugehen - die Platte wird vermutlich schneller sein als
                 // eine durchschnittliche Internetverbindung.Auch schreibend. Sollte kein File hinter dem stream stecken (z.B. bei einer
                 // http-connection) wird Tika automatisch ein temporäres File erzeugen.
-                tmpStream = TikaInputStream.get((TikaInputStream.get(stream).getFile()));
+                tmpStream = TikaInputStream.get((TikaInputStream.get(stream).getPath()));
 
                 ContentHandler handler2use4recursiveCall = TikaUtils.createContentHandler4SubCrawl(crawlerContext);
 
@@ -268,19 +268,28 @@ public abstract class CrawlerParser implements Parser
 
 
     /**
-     * Processes a sub data entity from this parsed 'container' data entity - this is finally the recursive call, normally you invoke some kind of Leech.parse(...) method
-     * here, e.g.<br>
+     * Processes a sub data entity from this parsed 'container' data entity - this can be the recursive call, in the case you have other complex data types behind your
+     * sub data entities, which needs further parsing again. In this case, normally you invoke some kind of Leech.parse(...) method here, e.g.<br>
      * <br>
      * <code>
      * Parser parser = m_leech.getParser();<br>
      * parser.parse(stream, handler2use4recursiveCall, metadata, context);<br>
      * <br>
-     * </code> The stream and possible additional metadata entries you create or get out of information inside the subDataEntityInformation. Make sure that you reuse the
+     * </code> In the other case, you have all the information yet, ready for the final handler. In this case, you can send it directly, without further processing: <br>
+     * <br>
+     * <code>
+     *  SubDataEntityContentHandler subHandler = new SubDataEntityContentHandler(handler, metadata, strBody);<br>
+     *   if(ignoreHistory)<br>
+     *         &nbsp;&nbsp;subHandler.triggerSubDataEntityHandling();<br>
+     *   else<br>
+     *       &nbsp;&nbsp;subHandler.triggerSubDataEntityHandling(context);<br>
+     *  </code> <br>
+     * The stream and possible additional metadata entries you get(or create) out of information inside the subDataEntityInformation. Make sure that you reuse the
      * metadata Object for the case that the handler has also an internal metadata member that must be the same object (as inside {@link DataSinkContentHandler})
      * 
      * @param subDataEntityInformation one entry out of the formerly returned iterator from
      *            {@link #getSubDataEntitiesInformation(InputStream, ContentHandler, Metadata, ParseContext)}
-     * @param metadata2use4recursiveCall the metadata object that should be used for recursive calls
+     * @param metadata2use4recursiveCall the metadata object that should be used for handling / recursive calls
      * @param handler2use4recursiveCall the origin content handler instance from the root crawl invocation, OR an instance created newly at every data entity as
      *            configured inside CrawlerContext
      * @param context the origin ParseContext instance given from the parse method

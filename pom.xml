@@ -99,7 +99,8 @@
 		<dependency>
 			<groupId>org.mapdb</groupId>
 			<artifactId>mapdb</artifactId>
-			<version>1.0.7</version>
+			<!-- <version>1.0.7</version> -->
+			<version>2.0-beta11</version>
 		</dependency>
 
 		<dependency>
@@ -111,7 +112,7 @@
 		<dependency>
 			<groupId>de.dfki.km</groupId>
 			<artifactId>inquisition</artifactId>
-			<version>20150619</version>
+			<version>20151124</version>
 		</dependency>
 
 

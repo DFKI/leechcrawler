@@ -50,13 +50,11 @@ import de.dfki.inquisition.text.StringUtils;
  * @author Christian Reuschling, Dipl.Ing.(BA)
  * 
  */
-public class CrawlReportContentHandler extends DataSinkContentHandler
+public class CrawlReportContentHandler extends DataSinkContentHandlerDecorator
 {
 
     public static class CrawlReport
     {
-        boolean bSomeHandled = false;
-
         public HashMap<String, Integer> hsErrorType2EntityCount = new HashMap<String, Integer>();
 
         public HashMap<String, Integer> hsModifiedType2EntityCount = new HashMap<String, Integer>();
@@ -90,6 +88,8 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
         public long lNewEntitiesProcessingTime = 0;
 
         public long lRemovedEntitiesProcessingTime = 0;
+
+        boolean bSomeHandled = false;
 
 
 
@@ -132,11 +132,11 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
                 strbReport.append(" (in average ").append(StopWatch.formatTimeDistance(lNewEntitiesProcessingTime / iNewEntities))
                         .append(" to handle. Last entity took " + StopWatch.formatTimeDistance(lastNewEntityProcessingTime) + ")");
             strbReport.append("\n");
-            
+
             MultiValueTreeMap<Integer, String> tmEntityCount2Type = new MultiValueTreeMap<>(Collections.reverseOrder(), LinkedList.class);
-            for(Entry<String, Integer> newType2EntityCount : hsNewType2EntityCount.entrySet())
+            for (Entry<String, Integer> newType2EntityCount : hsNewType2EntityCount.entrySet())
                 tmEntityCount2Type.add(newType2EntityCount.getValue(), newType2EntityCount.getKey());
-            
+
             StringBuilder strbTmp = new StringBuilder();
             for (Entry<Integer, String> entityCount2Type : tmEntityCount2Type.entryList())
                 strbTmp.append(", ").append(entityCount2Type.getValue()).append(":").append(StringUtils.beautifyNumber(entityCount2Type.getKey()));
@@ -149,11 +149,11 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
                 strbReport.append(" (in average ").append(StopWatch.formatTimeDistance(lModifiedEntitiesProcessingTime / iModifiedEntities))
                         .append(" to handle. Last entity took " + StopWatch.formatTimeDistance(lastModifiedEntityProcessingTime) + ")");
             strbReport.append("\n");
-            
+
             tmEntityCount2Type = new MultiValueTreeMap<>(Collections.reverseOrder(), LinkedList.class);
-            for(Entry<String, Integer> modifiedType2EntityCount : hsModifiedType2EntityCount.entrySet())
+            for (Entry<String, Integer> modifiedType2EntityCount : hsModifiedType2EntityCount.entrySet())
                 tmEntityCount2Type.add(modifiedType2EntityCount.getValue(), modifiedType2EntityCount.getKey());
-            
+
             strbTmp = new StringBuilder();
             for (Entry<Integer, String> entityCount2Type : tmEntityCount2Type.entryList())
                 strbTmp.append(", ").append(entityCount2Type.getValue()).append(":").append(StringUtils.beautifyNumber(entityCount2Type.getKey()));
@@ -174,11 +174,11 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
             strbReport.append("\n");
 
             strbReport.append("Error data entities: ").append(StringUtils.beautifyNumber(iErrorEntities)).append("\n");
-            
+
             tmEntityCount2Type = new MultiValueTreeMap<>(Collections.reverseOrder(), LinkedList.class);
-            for(Entry<String, Integer> errorType2EntityCount : hsErrorType2EntityCount.entrySet())
+            for (Entry<String, Integer> errorType2EntityCount : hsErrorType2EntityCount.entrySet())
                 tmEntityCount2Type.add(errorType2EntityCount.getValue(), errorType2EntityCount.getKey());
-            
+
             strbTmp = new StringBuilder();
             for (Entry<Integer, String> entityCount2Type : tmEntityCount2Type.entryList())
                 strbTmp.append(", ").append(entityCount2Type.getValue()).append(":").append(StringUtils.beautifyNumber(entityCount2Type.getKey()));
@@ -200,8 +200,6 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
 
 
     protected long m_lCyclicReportMilliseconds = -1;
-
-    protected final DataSinkContentHandler m_wrappedDataSinkContentHandler;
 
 
 
@@ -228,32 +226,6 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
     }
 
 
-
-
-    public DataSinkContentHandler getWrappedDataSinkContentHandler()
-    {
-        return m_wrappedDataSinkContentHandler;
-    }
-
-
-
-    protected void printReportIfItsTime()
-    {
-        if(m_lCyclicReportMilliseconds < 0) return;
-
-        if(m_lastReportTime < 0)
-        {
-            m_lastReportTime = System.currentTimeMillis();
-            return;
-        }
-
-        if(System.currentTimeMillis() >= m_lastReportTime + m_lCyclicReportMilliseconds)
-        {
-            Logger.getLogger(CrawlReportContentHandler.class.getName()).info(m_crawlReport.toString());
-
-            m_lastReportTime = System.currentTimeMillis();
-        }
-    }
 
 
 
@@ -283,7 +255,7 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
         }
 
 
-        m_wrappedDataSinkContentHandler.processErrorData(metadata);
+        if(m_wrappedDataSinkContentHandler != null) m_wrappedDataSinkContentHandler.processErrorData(metadata);
 
 
         m_crawlReport.lLastEntityEndTime = System.currentTimeMillis();
@@ -321,7 +293,7 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
 
         long lStart = System.currentTimeMillis();
 
-        m_wrappedDataSinkContentHandler.processModifiedData(metadata, strFulltext);
+        if(m_wrappedDataSinkContentHandler != null) m_wrappedDataSinkContentHandler.processModifiedData(metadata, strFulltext);
 
         long lDuration = System.currentTimeMillis() - lStart;
         m_crawlReport.lModifiedEntitiesProcessingTime += lDuration;
@@ -357,11 +329,11 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
 
             m_crawlReport.hsNewType2EntityCount.put(strType, iCount4Type);
         }
-        
+
 
         long lStart = System.currentTimeMillis();
 
-        m_wrappedDataSinkContentHandler.processNewData(metadata, strFulltext);
+        if(m_wrappedDataSinkContentHandler != null) m_wrappedDataSinkContentHandler.processNewData(metadata, strFulltext);
 
         long lDuration = System.currentTimeMillis() - lStart;
         m_crawlReport.lNewEntitiesProcessingTime += lDuration;
@@ -378,7 +350,7 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
     {
         m_crawlReport.iProcessedEntities++;
 
-        m_wrappedDataSinkContentHandler.processProcessedData(metadata);
+        if(m_wrappedDataSinkContentHandler != null) m_wrappedDataSinkContentHandler.processProcessedData(metadata);
 
         printReportIfItsTime();
     }
@@ -398,7 +370,7 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
 
         long lStart = System.currentTimeMillis();
 
-        m_wrappedDataSinkContentHandler.processRemovedData(metadata);
+        if(m_wrappedDataSinkContentHandler != null) m_wrappedDataSinkContentHandler.processRemovedData(metadata);
 
         long lDuration = System.currentTimeMillis() - lStart;
         m_crawlReport.lRemovedEntitiesProcessingTime += lDuration;
@@ -415,7 +387,7 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
     {
         m_crawlReport.iUnModifiedEntities++;
 
-        m_wrappedDataSinkContentHandler.processUnmodifiedData(metadata);
+        if(m_wrappedDataSinkContentHandler != null) m_wrappedDataSinkContentHandler.processUnmodifiedData(metadata);
 
         printReportIfItsTime();
     }
@@ -446,6 +418,26 @@ public class CrawlReportContentHandler extends DataSinkContentHandler
         m_lCyclicReportMilliseconds = everyMilliseconds;
 
         return this;
+    }
+
+
+
+    protected void printReportIfItsTime()
+    {
+        if(m_lCyclicReportMilliseconds < 0) return;
+
+        if(m_lastReportTime < 0)
+        {
+            m_lastReportTime = System.currentTimeMillis();
+            return;
+        }
+
+        if(System.currentTimeMillis() >= m_lastReportTime + m_lCyclicReportMilliseconds)
+        {
+            Logger.getLogger(CrawlReportContentHandler.class.getName()).info(m_crawlReport.toString());
+
+            m_lastReportTime = System.currentTimeMillis();
+        }
     }
 
 

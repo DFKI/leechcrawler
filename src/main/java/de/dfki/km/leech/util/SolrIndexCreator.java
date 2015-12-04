@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.parser.ParseContext;
+import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
 import de.dfki.inquisition.collections.MultiValueHashMap;
@@ -18,6 +19,8 @@ import de.dfki.km.leech.Leech;
 import de.dfki.km.leech.config.CrawlerContext;
 import de.dfki.km.leech.parser.wikipedia.WikipediaDumpParser.WikipediaDumpParserConfig;
 import de.dfki.km.leech.sax.CrawlReportContentHandler;
+import de.dfki.km.leech.sax.DataSinkContentHandler;
+import de.dfki.km.leech.sax.DataSinkContentHandlerDecorator;
 import de.dfki.km.leech.sax.PrintlnContentHandler;
 import de.dfki.km.leech.sax.PrintlnContentHandler.Verbosity;
 import de.dfki.km.leech.solr.ToSolrContentHandler;
@@ -33,11 +36,20 @@ import de.dfki.km.leech.solr.ToSolrContentHandler;
 public class SolrIndexCreator
 {
 
-    public static long cyclicReportTime = 1000 * 60;
+    public long cyclicReportTime = 1000 * 60;
 
 
 
-    public static void createIndex(List<String> lUrls2Crawl, String strSolrUrl, MultiValueHashMap<String, String> hsStaticAttValuePairs, boolean bPrintErrors,
+    public static void main(String[] args) throws Exception
+    {
+
+        new SolrIndexCreator().createIndex(args);
+
+    }
+
+
+
+    public void createIndex(List<String> lUrls2Crawl, String strSolrUrl, MultiValueHashMap<String, String> hsStaticAttValuePairs, boolean bPrintErrors,
             boolean bCloudSolrClient, String defaultCollection) throws IOException, Exception, SAXException, TikaException
     {
         createIndex(lUrls2Crawl, strSolrUrl, hsStaticAttValuePairs, bPrintErrors, bCloudSolrClient, defaultCollection, null);
@@ -46,7 +58,7 @@ public class SolrIndexCreator
 
 
 
-    public static void createIndex(List<String> lUrls2Crawl, String strSolrUrl, MultiValueHashMap<String, String> hsStaticAttValuePairs, boolean bPrintErrors,
+    public void createIndex(List<String> lUrls2Crawl, String strSolrUrl, MultiValueHashMap<String, String> hsStaticAttValuePairs, boolean bPrintErrors,
             boolean bCloudSolrClient, String defaultCollection, ParseContext context) throws IOException, Exception, SAXException, TikaException
     {
 
@@ -78,10 +90,22 @@ public class SolrIndexCreator
         else
             reportContentHandler = new CrawlReportContentHandler(toSolrContentHandler);
 
+        reportContentHandler.setCyclicReportPrintln(cyclicReportTime);
+
+        
+        
+        
+        ContentHandler finalContentHandler;
+        DataSinkContentHandlerDecorator postprocessingHandler = getPostprocessingHandler();
+        if(postprocessingHandler == null)
+            finalContentHandler = reportContentHandler;
+        else
+            finalContentHandler = postprocessingHandler.setWrappedDataSinkContentHandler(reportContentHandler);
 
 
 
-        leech.parse(lUrls2Crawl.toArray(new String[0]), reportContentHandler.setCyclicReportPrintln(cyclicReportTime), context);
+
+        leech.parse(lUrls2Crawl.toArray(new String[0]), finalContentHandler, context);
 
 
         StopWatch.stopAndLogDistance(startTime, Level.INFO);
@@ -91,11 +115,20 @@ public class SolrIndexCreator
 
 
     /**
-     * @param args args[0] is the source dir/file, args[1] the lucene target directory
+     * Returns a {@link DataSinkContentHandler} that will act as a postprocessing chain part. It will be processed directly after getting the data from the parsers,
+     * before delegating it to succeeding report handlers of data sink handler like {@link SolrIndexCreator}. Thus, the data can be modified before writing it into the
+     * data sink. If you overwrite a method from the returned decorator/wrapper, don't forget to call the super method for delegating the call to the wrapped Object
      * 
-     * @throws Exception
+     * @return
      */
-    public static void main(String[] args) throws Exception
+    public DataSinkContentHandlerDecorator getPostprocessingHandler()
+    {
+        return null;
+    }
+
+
+
+    public void createIndex(String[] args) throws IOException, SAXException, TikaException, Exception
     {
 
         if(args.length == 0 || (args.length != 0 && (args[0].equals("-?") || args[0].equals("-h") || args[0].equals("--help"))))
@@ -191,13 +224,10 @@ public class SolrIndexCreator
         CrawlerContext crawlerContext = new CrawlerContext().setCrawlingDepth(iCrawlingDepth);
         context.set(CrawlerContext.class, crawlerContext);
 
+
         createIndex(llFile2CrawlPath, strSolrUrl, hsStaticAttValuePairs, bPrintErrors, bCloudSolrClient, defaultCollection, context);
 
-
     }
-
-
-
 
 
 

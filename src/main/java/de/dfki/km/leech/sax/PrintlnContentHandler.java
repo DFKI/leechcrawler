@@ -34,7 +34,7 @@ import de.dfki.km.leech.parser.incremental.IncrementalCrawlingHistory;
  * 
  * @author Christian Reuschling, Dipl.Ing.(BA)
  */
-public class PrintlnContentHandler extends DataSinkContentHandler
+public class PrintlnContentHandler extends DataSinkContentHandlerDecorator
 {
 
 
@@ -50,9 +50,6 @@ public class PrintlnContentHandler extends DataSinkContentHandler
 
     protected Verbosity m_verbosity = Verbosity.all;
 
-
-
-    protected DataSinkContentHandler m_wrappedDataSinkContentHandler;
 
 
 
@@ -125,25 +122,15 @@ public class PrintlnContentHandler extends DataSinkContentHandler
 
 
 
-    @Override
-    public void crawlFinished()
-    {
-        if(m_wrappedDataSinkContentHandler != null) m_wrappedDataSinkContentHandler.crawlFinished();
-    }
 
 
-
-    public Verbosity getGranularity()
+    public Verbosity getVerbosity()
     {
         return m_verbosity;
     }
 
 
 
-    public DataSinkContentHandler getWrappedDataSinkContentHandler()
-    {
-        return m_wrappedDataSinkContentHandler;
-    }
 
 
 
@@ -302,12 +289,6 @@ public class PrintlnContentHandler extends DataSinkContentHandler
 
 
 
-    @Override
-    public void processProcessedData(Metadata metadata)
-    {
-        // NOP
-    }
-
 
 
     @Override
@@ -354,16 +335,10 @@ public class PrintlnContentHandler extends DataSinkContentHandler
 
 
 
-    @Override
-    public void processUnmodifiedData(Metadata metadata)
-    {
-        // NOP
-
-    }
 
 
 
-    public PrintlnContentHandler setGranularity(Verbosity granularity)
+    public PrintlnContentHandler setVerbosity(Verbosity granularity)
     {
         m_verbosity = granularity;
 

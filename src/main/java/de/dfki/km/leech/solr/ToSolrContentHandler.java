@@ -188,7 +188,7 @@ public class ToSolrContentHandler extends DataSinkContentHandler
             SolrInputDocument doc = new SolrInputDocument();
 
             if(metadata.getValues(LeechMetadata.id).length == 0) doc.addField(LeechMetadata.id, new UID().toString());
-            doc.addField(LeechMetadata.body, strFulltext);
+            if(strFulltext != null && !strFulltext.isEmpty()) doc.addField(LeechMetadata.body, strFulltext);
 
             for (String strFieldName : metadata.names())
             {
