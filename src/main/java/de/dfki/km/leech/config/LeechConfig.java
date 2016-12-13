@@ -49,10 +49,10 @@ import de.dfki.km.leech.parser.ImapCrawlerParser;
  * 
  * @author Christian Reuschling, Dipl.Ing.(BA)
  */
-public class LeechDefaultConfig extends TikaConfig
+public class LeechConfig extends TikaConfig
 {
 
-    static protected LeechDefaultConfig m_defaultLeechConfigSingleton;
+    static protected LeechConfig m_defaultLeechConfigSingleton;
 
 
 
@@ -62,7 +62,7 @@ public class LeechDefaultConfig extends TikaConfig
         try
         {
 
-            if(m_defaultLeechConfigSingleton == null) m_defaultLeechConfigSingleton = new LeechDefaultConfig();
+            if(m_defaultLeechConfigSingleton == null) m_defaultLeechConfigSingleton = new LeechConfig();
 
             return m_defaultLeechConfigSingleton;
 
@@ -89,7 +89,7 @@ public class LeechDefaultConfig extends TikaConfig
 
 
 
-    public LeechDefaultConfig() throws TikaException, IOException
+    public LeechConfig() throws TikaException, IOException
     {
         super();
 

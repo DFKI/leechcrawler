@@ -92,15 +92,30 @@ public class SolrIndexCreator
 
         reportContentHandler.setCyclicReportPrintln(cyclicReportTime);
 
-        
-        
-        
+
+
+
         ContentHandler finalContentHandler;
         DataSinkContentHandlerDecorator postprocessingHandler = getPostprocessingHandler();
         if(postprocessingHandler == null)
             finalContentHandler = reportContentHandler;
         else
-            finalContentHandler = postprocessingHandler.setWrappedDataSinkContentHandler(reportContentHandler);
+        {
+            finalContentHandler = postprocessingHandler;
+
+            DataSinkContentHandlerDecorator lastHandlerInChain = postprocessingHandler;
+            while (lastHandlerInChain.getWrappedDataSinkContentHandler() != null)
+            {
+                if(!(lastHandlerInChain.getWrappedDataSinkContentHandler() instanceof DataSinkContentHandlerDecorator))
+                    throw new IllegalStateException(
+                            "Postprocessing handlers must be all of type DataSinkContentHandlerDecorator in order to plug in the Solr data sink handler");
+                lastHandlerInChain = (DataSinkContentHandlerDecorator) lastHandlerInChain.getWrappedDataSinkContentHandler();
+            }
+
+            lastHandlerInChain.setWrappedDataSinkContentHandler(reportContentHandler);
+
+
+        }
 
 
 

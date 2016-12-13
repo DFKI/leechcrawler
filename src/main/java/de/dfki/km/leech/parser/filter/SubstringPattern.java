@@ -279,7 +279,7 @@ public class SubstringPattern implements URLFilterPattern
      */
     public URLFilter toURLFilterAsExclude()
     {
-        return new URLFilter().addIncludePattern(this);
+        return new URLFilter().addExcludePattern(this);
     }
 
 

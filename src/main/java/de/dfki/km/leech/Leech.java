@@ -43,7 +43,7 @@ import org.xml.sax.SAXException;
 import de.dfki.inquisition.text.StringUtils;
 import de.dfki.km.leech.config.CrawlerContext;
 import de.dfki.km.leech.config.DirectoryCrawlerContext;
-import de.dfki.km.leech.config.LeechDefaultConfig;
+import de.dfki.km.leech.config.LeechConfig;
 import de.dfki.km.leech.io.URLStreamProvider;
 import de.dfki.km.leech.parser.DirectoryCrawlerParser;
 import de.dfki.km.leech.parser.filter.URLFilteringParser;
@@ -125,9 +125,15 @@ public class Leech extends Tika
 
     public Leech()
     {
-        super(LeechDefaultConfig.getDefaultLeechConfig());
+        super(LeechConfig.getDefaultLeechConfig());
     }
 
+    
+    
+    public Leech(LeechConfig leechConfig)
+    {
+        super(leechConfig);
+    }
 
 
     @Override

@@ -37,11 +37,11 @@
 
 	<distributionManagement>
 		<repository>
-			<id>artifactory2-libs-releases-local</id>
+			<id>artifactory-libs-releases-local</id>
 			<url>http://www.dfki.uni-kl.de/artifactory/libs-releases-local</url>
 		</repository>
 		<snapshotRepository>
-			<id>artifactory2-libs-snapshots-local</id>
+			<id>artifactory-libs-snapshots-local</id>
 			<url>http://www.dfki.uni-kl.de/artifactory/libs-snapshots-local</url>
 			<uniqueVersion>false</uniqueVersion>
 		</snapshotRepository>

@@ -106,7 +106,7 @@ public class ToSolrContentHandler extends DataSinkContentHandler
                 {
                     m_iErrorEntityCount++;
                     Logger.getLogger(ToSolrContentHandler.class.getName()).log(Level.SEVERE,
-                            "Error while insertion in to SOLR (" + m_iErrorEntityCount + " errors yet). Check the SOLR logs. Error message: " + ex.getMessage());
+                            "Error while insertion to SOLR (" + m_iErrorEntityCount + " errors yet). Check the SOLR logs. Error message: " + ex.getMessage());
                 }
             };
         }
