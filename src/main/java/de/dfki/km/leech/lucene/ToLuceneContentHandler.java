@@ -20,6 +20,8 @@ package de.dfki.km.leech.lucene;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.rmi.server.UID;
 import java.util.Collection;
 import java.util.Collections;
@@ -296,7 +298,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
             LinkedList<Directory> llIndicesDirs2Merge = new LinkedList<Directory>();
 
             for (String strTmpPath : m_hsTmpLuceneWriterPaths2Merge)
-                llIndicesDirs2Merge.add(new SimpleFSDirectory(new File(strTmpPath)));
+                llIndicesDirs2Merge.add(new SimpleFSDirectory(Paths.get(strTmpPath)));
 
             if(llIndicesDirs2Merge.size() == 0) return;
 
@@ -940,22 +942,22 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
         Directory directory = m_initialLuceneWriter.getDirectory();
 
-        File fOurTmpDir = null;
+        Path fOurTmpDir = null;
         if(directory instanceof FSDirectory)
         {
             if(m_luceneWriter != m_initialLuceneWriter) m_llIndexWriter2Close.add(m_luceneWriter);
 
-            String strTmpPath = ((FSDirectory) directory).getDirectory().getAbsolutePath();
+            String strTmpPath = ((FSDirectory) directory).getDirectory().toAbsolutePath().toString();
             // if(strTmpPath.charAt(strTmpPath.length() - 1) == '/' || strTmpPath.charAt(strTmpPath.length() - 1) == '\\')
             // strTmpPath = strTmpPath.substring(0, strTmpPath.length() - 1);
             strTmpPath += "_" + (m_hsTmpLuceneWriterPaths2Merge.size() + 1);
-            fOurTmpDir = new File(strTmpPath);
+            fOurTmpDir = Paths.get(strTmpPath);
         }
         else
         {
             // wir brauchen was temporäres
             File parentDir = new File(System.getProperty("java.io.tmpdir"));
-            fOurTmpDir = new File(parentDir.getAbsolutePath() + "/leechTmp/" + UUID.randomUUID().toString().replaceAll("\\W", "_"));
+            fOurTmpDir = Paths.get(parentDir.getAbsolutePath() + "/leechTmp/" + UUID.randomUUID().toString().replaceAll("\\W", "_"));
         }
 
         Logger.getLogger(ToLuceneContentHandler.class.getName()).info(
@@ -963,11 +965,11 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
 
         @SuppressWarnings("deprecation")
-        IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_CURRENT, m_initialLuceneWriter.getConfig().getAnalyzer());
+        IndexWriterConfig config = new IndexWriterConfig(m_initialLuceneWriter.getConfig().getAnalyzer());
         config.setOpenMode(OpenMode.CREATE);
 
         m_luceneWriter = new IndexWriter(new SimpleFSDirectory(fOurTmpDir), config);
-        m_hsTmpLuceneWriterPaths2Merge.add(fOurTmpDir.getAbsolutePath());
+        m_hsTmpLuceneWriterPaths2Merge.add(fOurTmpDir.toAbsolutePath().toString());
 
         return m_luceneWriter;
     }

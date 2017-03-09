@@ -16,22 +16,14 @@ import java.util.logging.Logger;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.*;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
-import org.apache.lucene.index.MultiFields;
-import org.apache.lucene.index.MultiReader;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.index.Terms;
-import org.apache.lucene.index.TermsEnum;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.PrefixTermsEnum;
+import org.apache.lucene.search.PrefixQuery;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.SimpleFSDirectory;
-import org.apache.lucene.util.Version;
+import org.apache.lucene.util.automaton.CompiledAutomaton;
 import org.apache.tika.metadata.Metadata;
 
 import de.dfki.inquisition.file.FileUtils;
@@ -61,9 +53,11 @@ public class IndexPostprocessor
 
         if(terms == null) return llFieldTerms;
 
-        TermsEnum termsEnum = terms.iterator(null);
+        TermsEnum termsEnum = terms.iterator();
 
-        if(!StringUtils.nullOrWhitespace(strPrefix)) termsEnum = new PrefixTermsEnum(termsEnum, new Term(strFieldName, strPrefix).bytes());
+        if(!StringUtils.nullOrWhitespace(strPrefix)) {
+            termsEnum = new AutomatonTermsEnum(termsEnum, new CompiledAutomaton(PrefixQuery.toAutomaton(new Term(strFieldName, strPrefix).bytes())));
+        }
 
         while (termsEnum.next() != null)
         {
@@ -168,11 +162,11 @@ public class IndexPostprocessor
 
 
         LinkedList<IndexReader> llsubReaders = new LinkedList<IndexReader>();
-        IndexReader reader4SourceIndex = DirectoryReader.open(new SimpleFSDirectory(new File(strLuceneIndexPath)));
+        IndexReader reader4SourceIndex = DirectoryReader.open(new SimpleFSDirectory(Paths.get(strLuceneIndexPath)));
         IndexSearcher searcher4SourceIndex = new IndexSearcher(reader4SourceIndex);
         llsubReaders.add(reader4SourceIndex);
         for (String strLuceneReadOnlyLookupPath : straLuceneReadOnlyLookupPaths)
-            llsubReaders.add(DirectoryReader.open(new SimpleFSDirectory(new File(strLuceneReadOnlyLookupPath))));
+            llsubReaders.add(DirectoryReader.open(new SimpleFSDirectory(Paths.get(strLuceneReadOnlyLookupPath))));
 
 
         IndexReader lookupReader;
@@ -185,11 +179,10 @@ public class IndexPostprocessor
 
         // wir machen uns einen leeren initialen Writer zum schreiben - den Rest macht der ToLuceneContentHandler
         File fLuceneIndex = new File(strLuceneIndexPath);
-        String strTmpPath = fLuceneIndex.getAbsolutePath() + "_4PostProcessing";
-        File fOurTmpDir = new File(strTmpPath);
+        Path fOurTmpDir = Paths.get(fLuceneIndex.getAbsolutePath() + "_4PostProcessing");
 
 
-        IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_9, fieldConfig.createAnalyzer());
+        IndexWriterConfig config = new IndexWriterConfig(fieldConfig.createAnalyzer());
         config.setOpenMode(OpenMode.CREATE);
 
         IndexWriter firstTmpWriter = new IndexWriter(new SimpleFSDirectory(fOurTmpDir), config);
@@ -256,7 +249,7 @@ public class IndexPostprocessor
 
         toLuceneContentHandler.crawlFinished();
         firstTmpWriter.forceMerge(1, true);
-        firstTmpWriter.close(true);
+        firstTmpWriter.close();
         if(lookupReader instanceof MultiReader)
             lookupReader.close();
         else
@@ -284,7 +277,7 @@ public class IndexPostprocessor
 
         // nun verschieben wir die neuen Dateien alle in das alte, nun leere Indexverzeichnis
         Path pLuceneIndex = Paths.get(fLuceneIndex.getAbsolutePath());
-        for (File fFileInTmpDir : fOurTmpDir.listFiles())
+        for (File fFileInTmpDir : fOurTmpDir.toFile().listFiles())
         {
             Path pFileInTmpDir = Paths.get(fFileInTmpDir.getAbsolutePath());
             Files.move(pFileInTmpDir, pLuceneIndex.resolve(pFileInTmpDir.getFileName()));
@@ -292,7 +285,7 @@ public class IndexPostprocessor
         // fOurTmpDir.renameTo(fLuceneIndex);
 
         FileUtils.deleteDirectory(new File(pUnpostProcessed.toString()));
-        FileUtils.deleteDirectory(fOurTmpDir);
+        FileUtils.deleteDirectory(fOurTmpDir.toFile());
 
 
 
