@@ -180,7 +180,10 @@ public class CookieManager
         }
         try
         {
-            conn.setRequestProperty(COOKIE, cookieStringBuffer.toString());
+            if (cookieStringBuffer.length() > 0)
+            {
+                conn.setRequestProperty(COOKIE, cookieStringBuffer.toString());
+            }
         }
         catch (java.lang.IllegalStateException ise)
         {
