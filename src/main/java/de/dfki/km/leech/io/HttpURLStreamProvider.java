@@ -26,6 +26,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
 
@@ -133,7 +134,7 @@ public class HttpURLStreamProvider extends URLStreamProvider
 
         String strCurrentUrl = url2getMetadata.toString();
         
-        CookieManager cookies = new CookieManager();
+        CookieManager cookies = crawlerContext.getCookieManager();
         
         // We're going to loop, accessing urls until we arrive at a url that is not redirected. The
         // redirection is followed manually rather than automatically, which is HttpURLConnection's
@@ -163,16 +164,28 @@ public class HttpURLStreamProvider extends URLStreamProvider
             {
                 // maybe there exists other connections as http - in this case we want to fall back zu standard Tika behaviour
                 connection = currentUrl.openConnection();
-                connection.connect();
-                cookies.storeCookies(connection);
-                connection = currentUrl.openConnection();
-                cookies.setCookies(connection);
 
                 if(!(connection instanceof HttpURLConnection)) break;
 
+                ((HttpURLConnection) connection).setRequestMethod("HEAD");
+                cookies.setCookies(connection);
                 connection.setConnectTimeout(connectTimeout);
                 connection.setReadTimeout(readTimeout);
                 connection.setRequestProperty("Accept-Encoding", "gzip");
+
+                Map<String, String> userHeaders = crawlerContext.getUserHeaders();
+                if (userHeaders != null) {
+                    for (Map.Entry<String, String> entry : userHeaders.entrySet()) {
+                        connection.setRequestProperty(entry.getKey(), entry.getValue());
+                    }
+                }
+
+                String userAgent = crawlerContext.getUserAgent();
+                if (userAgent != null && !userAgent.isEmpty())
+                {
+                    connection.setRequestProperty("User-Agent", userAgent);
+                }
+
                 ((HttpURLConnection) connection).setInstanceFollowRedirects(false);
                 if(ifModifiedSinceDate != null)
                 {
@@ -181,7 +194,7 @@ public class HttpURLStreamProvider extends URLStreamProvider
 
                 // send the request to the server
                 connection.connect();
-                
+                cookies.storeCookies(connection);
             }
             catch (Exception e)
             {
@@ -216,7 +229,7 @@ public class HttpURLStreamProvider extends URLStreamProvider
             }
             else if(responseCode == HttpURLConnection.HTTP_NOT_FOUND)
             {
-                throw new LeechException(strCurrentUrl + "not found");
+                throw new LeechException(strCurrentUrl + " not found");
             }
             else if(responseCode == HttpURLConnection.HTTP_NOT_MODIFIED)
             {
@@ -281,26 +294,37 @@ public class HttpURLStreamProvider extends URLStreamProvider
     public TikaInputStream getStream(URLName url2getStream, Metadata metadata, ParseContext parseContext) throws Exception
     {
         final URL asUrl = new URL(url2getStream.toString());
-
+        final CrawlerContext crawlerContext = parseContext.get(CrawlerContext.class, new CrawlerContext());
 
         return TikaInputStream.get(new ShiftInitInputStream()
         {
             @Override
             protected InputStream initBeforeFirstStreamDataAccess() throws Exception
             {
-                CookieManager cookies = new CookieManager();
+                CookieManager cookies = crawlerContext.getCookieManager();
                 
                 URLConnection connection = asUrl.openConnection();
-                connection.connect();
-                cookies.storeCookies(connection);
-                
-                connection = asUrl.openConnection();
                 cookies.setCookies(connection);
 
                 connection.setConnectTimeout(connectTimeout);
                 connection.setReadTimeout(readTimeout);
                 connection.setRequestProperty("Accept-Encoding", "gzip");
 
+                Map<String, String> userHeaders = crawlerContext.getUserHeaders();
+                if (userHeaders != null) {
+                    for (Map.Entry<String, String> entry : userHeaders.entrySet()) {
+                        connection.setRequestProperty(entry.getKey(), entry.getValue());
+                    }
+                }
+
+                String userAgent = crawlerContext.getUserAgent();
+                if (userAgent != null && !userAgent.isEmpty())
+                {
+                    connection.setRequestProperty("User-Agent", userAgent);
+                }
+
+                connection.connect();
+                cookies.storeCookies(connection);
                 InputStream ourStream = connection.getInputStream();
 
                 String strContentEncoding = connection.getHeaderField("Content-Encoding");

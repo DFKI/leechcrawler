@@ -23,9 +23,11 @@ package de.dfki.km.leech.config;
 
 
 
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import de.dfki.km.leech.util.CookieManager;
 import org.apache.tika.parser.ParseContext;
 import org.xml.sax.ContentHandler;
 
@@ -79,6 +81,12 @@ public class CrawlerContext
     protected String m_strIncrementalCrawlingHistoryPath;
 
     protected URLFilter m_urlFilter = new URLFilter();
+
+    protected CookieManager m_cookieManager = new CookieManager();
+
+    protected String m_userAgent = null;
+
+    protected Map<String, String> m_userHeaders = null;
 
     /**
      * Creates a new ParseContext Object with an entry with this {@link #CrawlerContext} configuration. This method is only for convenience.
@@ -451,4 +459,23 @@ public class CrawlerContext
         return m_bStopRequested;
     }
 
+    public CookieManager getCookieManager() { return m_cookieManager; }
+
+    public CrawlerContext setUserAgent(String userAgent)
+    {
+        m_userAgent = userAgent;
+
+        return this;
+    }
+
+    public String getUserAgent() { return m_userAgent; }
+
+    public CrawlerContext setUserHeaders(Map<String, String> userHeaders)
+    {
+        m_userHeaders = userHeaders;
+
+        return this;
+    }
+
+    public Map<String, String> getUserHeaders() { return m_userHeaders; }
 }
