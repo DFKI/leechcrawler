@@ -18,8 +18,8 @@ package de.dfki.km.leech.parser.incremental;
 
 
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -29,7 +29,8 @@ import java.util.logging.Logger;
 import org.apache.lucene.analysis.core.KeywordAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.document.LongField;
+import org.apache.lucene.document.LongPoint;
+import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.DirectoryReader;
@@ -38,18 +39,11 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
 import org.apache.lucene.index.MultiFields;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.*;
 import org.apache.lucene.search.BooleanClause.Occur;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.NumericRangeQuery;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.search.TotalHitCountCollector;
 import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.store.SimpleFSDirectory;
 import org.apache.lucene.util.Bits;
-import org.apache.lucene.util.Version;
 
 import de.dfki.inquisition.text.StringUtils;
 import de.dfki.km.leech.config.CrawlerContext;
@@ -98,7 +92,7 @@ public class IncrementalCrawlingHistory
 
         protected LinkedList<String> m_llQueuedOutdatedIDs = new LinkedList<String>();
 
-        protected NumericRangeQuery<Long> m_query = null;
+        protected Query m_query = null;
 
 
 
@@ -108,7 +102,7 @@ public class IncrementalCrawlingHistory
             if(m_lCrawlStartingTime == null) throw new IllegalStateException("No crawl starting time found. Did you invoke crawlStarted?");
 
 
-            m_query = NumericRangeQuery.newLongRange(lastCrawledTime, 0l, m_lCrawlStartingTime, true, false);
+            m_query = LongPoint.newRangeQuery(lastCrawledTime, 0l, m_lCrawlStartingTime - 1);
         }
 
 
@@ -310,7 +304,8 @@ public class IncrementalCrawlingHistory
 
         doc.add(new StringField(dataEntityId, strDataEntityId, Store.YES));
         doc.add(new StringField(dataEntityContentFingerprint, strDataEntityContentFingerprint, Store.YES));
-        doc.add(new LongField(lastCrawledTime, System.currentTimeMillis(), Store.YES));
+        doc.add(new LongPoint(lastCrawledTime, System.currentTimeMillis()));
+        doc.add(new StoredField(lastCrawledTime, System.currentTimeMillis()));
         if(!StringUtils.nullOrWhitespace(strMasterDataEntityId)) doc.add(new StringField(masterDataEntityId, strMasterDataEntityId, Store.YES));
 
         m_indexWriter.addDocument(doc);
@@ -442,9 +437,10 @@ public class IncrementalCrawlingHistory
     {
         if(StringUtils.nullOrWhitespace(strDataEntityId)) return false;
         
-        BooleanQuery query = new BooleanQuery();
-        query.add(new TermQuery(new Term(dataEntityId, strDataEntityId)), Occur.MUST);
-        query.add(new TermQuery(new Term(dataEntityContentFingerprint, strDataEntityContentFingerprint)), Occur.MUST);
+        BooleanQuery query = (new BooleanQuery.Builder())
+                                 .add(new TermQuery(new Term(dataEntityId, strDataEntityId)), Occur.MUST)
+                                 .add(new TermQuery(new Term(dataEntityContentFingerprint, strDataEntityContentFingerprint)), Occur.MUST)
+                                 .build();
 
         TotalHitCountCollector collector = new TotalHitCountCollector();
 
@@ -540,13 +536,13 @@ public class IncrementalCrawlingHistory
     {
         if(m_indexWriter == null)
         {
-            IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_9, new KeywordAnalyzer());
+            IndexWriterConfig config = new IndexWriterConfig(new KeywordAnalyzer());
             config.setOpenMode(OpenMode.CREATE_OR_APPEND);
 
-            m_indexWriter = new IndexWriter(new SimpleFSDirectory(new File(m_strHistoryPath)), config);
+            m_indexWriter = new IndexWriter(new SimpleFSDirectory(Paths.get(m_strHistoryPath)), config);
         }
 
-        if(m_indexReader == null) m_indexReader = DirectoryReader.open(m_indexWriter, true);
+        if(m_indexReader == null) m_indexReader = DirectoryReader.open(m_indexWriter, true, true);
 
         if(m_indexSearcher == null) m_indexSearcher = new IndexSearcher(m_indexReader);
     }
@@ -621,7 +617,8 @@ public class IncrementalCrawlingHistory
 
         doc.add(new StringField(dataEntityId, strDataEntityId, Store.YES));
         doc.add(new StringField(dataEntityContentFingerprint, strDataEntityContentFingerprint, Store.YES));
-        doc.add(new LongField(lastCrawledTime, System.currentTimeMillis(), Store.YES));
+        doc.add(new LongPoint(lastCrawledTime, System.currentTimeMillis()));
+        doc.add(new StoredField(lastCrawledTime, System.currentTimeMillis()));
         if(!StringUtils.nullOrWhitespace(strMasterDataEntityId))
             doc.add(new StringField(masterDataEntityId, strMasterDataEntityId, Store.YES));
 
@@ -657,7 +654,8 @@ public class IncrementalCrawlingHistory
         Document doc = m_indexReader.document(topDocs.scoreDocs[0].doc);
 
         doc.removeFields(lastCrawledTime);
-        doc.add(new LongField(lastCrawledTime, lCurrentTime, Store.YES));
+        doc.add(new LongPoint(lastCrawledTime, lCurrentTime));
+        doc.add(new StoredField(lastCrawledTime, lCurrentTime));
 
         m_indexWriter.updateDocument(termId, doc);
 
@@ -676,7 +674,8 @@ public class IncrementalCrawlingHistory
             Document slaveDoc = m_indexReader.document(topDocs.scoreDocs[i].doc);
 
             slaveDoc.removeFields(lastCrawledTime);
-            slaveDoc.add(new LongField(lastCrawledTime, lCurrentTime, Store.YES));
+            slaveDoc.add(new LongPoint(lastCrawledTime, lCurrentTime));
+            slaveDoc.add(new StoredField(lastCrawledTime, lCurrentTime));
 
             m_indexWriter.updateDocument(termId, doc);
         }

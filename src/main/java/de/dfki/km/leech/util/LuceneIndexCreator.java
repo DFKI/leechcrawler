@@ -4,6 +4,7 @@ package de.dfki.km.leech.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -101,7 +102,7 @@ public class LuceneIndexCreator
 
             CrawlReportContentHandler reportContentHandler;
             IndexWriter indexWriter = null;
-            SimpleFSDirectory directory = new SimpleFSDirectory(new File(strLuceneIndexPath));
+            SimpleFSDirectory directory = new SimpleFSDirectory(Paths.get(strLuceneIndexPath));
             FieldConfig fieldConfig = new LeechDefaultFieldConfig();
 
             context.set(FieldConfig.class, fieldConfig);
@@ -109,7 +110,7 @@ public class LuceneIndexCreator
 
 
             @SuppressWarnings("deprecation")
-            IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_CURRENT, fieldConfig.createAnalyzer());
+            IndexWriterConfig config = new IndexWriterConfig(fieldConfig.createAnalyzer());
 
             config.setOpenMode(OpenMode.CREATE_OR_APPEND);
 
@@ -142,7 +143,7 @@ public class LuceneIndexCreator
                 Logger.getLogger(LuceneIndexCreator.class.getName()).info("Will commit and merge");
                 indexWriter.commit();
                 indexWriter.forceMerge(1, true);
-                indexWriter.close(true);
+                indexWriter.close();
 
                 StopWatch.stopAndLogDistance(startTime, Level.INFO);
 
