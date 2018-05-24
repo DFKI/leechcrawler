@@ -8,31 +8,28 @@ Author: [Christian Reuschling](http://www.dfki.uni-kl.de/~reuschling)
 EMail: Christian.Reuschling@dfki.de  
 
 # Legal Information
-Deutsches Forschungszentrum für Künstliche Intelligenz GmbH, DFKI
-
+Deutsches Forschungszentrum für Künstliche Intelligenz GmbH, DFKI   
 (German Research Center for Artificial Intelligence)
 
 ### Postal Address
 
-Postfach 20 80
-D-67608 Kaiserslautern
+Postfach 20 80   
+D-67608 Kaiserslautern   
+Trippstadter Strasse 122   
+67663 Kaiserslautern
 
-Email: info@dfki.de
-
-
-Trippstadter Strasse 122,D-67663 Kaiserslautern
-
-Phone: +49 (0)631 / 205 75-0, Telefax: +49 (0)631 / 205 75-5030
-
+Email: info@dfki.de   
+Phone: +49 (0)631 / 205 75-0   
+Telefax: +49 (0)631 / 205 75-5030
 
 ### Management Board
-Prof. Dr. Dr. h.c. mult. Wolfgang Wahlster (CEO)
+
+Prof. Dr. Dr. h.c. mult. Wolfgang Wahlster (CEO)   
 Dr. Walter Olthoff (CFO)
 
-Head of Supervisory Board
+Head of Supervisory Board   
 Prof. Dr. h.c. Hans A. Aukes
 
-Register Court: Amtsgericht Kaiserslautern
-Register Number: HRB 2313
-
+Register Court: Amtsgericht Kaiserslautern   
+Register Number: HRB 2313   
 ID-Number: DE 148 646 973
