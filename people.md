@@ -23,12 +23,10 @@ Phone: +49 (0)631 / 205 75-0
 Telefax: +49 (0)631 / 205 75-5030
 
 ### Management Board
-
-Prof. Dr. Dr. h.c. mult. Wolfgang Wahlster (CEO)   
-Dr. Walter Olthoff (CFO)
+Prof. Dr. Antonio Krüger (CEO)
 
 Head of Supervisory Board   
-Prof. Dr. h.c. Hans A. Aukes
+Dr. Gabriël Clemens
 
 Register Court: Amtsgericht Kaiserslautern   
 Register Number: HRB 2313   
