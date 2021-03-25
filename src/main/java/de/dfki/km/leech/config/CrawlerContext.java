@@ -89,7 +89,7 @@ public class CrawlerContext
     protected Map<String, String> m_userHeaders = null;
 
     /**
-     * Creates a new ParseContext Object with an entry with this {@link #CrawlerContext} configuration. This method is only for convenience.
+     * Creates a new ParseContext Object with an entry with this {@link CrawlerContext} configuration. This method is only for convenience.
      * 
      * @return the created ParseContext Object.
      */

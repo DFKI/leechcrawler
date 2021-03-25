@@ -44,9 +44,9 @@ import org.apache.tika.sax.LinkContentHandler;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
-import de.dfki.inquisition.collections.MultiValueHashMap;
-import de.dfki.inquisition.processes.StopWatch;
-import de.dfki.inquisition.text.StringUtils;
+import de.dfki.inquisitor.collections.MultiValueHashMap;
+import de.dfki.inquisitor.processes.StopWatch;
+import de.dfki.inquisitor.text.StringUtils;
 import de.dfki.km.leech.Leech;
 import de.dfki.km.leech.config.CrawlerContext;
 import de.dfki.km.leech.config.HtmlCrawlerContext;

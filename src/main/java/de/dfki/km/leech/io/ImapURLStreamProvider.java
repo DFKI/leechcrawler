@@ -18,6 +18,17 @@ package de.dfki.km.leech.io;
 
 
 
+import com.sun.mail.imap.IMAPFolder;
+import com.sun.mail.imap.IMAPMessage;
+import de.dfki.km.leech.detect.DatasourceMediaTypes;
+import de.dfki.km.leech.parser.ImapCrawlerParser;
+import de.dfki.km.leech.parser.incremental.IncrementalCrawlingHistory;
+import de.dfki.km.leech.util.UrlUtil;
+import org.apache.tika.io.TikaInputStream;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.parser.ParseContext;
+
+import javax.mail.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,24 +37,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.mail.Folder;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Store;
-import javax.mail.URLName;
-
-import org.apache.tika.io.TikaInputStream;
-import org.apache.tika.metadata.Metadata;
-import org.apache.tika.parser.ParseContext;
-
-import com.sun.mail.imap.IMAPFolder;
-import com.sun.mail.imap.IMAPMessage;
-
-import de.dfki.km.leech.detect.DatasourceMediaTypes;
-import de.dfki.km.leech.parser.ImapCrawlerParser;
-import de.dfki.km.leech.parser.incremental.IncrementalCrawlingHistory;
-import de.dfki.km.leech.util.UrlUtil;
 
 
 

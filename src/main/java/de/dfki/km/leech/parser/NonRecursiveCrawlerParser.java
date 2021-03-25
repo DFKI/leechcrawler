@@ -9,7 +9,7 @@ import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
 import org.xml.sax.ContentHandler;
 
-import de.dfki.inquisition.collections.MultiValueHashMap;
+import de.dfki.inquisitor.collections.MultiValueHashMap;
 import de.dfki.km.leech.SubDataEntityContentHandler;
 import de.dfki.km.leech.metadata.LeechMetadata;
 

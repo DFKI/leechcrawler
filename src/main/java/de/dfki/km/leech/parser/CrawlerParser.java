@@ -31,7 +31,7 @@ import org.apache.tika.parser.Parser;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
-import de.dfki.inquisition.collections.MultiValueHashMap;
+import de.dfki.inquisitor.collections.MultiValueHashMap;
 import de.dfki.km.leech.config.CrawlerContext;
 import de.dfki.km.leech.parser.incremental.IncrementalCrawlingParser;
 import de.dfki.km.leech.sax.DataSinkContentHandler;

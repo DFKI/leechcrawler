@@ -9,7 +9,8 @@ target/
 luceneIndex_wikipedia/
 testIndex/
 bla.txt
+.idea/
+leechcrawler.iml
+testIndex_4PostProcessing/
 
 
-# Except this file
-#!.gitignore

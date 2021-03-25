@@ -45,7 +45,7 @@ import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.store.SimpleFSDirectory;
 import org.apache.lucene.util.Bits;
 
-import de.dfki.inquisition.text.StringUtils;
+import de.dfki.inquisitor.text.StringUtils;
 import de.dfki.km.leech.config.CrawlerContext;
 
 

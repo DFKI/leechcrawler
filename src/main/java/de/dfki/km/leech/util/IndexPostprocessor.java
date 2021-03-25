@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import de.dfki.km.leech.lucene.basic.*;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.*;
@@ -26,14 +27,14 @@ import org.apache.lucene.store.SimpleFSDirectory;
 import org.apache.lucene.util.automaton.CompiledAutomaton;
 import org.apache.tika.metadata.Metadata;
 
-import de.dfki.inquisition.file.FileUtils;
-import de.dfki.inquisition.lucene.Buzzwords;
-import de.dfki.inquisition.lucene.DocumentFrqClass;
-import de.dfki.inquisition.lucene.FieldConfig;
-import de.dfki.inquisition.lucene.LuceneUtilz;
-import de.dfki.inquisition.lucene.PageCountEstimator;
-import de.dfki.inquisition.processes.StopWatch;
-import de.dfki.inquisition.text.StringUtils;
+import de.dfki.inquisitor.file.FileUtilz;
+// import de.dfki.inquisitor.lucene.Buzzwords;
+// import de.dfki.inquisitor.lucene.DocumentFrqClass;
+// import de.dfki.inquisitor.lucene.FieldConfig;
+// import de.dfki.inquisitor.lucene.LuceneUtilz;
+// import de.dfki.inquisitor.lucene.PageCountEstimator;
+import de.dfki.inquisitor.processes.StopWatch;
+import de.dfki.inquisitor.text.StringUtils;
 import de.dfki.km.leech.lucene.ToLuceneContentHandler;
 import de.dfki.km.leech.metadata.LeechMetadata;
 
@@ -90,11 +91,6 @@ public class IndexPostprocessor
 
     /**
      * Enables the Buzzword creation by setting the related configuration parameters.
-     * 
-     * @param strNewField4Buzzwords
-     * @param sAttNames4BuzzwordCalculation
-     * @param iMaxNumberOfBuzzwords
-     * @param bSkipSimilarTerms
      */
     public void enableBuzzwordGeneration(String strNewField4Buzzwords, int iMaxNumberOfBuzzwords, boolean bSkipSimilarTerms)
     {
@@ -284,8 +280,8 @@ public class IndexPostprocessor
         }
         // fOurTmpDir.renameTo(fLuceneIndex);
 
-        FileUtils.deleteDirectory(new File(pUnpostProcessed.toString()));
-        FileUtils.deleteDirectory(fOurTmpDir.toFile());
+        FileUtilz.deleteDirectory(new File(pUnpostProcessed.toString()));
+        FileUtilz.deleteDirectory(fOurTmpDir.toFile());
 
 
 

@@ -2,8 +2,13 @@ package de.dfki.km.leech.lucene;
 
 
 
-import de.dfki.inquisition.lucene.DynamicFieldType;
-import de.dfki.inquisition.lucene.FieldConfig;
+// import de.dfki.inquisitor.lucene.DynamicFieldType;
+// import de.dfki.inquisitor.lucene.FieldConfig;
+
+
+
+import de.dfki.km.leech.lucene.basic.DynamicFieldType;
+import de.dfki.km.leech.lucene.basic.FieldConfig;
 
 
 

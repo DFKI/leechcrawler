@@ -29,7 +29,7 @@ import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
 import org.xml.sax.ContentHandler;
 
-import de.dfki.inquisition.text.StringUtils;
+import de.dfki.inquisitor.text.StringUtils;
 import de.dfki.km.leech.config.CrawlerContext;
 import de.dfki.km.leech.parser.DirectoryCrawlerParser;
 

@@ -18,7 +18,7 @@ import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
 import org.xml.sax.ContentHandler;
 
-import de.dfki.inquisition.collections.MultiValueHashMap;
+import de.dfki.inquisitor.collections.MultiValueHashMap;
 import de.dfki.km.leech.Leech;
 import de.dfki.km.leech.io.URLStreamProvider;
 

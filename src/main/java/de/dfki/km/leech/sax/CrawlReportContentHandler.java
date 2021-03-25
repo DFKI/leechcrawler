@@ -28,10 +28,10 @@ import java.util.logging.Logger;
 
 import org.apache.tika.metadata.Metadata;
 
-import de.dfki.inquisition.collections.CollectionUtilz;
-import de.dfki.inquisition.collections.MultiValueTreeMap;
-import de.dfki.inquisition.processes.StopWatch;
-import de.dfki.inquisition.text.StringUtils;
+import de.dfki.inquisitor.collections.CollectionUtilz;
+import de.dfki.inquisitor.collections.MultiValueTreeMap;
+import de.dfki.inquisitor.processes.StopWatch;
+import de.dfki.inquisitor.text.StringUtils;
 
 
 

@@ -13,8 +13,8 @@ import org.apache.tika.parser.ParseContext;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
-import de.dfki.inquisition.collections.MultiValueHashMap;
-import de.dfki.inquisition.processes.StopWatch;
+import de.dfki.inquisitor.collections.MultiValueHashMap;
+import de.dfki.inquisitor.processes.StopWatch;
 import de.dfki.km.leech.Leech;
 import de.dfki.km.leech.config.CrawlerContext;
 import de.dfki.km.leech.parser.wikipedia.WikipediaDumpParser.WikipediaDumpParserConfig;
@@ -76,7 +76,7 @@ public class SolrIndexCreator
 
         Leech leech = new Leech();
 
-        long startTime = StopWatch.startAndLogTime(Level.INFO);
+        long startTime = StopWatch.startAndLogTime(SolrIndexCreator.class);
 
 
         CrawlReportContentHandler reportContentHandler;
@@ -123,7 +123,7 @@ public class SolrIndexCreator
         leech.parse(lUrls2Crawl.toArray(new String[0]), finalContentHandler, context);
 
 
-        StopWatch.stopAndLogDistance(startTime, Level.INFO);
+        StopWatch.stopAndLogDistance(startTime, SolrIndexCreator.class);
 
     }
 

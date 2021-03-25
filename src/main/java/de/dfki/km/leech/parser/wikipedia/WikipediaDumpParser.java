@@ -54,9 +54,9 @@ import org.apache.tika.sax.XHTMLContentHandler;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
-import de.dfki.inquisition.collections.MultiValueBalancedTreeMap;
-import de.dfki.inquisition.collections.MultiValueHashMap;
-import de.dfki.inquisition.text.StringUtils;
+import de.dfki.inquisitor.collections.MultiValueBalancedTreeMap;
+import de.dfki.inquisitor.collections.MultiValueHashMap;
+import de.dfki.inquisitor.text.StringUtils;
 import de.dfki.km.leech.metadata.LeechMetadata;
 import de.dfki.km.leech.util.TikaUtils;
 
@@ -658,7 +658,7 @@ public class WikipediaDumpParser implements Parser
 
 
 
-    protected void parseInfoBox(String strText, Metadata metadata, ContentHandler handler) throws SAXException
+    protected void parseInfoBox(String strText, Metadata metadata, ContentHandler handler) throws SAXException, IOException
     {
 
         // att-value paare mit | getrennt. Innerhalb eines values gibt es auch Zeilenumbrüche (mit '<br />') - dies gilt als Aufzählung
@@ -673,7 +673,7 @@ public class WikipediaDumpParser implements Parser
         // als erstes schneiden wir mal die Infobox raus. (?m) ist multiline und (?s) ist dotall ('.' matcht auch line breaks)
         int iStartInfoBox = -1;
         int iEndInfoBox = -1;
-        MatchResult infoMatch = StringUtils.findFirst("\\{\\{\\s*Infobox", strText);
+        MatchResult infoMatch = StringUtils.findFirstMatch("\\{\\{\\s*Infobox", strText);
         if(infoMatch != null)
         {
             iStartInfoBox = infoMatch.start();

@@ -14,8 +14,8 @@ import org.apache.solr.client.solrj.impl.ConcurrentUpdateSolrClient;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.tika.metadata.Metadata;
 
-import de.dfki.inquisition.collections.MultiValueHashMap;
-import de.dfki.inquisition.text.StringUtils;
+import de.dfki.inquisitor.collections.MultiValueHashMap;
+import de.dfki.inquisitor.text.StringUtils;
 import de.dfki.km.leech.metadata.LeechMetadata;
 import de.dfki.km.leech.parser.incremental.IncrementalCrawlingHistory;
 import de.dfki.km.leech.sax.DataSinkContentHandler;

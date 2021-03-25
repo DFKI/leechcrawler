@@ -13,6 +13,7 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import de.dfki.km.leech.lucene.basic.FieldConfig;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
@@ -23,10 +24,10 @@ import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
 import org.xml.sax.SAXException;
 
-import de.dfki.inquisition.collections.MultiValueHashMap;
-import de.dfki.inquisition.lucene.FieldConfig;
-import de.dfki.inquisition.processes.StopWatch;
-import de.dfki.inquisition.text.StringUtils;
+import de.dfki.inquisitor.collections.MultiValueHashMap;
+// import de.dfki.inquisitor.lucene.FieldConfig;
+import de.dfki.inquisitor.processes.StopWatch;
+import de.dfki.inquisitor.text.StringUtils;
 import de.dfki.km.leech.Leech;
 import de.dfki.km.leech.config.CrawlerContext;
 import de.dfki.km.leech.lucene.LeechDefaultFieldConfig;
@@ -40,8 +41,7 @@ import de.dfki.km.leech.sax.PrintlnContentHandler.Verbosity;
 
 
 /**
- * A very simple Lucene Index creator. FieldConfig is from {@link WikipediaDumpParser#getFieldConfig4ParserAttributes()}, currently you can only specify the source
- * dir/file and the target dir for the lucene index
+ * A very simple Lucene Index creator. Currently you can only specify the source dir/file and the target dir for the lucene index
  * 
  * @author Christian Reuschling, Dipl.Ing.(BA)
  * 
@@ -97,7 +97,7 @@ public class LuceneIndexCreator
 
             Leech leech = new Leech();
 
-            long startTime = StopWatch.startAndLogTime(Level.INFO);
+            long startTime = StopWatch.startAndLogTime(LuceneIndexCreator.class);
 
 
             CrawlReportContentHandler reportContentHandler;
@@ -145,7 +145,7 @@ public class LuceneIndexCreator
                 indexWriter.forceMerge(1, true);
                 indexWriter.close();
 
-                StopWatch.stopAndLogDistance(startTime, Level.INFO);
+                StopWatch.stopAndLogDistance(startTime, LuceneIndexCreator.class);
 
                 Logger.getLogger(LuceneIndexCreator.class.getName()).info("..finished crawling " + lUrls2Crawl);
             }
