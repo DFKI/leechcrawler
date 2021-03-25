@@ -37,7 +37,7 @@ The version corresponds to the used Tika release version. Currently, these versi
 
 1.25.0 (groupId: de.dfki.sds, artifactId: leechcrawler)
 
-**You can also [download](http://www.dfki.uni-kl.de/leech/free/) all needed libraries in the case you don't use maven.**
+**You can also [download](https://cloud.dfki.de/owncloud/index.php/s/CzEY8kyzx2pRAwF) all needed libraries in the case you don't use maven.**
 
 **As a next step, try out our [Code snippets / examples](https://github.com/leechcrawler/leech/blob/master/codeSnippets.md) section.**
 
