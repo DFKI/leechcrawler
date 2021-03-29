@@ -4,7 +4,7 @@
     <groupId>de.dfki.sds</groupId>
     <artifactId>leechcrawler</artifactId>
     <packaging>jar</packaging>
-    <version>1.25.0</version>
+    <version>1.25.1</version>
     <name>leechcrawler</name>
     <url>http://leechcrawler.github.com/leech/</url>
 
