@@ -239,7 +239,7 @@ public class IncrementalCrawlingParser extends ParserDecorator
         finally
         {
 
-            if(crawlingHistory != null && iCurrentCrawlingDepth == 0) crawlingHistory.closeLuceneStuff();
+            if(crawlingHistory != null && iCurrentCrawlingDepth == 0) crawlingHistory.closeDBStuff();
 
             if(tmpLock != null) tmpLock.release();
             if(fosTmpLock != null) fosTmpLock.close();

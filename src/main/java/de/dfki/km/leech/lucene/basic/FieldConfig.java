@@ -4,7 +4,6 @@ package de.dfki.km.leech.lucene.basic;
 
 import com.cedarsoftware.util.io.JsonReader;
 import com.cedarsoftware.util.io.JsonWriter;
-// import de.dfki.inquisitor.lucene.LuceneAnalyzerFactory;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
 import org.apache.lucene.document.Field;

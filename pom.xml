@@ -81,18 +81,21 @@
             <groupId>org.apache.lucene</groupId>
             <artifactId>lucene-core</artifactId>
             <version>6.4.2</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.apache.lucene</groupId>
             <artifactId>lucene-analyzers-common</artifactId>
             <version>6.4.2</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.apache.lucene</groupId>
             <artifactId>lucene-queryparser</artifactId>
             <version>6.4.2</version>
+            <scope>provided</scope>
         </dependency>
 
 
@@ -169,11 +172,11 @@
                     </binFileExtensions>
                     <programs>
                         <program>
-                            <mainClass>de.dfki.km.leech.util.LuceneIndexCreator</mainClass>
+                            <mainClass>de.dfki.km.leech.lucene.LuceneIndexCreator</mainClass>
                             <name>createLuceneIndex</name>
                         </program>
                         <program>
-                            <mainClass>de.dfki.km.leech.util.SolrIndexCreator</mainClass>
+                            <mainClass>de.dfki.km.leech.solr.SolrIndexCreator</mainClass>
                             <name>createSolrIndex</name>
                         </program>
                         <program>

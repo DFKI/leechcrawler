@@ -1,8 +1,7 @@
-package de.dfki.km.leech.util;
+package de.dfki.km.leech.lucene;
 
 
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -10,7 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import de.dfki.km.leech.lucene.basic.FieldConfig;
@@ -30,9 +28,6 @@ import de.dfki.inquisitor.processes.StopWatch;
 import de.dfki.inquisitor.text.StringUtils;
 import de.dfki.km.leech.Leech;
 import de.dfki.km.leech.config.CrawlerContext;
-import de.dfki.km.leech.lucene.LeechDefaultFieldConfig;
-import de.dfki.km.leech.lucene.ToLuceneContentHandler;
-import de.dfki.km.leech.parser.wikipedia.WikipediaDumpParser;
 import de.dfki.km.leech.parser.wikipedia.WikipediaDumpParser.WikipediaDumpParserConfig;
 import de.dfki.km.leech.sax.CrawlReportContentHandler;
 import de.dfki.km.leech.sax.PrintlnContentHandler;

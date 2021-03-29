@@ -20,7 +20,6 @@ package de.dfki.km.leech.lucene;
 
 import de.dfki.inquisitor.collections.MultiValueHashMap;
 import de.dfki.inquisitor.file.FileUtilz;
-// import de.dfki.inquisitor.lucene.FieldConfig;
 import de.dfki.km.leech.Leech;
 import de.dfki.km.leech.lucene.basic.FieldConfig;
 import de.dfki.km.leech.metadata.LeechMetadata;

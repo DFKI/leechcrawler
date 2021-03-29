@@ -1,11 +1,10 @@
-package de.dfki.km.leech.util;
+package de.dfki.km.leech.solr;
 
 
 
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.tika.exception.TikaException;
@@ -23,7 +22,6 @@ import de.dfki.km.leech.sax.DataSinkContentHandler;
 import de.dfki.km.leech.sax.DataSinkContentHandlerDecorator;
 import de.dfki.km.leech.sax.PrintlnContentHandler;
 import de.dfki.km.leech.sax.PrintlnContentHandler.Verbosity;
-import de.dfki.km.leech.solr.ToSolrContentHandler;
 
 
 

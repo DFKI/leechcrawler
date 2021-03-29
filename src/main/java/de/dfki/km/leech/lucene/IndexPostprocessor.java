@@ -1,4 +1,4 @@
-package de.dfki.km.leech.util;
+package de.dfki.km.leech.lucene;
 
 
 
@@ -28,14 +28,8 @@ import org.apache.lucene.util.automaton.CompiledAutomaton;
 import org.apache.tika.metadata.Metadata;
 
 import de.dfki.inquisitor.file.FileUtilz;
-// import de.dfki.inquisitor.lucene.Buzzwords;
-// import de.dfki.inquisitor.lucene.DocumentFrqClass;
-// import de.dfki.inquisitor.lucene.FieldConfig;
-// import de.dfki.inquisitor.lucene.LuceneUtilz;
-// import de.dfki.inquisitor.lucene.PageCountEstimator;
 import de.dfki.inquisitor.processes.StopWatch;
 import de.dfki.inquisitor.text.StringUtils;
-import de.dfki.km.leech.lucene.ToLuceneContentHandler;
 import de.dfki.km.leech.metadata.LeechMetadata;
 
 

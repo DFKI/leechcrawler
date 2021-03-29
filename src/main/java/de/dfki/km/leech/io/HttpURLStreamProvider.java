@@ -122,7 +122,7 @@ public class HttpURLStreamProvider extends URLStreamProvider
 
         // müssen wir hier evtl. die Lucene-Teile auch wieder closen? das ist immerhin eine utility-Methode^^ och - wir haben ja auch noch nen
         // shutdown hook, und nach dem crawl wirds eh geschlossen. Klingt safe
-        if(crawlingHistory != null) crawlingHistory.openLuceneStuff();
+        if(crawlingHistory != null) crawlingHistory.openDBStuff();
 
 
         // keep a backup of the originally passed url
