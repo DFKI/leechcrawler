@@ -4,7 +4,9 @@
 
 # Mailing list
 
-Our mailing list is hosted at http://groups.google.com/group/leechcrawler
+Feel free to ask questions or discuss anything in the [projects discussions](https://github.com/leechcrawler/leech/discussions).
 
-Feel free to send emails to leechcrawler@googlegroups.com or use the web interface.
+
+**Old**
+Our mailing list was hosted at http://groups.google.com/group/leechcrawler. We leaved this in favour of the build-in GitHub discussions functionality.
 
