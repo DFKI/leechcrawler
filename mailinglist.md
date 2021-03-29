@@ -6,6 +6,7 @@
 
 Feel free to ask questions or discuss anything in the [projects discussions](https://github.com/leechcrawler/leech/discussions).
 
+---
 
 **Old**
 
