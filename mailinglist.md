@@ -6,9 +6,3 @@
 
 Feel free to ask questions or discuss anything in the [projects discussions](https://github.com/leechcrawler/leech/discussions).
 
----
-
-**Old**
-
-Our mailing list was hosted at http://groups.google.com/group/leechcrawler. We leaved this in favour of the build-in GitHub discussions functionality.
-
