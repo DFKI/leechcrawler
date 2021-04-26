@@ -1,44 +1,22 @@
 /*
  * Leech - crawling capabilities for Apache Tika
- * 
+ *
  * Copyright (C) 2012 DFKI GmbH, Author: Christian Reuschling
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  * Contact us by mail: christian.reuschling@dfki.de
  */
 
 package de.dfki.km.leech;
 
 
-
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.net.URL;
-import java.rmi.server.UID;
-import java.util.LinkedList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.mail.URLName;
-
-import org.apache.tika.Tika;
-import org.apache.tika.exception.TikaException;
-import org.apache.tika.metadata.DublinCore;
-import org.apache.tika.metadata.Metadata;
-import org.apache.tika.parser.ParseContext;
-import org.apache.tika.parser.Parser;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.SAXException;
 
 import de.dfki.inquisitor.text.StringUtils;
 import de.dfki.km.leech.config.CrawlerContext;
@@ -55,6 +33,23 @@ import de.dfki.km.leech.sax.PrintlnContentHandler;
 import de.dfki.km.leech.sax.PrintlnContentHandler.Verbosity;
 import de.dfki.km.leech.util.ExceptionUtils;
 import de.dfki.km.leech.util.UrlUtil;
+import org.apache.tika.Tika;
+import org.apache.tika.exception.TikaException;
+import org.apache.tika.metadata.DublinCore;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.parser.ParseContext;
+import org.apache.tika.parser.Parser;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
+
+import javax.mail.URLName;
+import java.io.*;
+import java.net.URL;
+import java.nio.file.Path;
+import java.rmi.server.UID;
+import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 
@@ -87,8 +82,7 @@ import de.dfki.km.leech.util.UrlUtil;
  * <code>
  * crawlerContext.requestStop()
  * </code>
- * 
- * 
+ *
  * @author Christian Reuschling, Dipl.Ing.(BA)
  */
 
@@ -100,14 +94,10 @@ public class Leech extends Tika
 
     public static void main(String[] args) throws IOException, SAXException, TikaException
     {
-        Logger.getLogger(Leech.class.getName()).info(
-                "Usage: leech <source2crawl_1> <source2crawl_2> ... <source2crawl_N>\n\n"
-                        + "A source can be an URL for file://, http://, imap:// or -maybe in future- other urls (e.g. for databases, webDAV, etc...).\n"
-                        + "In the case the string is no correct url string, the method will use the string as file path and then generates an\n"
-                        + "according URL. Examples: 'file://myDataDir', 'file://bla.pdf', 'http://reuschling.github.com/leech/',\n"
-                        + "'imap://usr:pswd@myImapServer.de:993/inbox', 'imaps://usr:pswd@myImapServer.de:993/inbox;uid=22'\n\n"
-                        + "This executable crawls all data and simply shows the metadata on the screen. Because leech is designed to be used as a\n"
-                        + "java library, this exec is for quick testing purposes.\n\n");
+        Logger.getLogger(Leech.class.getName())
+                .info("Usage: leech <source2crawl_1> <source2crawl_2> ... <source2crawl_N>\n\n" + "A source can be an URL for file://, http://, imap:// or -maybe in future- " +
+                        "other urls (e.g. for databases, webDAV, etc...).\n" + "In the case the string is no correct url string, the method will use the string as file path and "
+                        + "then generates an\n" + "according URL. Examples: 'file://myDataDir', 'file://bla.pdf', 'http://reuschling.github.com/leech/',\n" + "'imap://usr:pswd" + "@myImapServer.de:993/inbox', 'imaps://usr:pswd@myImapServer.de:993/inbox;uid=22'\n\n" + "This executable crawls all data and simply shows the metadata " + "on the screen. Because leech is designed to be used as a\n" + "java library, this exec is for quick testing purposes.\n\n");
 
         Leech leech = new Leech();
 
@@ -128,12 +118,13 @@ public class Leech extends Tika
         super(LeechConfig.getDefaultLeechConfig());
     }
 
-    
-    
+
+
     public Leech(LeechConfig leechConfig)
     {
         super(leechConfig);
     }
+
 
 
     @Override
@@ -144,13 +135,21 @@ public class Leech extends Tika
 
 
 
+    @Override
+    public String detect(Path path) throws IOException
+    {
+        return detect(path.toFile());
+    }
+
+
+
 
     @Override
     public String detect(URL url)
     {
         throw new UnsupportedOperationException(
-                "The java.net.URL class methods are not supported because our mechanism supporting new protocols and the according stream creation differ.\n"
-                        + "Use the according URLName method instead");
+                "The java.net.URL class methods are not supported because our mechanism supporting new protocols and the according stream creation differ.\n" + "Use the " +
+                        "according URLName method instead");
     }
 
 
@@ -167,17 +166,33 @@ public class Leech extends Tika
 
 
             return detect(stream, metadata);
-
-        }
-        catch (Throwable e)
+        } catch (Throwable e)
         {
             Logger.getLogger(Leech.class.getName()).log(Level.SEVERE, "Error", e);
 
             return null;
-        }
-        finally
+        } finally
         {
-            if(stream != null) stream.close();
+            if (stream != null)
+                stream.close();
+        }
+    }
+
+
+
+    /**
+     * This overridden method don't use only the name but tries to generate a URL out of the given name and uses the underlying data if possible
+     */
+    @Override
+    public String detect(String name)
+    {
+        try
+        {
+            return detect(UrlUtil.sourceString2URL(name));
+        } catch (Throwable e)
+        {
+            Logger.getLogger(Leech.class.getName()).log(Level.SEVERE, "Error", e);
+            return null;
         }
     }
 
@@ -188,34 +203,29 @@ public class Leech extends Tika
 
         CrawlerContext crawlerContext = context.get(CrawlerContext.class);
 
-        if(crawlerContext == null)
-            throw new IllegalStateException(
-                    "no crawlerContext was set. Set a CrawlerContext with a configured handler or use another method with directly specifying a handler.");
+        if (crawlerContext == null)
+            throw new IllegalStateException("no crawlerContext was set. Set a CrawlerContext with a configured handler or use another method with directly specifying a handler.");
 
 
         ContentHandler handler2use4recursiveCall = crawlerContext.getContentHandler();
 
-        if(!StringUtils.nullOrWhitespace(crawlerContext.getContentHandlerClassName()))
+        if (!StringUtils.nullOrWhitespace(crawlerContext.getContentHandlerClassName()))
             try
             {
                 handler2use4recursiveCall = (ContentHandler) Class.forName(crawlerContext.getContentHandlerClassName()).newInstance();
-            }
-            catch (Throwable e)
+            } catch (Throwable e)
             {
-                Logger.getLogger(DirectoryCrawlerParser.class.getName()).log(Level.SEVERE,
-                        "Error during the instantiation of the configured content handler " + crawlerContext.getContentHandlerClassName(), e);
+                Logger.getLogger(DirectoryCrawlerParser.class.getName())
+                        .log(Level.SEVERE, "Error during the instantiation of the configured content handler " + crawlerContext.getContentHandlerClassName(), e);
             }
 
 
-        if(handler2use4recursiveCall == null) throw new IllegalStateException("no contentHandler was set. Have a look into the class CrawlerContext");
+        if (handler2use4recursiveCall == null)
+            throw new IllegalStateException("no contentHandler was set. Have a look into the class CrawlerContext");
 
 
         return handler2use4recursiveCall;
     }
-
-
-
-
 
 
 
@@ -235,16 +245,54 @@ public class Leech extends Tika
 
 
 
+    public Reader parse(String name) throws IOException
+    {
+        return parse(UrlUtil.sourceString2URL(name));
+    }
+
+
+
+
+
+    @Override
+    public Reader parse(Path path) throws IOException
+    {
+        return parse(path.toFile());
+    }
+
+
+
+    public void parse(Path path, ContentHandler handler) throws IOException, SAXException, TikaException
+    {
+        parse(path.toFile(), handler);
+    }
+
+
+
+    public void parse(Path path, ContentHandler handler, ParseContext context) throws IOException, SAXException, TikaException
+    {
+        parse(path.toFile(), handler, context);
+    }
+
+
+
+    public void parse(Path path, ParseContext context) throws IOException, SAXException, TikaException
+    {
+        parse(path.toFile(), context);
+    }
+
+
+
     /**
      * Parse a directory or a file with a callback-contenthandler. We recommend to use an own implementation of DataSinkContentHandler. In the case you want to use
      * another ContentHandler, be aware that this Object is re-used at every recursive invocation. So make sure that this is possible, and all internal members (e.g.
      * writers, etc.) are re-initialized at the new invocation (maybe clear them inside endDocument(), or inside startDocument()). In the case the handler does not have
      * any internal states that are critical, there should be no problems at all. In the case you have a critical handler with a default constructor, you can also set the
      * class name inside the CrawlerContext object inside ParseContext. In this case, a new handler object will be created at every recursive call..
-     * 
-     * @param file the file you want to crawl/extract content from
+     *
+     * @param file    the file you want to crawl/extract content from
      * @param handler the handler that should handle the extracted data
-     * 
+     *
      * @throws IOException
      * @throws SAXException
      * @throws TikaException
@@ -259,7 +307,8 @@ public class Leech extends Tika
         Metadata metadata = new Metadata();
         InputStream stream = null;
 
-        if(handler instanceof DataSinkContentHandler) metadata = ((DataSinkContentHandler) handler).getMetaData();
+        if (handler instanceof DataSinkContentHandler)
+            metadata = ((DataSinkContentHandler) handler).getMetaData();
 
         try
         {
@@ -269,17 +318,16 @@ public class Leech extends Tika
             stream = URLStreamProvider.getURLStreamProvider(url).getStream(url, metadata, context);
 
             getParser().parse(stream, handler, metadata, context);
-
-        }
-        catch (Throwable e)
+        } catch (Throwable e)
         {
             ExceptionUtils.handleException(e, null, metadata, context.get(CrawlerContext.class), context, 0, handler);
-        }
-        finally
+        } finally
         {
-            if(handler instanceof DataSinkContentHandler) ((DataSinkContentHandler) handler).crawlFinished();
+            if (handler instanceof DataSinkContentHandler)
+                ((DataSinkContentHandler) handler).crawlFinished();
 
-            if(stream != null) stream.close();
+            if (stream != null)
+                stream.close();
         }
     }
 
@@ -291,12 +339,12 @@ public class Leech extends Tika
      * writers, etc.) are re-initialized at the new invocation (maybe clear them inside endDocument(), or inside startDocument()). In the case the handler does not have
      * any internal states that are critical, there should be no problems at all. In the case you have a critical handler with a default constructor, you can also set the
      * class name inside the CrawlerContext object inside ParseContext. In this case, a new handler object will be created at every recursive call..
-     * 
-     * @param file the file you want to crawl/extract content from
+     *
+     * @param file    the file you want to crawl/extract content from
      * @param handler the handler that should handle the extracted data
      * @param context the parsing context to use. An entry with the configured parser will be added by the method. You can pass in an CrawlerContext instance to e.g. set
-     *            the contentHandler for recursive crawls or enable incremental crawling.
-     * 
+     *                the contentHandler for recursive crawls or enable incremental crawling.
+     *
      * @throws IOException
      * @throws SAXException
      * @throws TikaException
@@ -306,7 +354,7 @@ public class Leech extends Tika
         context.set(Parser.class, super.getParser());
 
         CrawlerContext crawlerContext = context.get(CrawlerContext.class);
-        if(crawlerContext == null)
+        if (crawlerContext == null)
         {
             crawlerContext = new CrawlerContext();
             context.set(CrawlerContext.class, crawlerContext);
@@ -316,7 +364,8 @@ public class Leech extends Tika
         Metadata metadata = new Metadata();
         InputStream stream = null;
 
-        if(handler instanceof DataSinkContentHandler) metadata = ((DataSinkContentHandler) handler).getMetaData();
+        if (handler instanceof DataSinkContentHandler)
+            metadata = ((DataSinkContentHandler) handler).getMetaData();
 
         try
         {
@@ -326,32 +375,29 @@ public class Leech extends Tika
             stream = URLStreamProvider.getURLStreamProvider(url).getStream(url, metadata, context);
 
             getParser().parse(stream, handler, metadata, context);
-
-        }
-        catch (Throwable e)
+        } catch (Throwable e)
         {
             ExceptionUtils.handleException(e, null, metadata, context.get(CrawlerContext.class), context, 0, handler);
-        }
-        finally
+        } finally
         {
-            if(handler instanceof DataSinkContentHandler) ((DataSinkContentHandler) handler).crawlFinished();
+            if (handler instanceof DataSinkContentHandler)
+                ((DataSinkContentHandler) handler).crawlFinished();
 
-            if(stream != null) stream.close();
+            if (stream != null)
+                stream.close();
         }
     }
-
-
 
 
 
     /**
      * Parse a directory or a file by specifying a ParseContext config. You can pass in an CrawlerContext instance to e.g. set the ContentHandler for recursive crawls.
      * This one will be newly instantiated with the default constructor for every recursive call. Alternatively, you can also set a contentHandler object for reuse.
-     * 
-     * @param file the file you want to crawl/extract content from
+     *
+     * @param file    the file you want to crawl/extract content from
      * @param context the parsing context to use. An entry with the configured parser will be added by the method. You can pass in an CrawlerContext instance to e.g. set
-     *            the contentHandler for recursive crawls or enable incremental crawling.
-     * 
+     *                the contentHandler for recursive crawls or enable incremental crawling.
+     *
      * @throws IOException
      * @throws SAXException
      * @throws TikaException
@@ -364,7 +410,8 @@ public class Leech extends Tika
         InputStream stream = null;
 
         ContentHandler handler = getContentHandler(context);
-        if(handler instanceof DataSinkContentHandler) metadata = ((DataSinkContentHandler) handler).getMetaData();
+        if (handler instanceof DataSinkContentHandler)
+            metadata = ((DataSinkContentHandler) handler).getMetaData();
 
         try
         {
@@ -375,23 +422,18 @@ public class Leech extends Tika
 
 
             getParser().parse(stream, handler, metadata, context);
-
-        }
-        catch (Throwable e)
+        } catch (Throwable e)
         {
             ExceptionUtils.handleException(e, null, metadata, new CrawlerContext(), context, 0, handler);
-        }
-        finally
+        } finally
         {
-            if(handler instanceof DataSinkContentHandler) ((DataSinkContentHandler) handler).crawlFinished();
+            if (handler instanceof DataSinkContentHandler)
+                ((DataSinkContentHandler) handler).crawlFinished();
 
-            if(stream != null) stream.close();
+            if (stream != null)
+                stream.close();
         }
     }
-
-
-
-
 
 
 
@@ -401,12 +443,14 @@ public class Leech extends Tika
      * writers, etc.) are re-initialized at the new invocation (maybe clear them inside endDocument(), or inside startDocument()). In the case the handler does not have
      * any internal states that are critical, there should be no problems at all.In the case you have a critical handler with a default constructor, you can also set the
      * class name inside the CrawlerContext object inside ParseContext. In this case, a new handler object will be created at every recursive call..
-     * 
+     *
      * @param strSourceString the URL string you want to crawl/extract content from. This can ether be a file://, http:// or - in future - other urls (e.g. for databases,
-     *            imap, webDAV, etc...). In the case the string is no correct url string, the method will use the string as file path and then generates an according URL.
-     *            Examples: 'file://myDataDir', 'file://bla.pdf', 'http://reuschling.github.com/leech/', 'imap://usr:pswd@myImapServer.de:993/inbox',
-     *            'imaps://usr:pswd@myImapServer.de:993/inbox;uid=22'
-     * @param handler the handler that should handle the extracted data
+     *                        imap, webDAV, etc...). In the case the string is no correct url string, the method will use the string as file path and then generates an according
+     *                        URL.
+     *                        Examples: 'file://myDataDir', 'file://bla.pdf', 'http://reuschling.github.com/leech/', 'imap://usr:pswd@myImapServer.de:993/inbox',
+     *                        'imaps://usr:pswd@myImapServer.de:993/inbox;uid=22'
+     * @param handler         the handler that should handle the extracted data
+     *
      * @throws IOException
      * @throws SAXException
      * @throws TikaException
@@ -418,43 +462,22 @@ public class Leech extends Tika
 
 
 
-
-
-
-    /**
-     * This overridden method don't use only the name but tries to generate a URL out of the given name and uses the underlying data if possible
-     */
-    @Override
-    public String detect(String name)
-    {
-        try
-        {
-            return detect(UrlUtil.sourceString2URL(name));
-        }
-        catch (Throwable e)
-        {
-            Logger.getLogger(Leech.class.getName()).log(Level.SEVERE, "Error", e);
-            return null;
-        }
-    }
-
-
-
     /**
      * Parse a directory or a file with a callback-contenthandler. We recommend to use an own implementation of DataSinkContentHandler. In the case you want to use
      * another ContentHandler, be aware that this Object is re-used at every recursive invocation. So make sure that this is possible, and all internal members (e.g.
      * writers, etc.) are re-initialized at the new invocation (maybe clear them inside endDocument(), or inside startDocument()). In the case the handler does not have
      * any internal states that are critical, there should be no problems at all.In the case you have a critical handler with a default constructor, you can also set the
      * class name inside the CrawlerContext object inside ParseContext. In this case, a new handler object will be created at every recursive call..
-     * 
+     *
      * @param strSourceString the URL string you want to crawl/extract content from. This can ether be a file://, http://, imap:// or - in future - other urls (e.g. for
-     *            databases, webDAV, etc...). In the case the string is no correct url string, the method will use the string as file path and then generates an according
-     *            URL. Examples: 'file://myDataDir', 'file://bla.pdf', 'http://reuschling.github.com/leech/', 'imap://usr:pswd@myImapServer.de:993/inbox',
-     *            'imaps://usr:pswd@myImapServer.de:993/inbox;uid=22'
-     * @param handler the handler that should handle the extracted data
-     * @param context the parsing context to use. An entry with the configured parser will be added by the method. You can pass in an CrawlerContext instance to e.g. set
-     *            the contentHandler for recursive crawls or enable incremental crawling.
-     * 
+     *                        databases, webDAV, etc...). In the case the string is no correct url string, the method will use the string as file path and then generates an
+     *                        according
+     *                        URL. Examples: 'file://myDataDir', 'file://bla.pdf', 'http://reuschling.github.com/leech/', 'imap://usr:pswd@myImapServer.de:993/inbox',
+     *                        'imaps://usr:pswd@myImapServer.de:993/inbox;uid=22'
+     * @param handler         the handler that should handle the extracted data
+     * @param context         the parsing context to use. An entry with the configured parser will be added by the method. You can pass in an CrawlerContext instance to e.g. set
+     *                        the contentHandler for recursive crawls or enable incremental crawling.
+     *
      * @throws IOException
      * @throws SAXException
      * @throws TikaException
@@ -472,15 +495,16 @@ public class Leech extends Tika
      * writers, etc.) are re-initialized at the new invocation (maybe clear them inside endDocument(), or inside startDocument()). In the case the handler does not have
      * any internal states that are critical, there should be no problems at all.In the case you have a critical handler with a default constructor, you can also set the
      * class name inside the CrawlerContext object inside ParseContext. In this case, a new handler object will be created at every recursive call..
-     * 
+     *
      * @param lSourceStrings the URL strings you want to crawl/extract content from. This can ether be a file://, http://, imap:// or - in future - other urls (e.g. for
-     *            databases, webDAV, etc...). In the case the string is no correct url string, the method will use the string as file path and then generates an according
-     *            URL. Examples: 'file://myDataDir', 'file://bla.pdf', 'http://reuschling.github.com/leech/', 'imap://usr:pswd@myImapServer.de:993/inbox',
-     *            'imaps://usr:pswd@myImapServer.de:993/inbox;uid=22'
-     * @param handler the handler that should handle the extracted data
-     * @param context the parsing context to use. An entry with the configured parser will be added by the method. You can pass in an CrawlerContext instance to e.g. set
-     *            the contentHandler for recursive crawls or enable incremental crawling.
-     * 
+     *                       databases, webDAV, etc...). In the case the string is no correct url string, the method will use the string as file path and then generates an
+     *                       according
+     *                       URL. Examples: 'file://myDataDir', 'file://bla.pdf', 'http://reuschling.github.com/leech/', 'imap://usr:pswd@myImapServer.de:993/inbox',
+     *                       'imaps://usr:pswd@myImapServer.de:993/inbox;uid=22'
+     * @param handler        the handler that should handle the extracted data
+     * @param context        the parsing context to use. An entry with the configured parser will be added by the method. You can pass in an CrawlerContext instance to e.g. set
+     *                       the contentHandler for recursive crawls or enable incremental crawling.
+     *
      * @throws IOException
      * @throws SAXException
      * @throws TikaException
@@ -500,14 +524,15 @@ public class Leech extends Tika
     /**
      * Parse an URL by specifying a ParseContext config. You can pass in an CrawlerContext instance to e.g. set the ContentHandler for recursive crawls. This one will be
      * newly instantiated with the default constructor for every recursive call.
-     * 
+     *
      * @param strSourceString the URL string you want to crawl/extract content from. This can ether be a file://, http:// or - in future - other urls (e.g. for databases,
-     *            imap, webDAV, etc...). In the case the string is no correct url string, the method will use the string as file path and then generates an according URL.
-     *            Examples: 'file://myDataDir', 'file://bla.pdf', 'http://reuschling.github.com/leech/', 'imap://usr:pswd@myImapServer.de:993/inbox',
-     *            'imaps://usr:pswd@myImapServer.de:993/inbox;uid=22'
-     * @param context the parsing context to use. An entry with the configured parser will be added by the method. You can pass in an CrawlerContext instance to e.g. set
-     *            the contentHandler for recursive crawls or enable incremental crawling.
-     * 
+     *                        imap, webDAV, etc...). In the case the string is no correct url string, the method will use the string as file path and then generates an according
+     *                        URL.
+     *                        Examples: 'file://myDataDir', 'file://bla.pdf', 'http://reuschling.github.com/leech/', 'imap://usr:pswd@myImapServer.de:993/inbox',
+     *                        'imaps://usr:pswd@myImapServer.de:993/inbox;uid=22'
+     * @param context         the parsing context to use. An entry with the configured parser will be added by the method. You can pass in an CrawlerContext instance to e.g. set
+     *                        the contentHandler for recursive crawls or enable incremental crawling.
+     *
      * @throws IOException
      * @throws SAXException
      * @throws TikaException
@@ -523,8 +548,8 @@ public class Leech extends Tika
     public Reader parse(URL url) throws IOException
     {
         throw new UnsupportedOperationException(
-                "The java.net.URL class methods are not supported because our mechanism supporting new protocols and the according stream creation differ.\n"
-                        + "Use the according URLName method instead");
+                "The java.net.URL class methods are not supported because our mechanism supporting new protocols and the according stream creation differ.\n" + "Use the " +
+                        "according URLName method instead");
     }
 
 
@@ -542,9 +567,7 @@ public class Leech extends Tika
 
 
             return parse(stream, metadata);
-
-        }
-        catch (Throwable e)
+        } catch (Throwable e)
         {
             Logger.getLogger(Leech.class.getName()).log(Level.SEVERE, "Error", e);
 
@@ -560,10 +583,11 @@ public class Leech extends Tika
      * writers, etc.) are re-initialized at the new invocation (maybe clear them inside endDocument(), or inside startDocument()). In the case the handler does not have
      * any internal states that are critical, there should be no problems at all.In the case you have a critical handler with a default constructor, you can also set the
      * class name inside the CrawlerContext object inside ParseContext. In this case, a new handler object will be created at every recursive call..
-     * 
-     * @param url the URL you want to crawl/extract content from. This can ether be a file://, http:// or - in future - other urls (e.g. for databases, imap, webDAV,
-     *            etc...)
+     *
+     * @param url     the URL you want to crawl/extract content from. This can ether be a file://, http:// or - in future - other urls (e.g. for databases, imap, webDAV,
+     *                etc...)
      * @param handler the handler that should handle the extracted data
+     *
      * @throws IOException
      * @throws SAXException
      * @throws TikaException
@@ -580,7 +604,8 @@ public class Leech extends Tika
         Metadata metadata = new Metadata();
         InputStream stream = null;
 
-        if(handler instanceof DataSinkContentHandler) metadata = ((DataSinkContentHandler) handler).getMetaData();
+        if (handler instanceof DataSinkContentHandler)
+            metadata = ((DataSinkContentHandler) handler).getMetaData();
 
         try
         {
@@ -589,19 +614,17 @@ public class Leech extends Tika
             stream = URLStreamProvider.getURLStreamProvider(url).getStream(url, metadata, context);
 
             getParser().parse(stream, handler, metadata, context);
-
-        }
-        catch (Throwable e)
+        } catch (Throwable e)
         {
             ExceptionUtils.handleException(e, null, metadata, context.get(CrawlerContext.class), context, 0, handler);
-        }
-        finally
+        } finally
         {
-            if(handler instanceof DataSinkContentHandler) ((DataSinkContentHandler) handler).crawlFinished();
+            if (handler instanceof DataSinkContentHandler)
+                ((DataSinkContentHandler) handler).crawlFinished();
 
-            if(stream != null) stream.close();
+            if (stream != null)
+                stream.close();
         }
-
     }
 
 
@@ -612,13 +635,13 @@ public class Leech extends Tika
      * writers, etc.) are re-initialized at the new invocation (maybe clear them inside endDocument(), or inside startDocument()). In the case the handler does not have
      * any internal states that are critical, there should be no problems at all.In the case you have a critical handler with a default constructor, you can also set the
      * class name inside the CrawlerContext object inside ParseContext. In this case, a new handler object will be created at every recursive call..
-     * 
-     * @param url the URL you want to crawl/extract content from. This can ether be a file://, http:// or - in future - other urls (e.g. for databases, imap, webDAV,
-     *            etc...)
+     *
+     * @param url     the URL you want to crawl/extract content from. This can ether be a file://, http:// or - in future - other urls (e.g. for databases, imap, webDAV,
+     *                etc...)
      * @param handler the handler that should handle the extracted data
      * @param context the parsing context to use. An entry with the configured parser will be added by the method. You can pass in an CrawlerContext instance to e.g. set
-     *            the contentHandler for recursive crawls or enable incremental crawling.
-     * 
+     *                the contentHandler for recursive crawls or enable incremental crawling.
+     *
      * @throws IOException
      * @throws SAXException
      * @throws TikaException
@@ -630,7 +653,7 @@ public class Leech extends Tika
         context.set(Parser.class, super.getParser());
 
         CrawlerContext crawlerContext = context.get(CrawlerContext.class);
-        if(crawlerContext == null)
+        if (crawlerContext == null)
         {
             crawlerContext = new CrawlerContext();
             context.set(CrawlerContext.class, crawlerContext);
@@ -640,7 +663,8 @@ public class Leech extends Tika
         Metadata metadata = new Metadata();
         InputStream stream = null;
 
-        if(handler instanceof DataSinkContentHandler) metadata = ((DataSinkContentHandler) handler).getMetaData();
+        if (handler instanceof DataSinkContentHandler)
+            metadata = ((DataSinkContentHandler) handler).getMetaData();
 
         try
         {
@@ -649,19 +673,17 @@ public class Leech extends Tika
 
 
             getParser().parse(stream, handler, metadata, context);
-
-        }
-        catch (Throwable e)
+        } catch (Throwable e)
         {
             ExceptionUtils.handleException(e, null, metadata, context.get(CrawlerContext.class), context, 0, handler);
-        }
-        finally
+        } finally
         {
-            if(handler instanceof DataSinkContentHandler) ((DataSinkContentHandler) handler).crawlFinished();
+            if (handler instanceof DataSinkContentHandler)
+                ((DataSinkContentHandler) handler).crawlFinished();
 
-            if(stream != null) stream.close();
+            if (stream != null)
+                stream.close();
         }
-
     }
 
 
@@ -672,13 +694,13 @@ public class Leech extends Tika
      * writers, etc.) are re-initialized at the new invocation (maybe clear them inside endDocument(), or inside startDocument()). In the case the handler does not have
      * any internal states that are critical, there should be no problems at all.In the case you have a critical handler with a default constructor, you can also set the
      * class name inside the CrawlerContext object inside ParseContext. In this case, a new handler object will be created at every recursive call..
-     * 
-     * @param urls the URLs you want to crawl/extract content from. This can ether be a file://, http:// or - in future - other urls (e.g. for databases, imap, webDAV,
-     *            etc...)
+     *
+     * @param urls    the URLs you want to crawl/extract content from. This can ether be a file://, http:// or - in future - other urls (e.g. for databases, imap, webDAV,
+     *                etc...)
      * @param handler the handler that should handle the extracted data
      * @param context the parsing context to use. An entry with the configured parser will be added by the method. You can pass in an CrawlerContext instance to e.g. set
-     *            the contentHandler for recursive crawls or enable incremental crawling.
-     * 
+     *                the contentHandler for recursive crawls or enable incremental crawling.
+     *
      * @throws IOException
      * @throws SAXException
      * @throws TikaException
@@ -691,7 +713,7 @@ public class Leech extends Tika
         context.set(Parser.class, super.getParser());
 
         CrawlerContext crawlerContext = context.get(CrawlerContext.class);
-        if(crawlerContext == null)
+        if (crawlerContext == null)
         {
             crawlerContext = new CrawlerContext();
             context.set(CrawlerContext.class, crawlerContext);
@@ -701,7 +723,8 @@ public class Leech extends Tika
         Metadata metadata = new Metadata();
         InputStream stream = null;
 
-        if(handler instanceof DataSinkContentHandler) metadata = ((DataSinkContentHandler) handler).getMetaData();
+        if (handler instanceof DataSinkContentHandler)
+            metadata = ((DataSinkContentHandler) handler).getMetaData();
 
         try
         {
@@ -722,22 +745,21 @@ public class Leech extends Tika
 
             // wir müssen noch aufpassen: wenn wir eine Liste übergeben und mit dem URListParser arbeiten, dann dürfen wir die erste Rekursionsstufe nicht dazuzählen
             int iCrawlingDepth = crawlerContext.getCrawlingDepth();
-            if(iCrawlingDepth < Integer.MAX_VALUE) crawlerContext.setCrawlingDepth(iCrawlingDepth + 1);
+            if (iCrawlingDepth < Integer.MAX_VALUE)
+                crawlerContext.setCrawlingDepth(iCrawlingDepth + 1);
 
             getParser().parse(stream, handler, metadata, context);
-
-        }
-        catch (Throwable e)
+        } catch (Throwable e)
         {
             ExceptionUtils.handleException(e, null, metadata, context.get(CrawlerContext.class), context, 0, handler);
-        }
-        finally
+        } finally
         {
-            if(handler instanceof DataSinkContentHandler) ((DataSinkContentHandler) handler).crawlFinished();
+            if (handler instanceof DataSinkContentHandler)
+                ((DataSinkContentHandler) handler).crawlFinished();
 
-            if(stream != null) stream.close();
+            if (stream != null)
+                stream.close();
         }
-
     }
 
 
@@ -745,12 +767,12 @@ public class Leech extends Tika
     /**
      * Parse an URL by specifying a ParseContext config. You can pass in an CrawlerContext instance to e.g. set the ContentHandler for recursive crawls. This one will be
      * newly instantiated with the default constructor for every recursive call.
-     * 
-     * @param url the URL you want to crawl/extract content from. This can ether be a file://, http:// or - in future - other urls (e.g. for databases, imap, webDAV,
-     *            etc...)
+     *
+     * @param url     the URL you want to crawl/extract content from. This can ether be a file://, http:// or - in future - other urls (e.g. for databases, imap, webDAV,
+     *                etc...)
      * @param context the parsing context to use. An entry with the configured parser will be added by the method. You can pass in an CrawlerContext instance to e.g. set
-     *            the contentHandler for recursive crawls or enable incremental crawling.
-     * 
+     *                the contentHandler for recursive crawls or enable incremental crawling.
+     *
      * @throws IOException
      * @throws SAXException
      * @throws TikaException
@@ -766,7 +788,8 @@ public class Leech extends Tika
 
         ContentHandler handler = getContentHandler(context);
 
-        if(handler instanceof DataSinkContentHandler) metadata = ((DataSinkContentHandler) handler).getMetaData();
+        if (handler instanceof DataSinkContentHandler)
+            metadata = ((DataSinkContentHandler) handler).getMetaData();
 
         try
         {
@@ -774,19 +797,17 @@ public class Leech extends Tika
             stream = URLStreamProvider.getURLStreamProvider(url).getStream(url, metadata, context);
 
             getParser().parse(stream, handler, metadata, context);
-
-        }
-        catch (Throwable e)
+        } catch (Throwable e)
         {
             ExceptionUtils.handleException(e, null, metadata, context.get(CrawlerContext.class), context, 0, handler);
-        }
-        finally
+        } finally
         {
-            if(handler instanceof DataSinkContentHandler) ((DataSinkContentHandler) handler).crawlFinished();
+            if (handler instanceof DataSinkContentHandler)
+                ((DataSinkContentHandler) handler).crawlFinished();
 
-            if(stream != null) stream.close();
+            if (stream != null)
+                stream.close();
         }
-
     }
 
 
@@ -800,13 +821,27 @@ public class Leech extends Tika
 
 
     @Override
+    public String parseToString(Path path) throws IOException, TikaException
+    {
+        return parseToString(path.toFile());
+    }
+
+
+
+    @Override
     public String parseToString(URL url) throws IOException, TikaException
     {
         throw new UnsupportedOperationException(
-                "The java.net.URL class methods are not supported because our mechanism supporting new protocols and the according stream creation differ.\n"
-                        + "Use the according URLName method instead");
+                "The java.net.URL class methods are not supported because our mechanism supporting new protocols and the according stream creation differ.\n" + "Use the " +
+                        "according URLName method instead");
     }
 
+
+
+    public String parseToString(String name) throws IOException, TikaException
+    {
+        return parseToString(UrlUtil.sourceString2URL(name));
+    }
 
 
 
@@ -823,17 +858,9 @@ public class Leech extends Tika
 
 
             return parseToString(stream, metadata);
-        }
-        catch (Throwable e)
+        } catch (Throwable e)
         {
             throw new TikaException("Error while parsing " + url.getFile(), e);
         }
     }
-
-
-
-
-
-
-
 }

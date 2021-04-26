@@ -11,7 +11,6 @@ import org.apache.lucene.document.*;
 import org.apache.lucene.index.DocValuesType;
 import org.apache.lucene.index.IndexOptions;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,16 +32,13 @@ public class DynamicFieldType extends FieldType
 
     public static final DynamicFieldType dateFieldType = new DynamicFieldType(LegacyLongField.TYPE_STORED).setDateParsing(true).freezE();
 
-    public static final DynamicFieldType keywordFieldType =
-            new DynamicFieldType().setTokenizeD(true).setStoreD(true).setStoreTermVectorS(true).setStoreTermVectorOffsetS(true)
-                    .setIndexOptionS(IndexOptions.DOCS_AND_FREQS_AND_POSITIONS_AND_OFFSETS).setOmitNormS(true).setAnalyzer("org.apache.lucene.analysis.core.KeywordAnalyzer")
-                    .freezE();
+    public static final DynamicFieldType keywordFieldType = new DynamicFieldType().setTokenizeD(true).setStoreD(true).setStoreTermVectorS(true).setStoreTermVectorOffsetS(true)
+            .setIndexOptionS(IndexOptions.DOCS_AND_FREQS_AND_POSITIONS_AND_OFFSETS).setOmitNormS(true).setAnalyzer("org.apache.lucene.analysis.core.KeywordAnalyzer").freezE();
 
     public static final DynamicFieldType longFieldType = new DynamicFieldType(LegacyLongField.TYPE_STORED).freezE();
 
-    public static final DynamicFieldType tokenizedFieldType =
-            new DynamicFieldType().setTokenizeD(true).setStoreD(true).setStoreTermVectorS(true).setStoreTermVectorOffsetS(true)
-                    .setIndexOptionS(IndexOptions.DOCS_AND_FREQS_AND_POSITIONS_AND_OFFSETS).setAnalyzer("de.dfki.km.leech.lucene.LeechSimpleAnalyzer").freezE();
+    public static final DynamicFieldType tokenizedFieldType = new DynamicFieldType().setTokenizeD(true).setStoreD(true).setStoreTermVectorS(true).setStoreTermVectorOffsetS(true)
+            .setIndexOptionS(IndexOptions.DOCS_AND_FREQS_AND_POSITIONS_AND_OFFSETS).setAnalyzer("de.dfki.km.leech.lucene.LeechSimpleAnalyzer").freezE();
 
 
 
@@ -77,13 +73,13 @@ public class DynamicFieldType extends FieldType
             {
 
                 if (fieldType.numericType() == LegacyNumericType.INT)
-                    return new LegacyIntField(strAttName, Integer.valueOf((String) attValue), fieldType);
+                    return new LegacyIntField(strAttName, Integer.parseInt((String) attValue), fieldType);
                 else if (fieldType.numericType() == LegacyNumericType.LONG)
-                    return new LegacyLongField(strAttName, Long.valueOf((String) attValue), fieldType);
+                    return new LegacyLongField(strAttName, Long.parseLong((String) attValue), fieldType);
                 else if (fieldType.numericType() == LegacyNumericType.FLOAT)
-                    return new LegacyFloatField(strAttName, Float.valueOf((String) attValue), fieldType);
+                    return new LegacyFloatField(strAttName, Float.parseFloat((String) attValue), fieldType);
                 else if (fieldType.numericType() == LegacyNumericType.DOUBLE)
-                    return new LegacyDoubleField(strAttName, Double.valueOf((String) attValue), fieldType);
+                    return new LegacyDoubleField(strAttName, Double.parseDouble((String) attValue), fieldType);
                 else
                     return new Field(strAttName, (String) attValue, fieldType);
             }
@@ -109,8 +105,13 @@ public class DynamicFieldType extends FieldType
             return null;
         }
     }
+
+
+
     protected String analyzer;
     protected boolean dateParsing = false;
+
+
 
     public DynamicFieldType()
     {
@@ -175,28 +176,22 @@ public class DynamicFieldType extends FieldType
      */
     public void fromJson(String strJson)
     {
-        try
-        {
-            DynamicFieldType ref = (DynamicFieldType) JsonReader.jsonToJava(strJson);
+        DynamicFieldType ref = (DynamicFieldType) JsonReader.jsonToJava(strJson);
 
-            // this.setIndexed(ref.indexed());
-            this.setStored(ref.stored());
-            this.setTokenized(ref.tokenized());
-            this.setStoreTermVectors(ref.storeTermVectors());
-            this.setStoreTermVectorOffsets(ref.storeTermVectorOffsets());
-            this.setStoreTermVectorPositions(ref.storeTermVectorPositions());
-            this.setStoreTermVectorPayloads(ref.storeTermVectorPayloads());
-            this.setOmitNorms(ref.omitNorms());
-            this.setIndexOptions(ref.indexOptions());
-            this.setDocValuesType(ref.docValuesType());
-            this.setNumericType(ref.numericType());
-            this.setNumericPrecisionStep(ref.numericPrecisionStep());
+        // this.setIndexed(ref.indexed());
+        this.setStored(ref.stored());
+        this.setTokenized(ref.tokenized());
+        this.setStoreTermVectors(ref.storeTermVectors());
+        this.setStoreTermVectorOffsets(ref.storeTermVectorOffsets());
+        this.setStoreTermVectorPositions(ref.storeTermVectorPositions());
+        this.setStoreTermVectorPayloads(ref.storeTermVectorPayloads());
+        this.setOmitNorms(ref.omitNorms());
+        this.setIndexOptions(ref.indexOptions());
+        this.setDocValuesType(ref.docValuesType());
+        this.setNumericType(ref.numericType());
+        this.setNumericPrecisionStep(ref.numericPrecisionStep());
 
-            this.setAnalyzer(ref.getAnalyzer());
-        } catch (IOException e)
-        {
-            throw new RuntimeException(e);
-        }
+        this.setAnalyzer(ref.getAnalyzer());
     }
 
 
@@ -401,18 +396,12 @@ public class DynamicFieldType extends FieldType
 
     public String toJson(boolean bFormatIt)
     {
-        try
-        {
-            String strJson = JsonWriter.objectToJson(this);
+        String strJson = JsonWriter.objectToJson(this);
 
-            if (bFormatIt)
-                strJson = JsonWriter.formatJson(strJson);
+        if (bFormatIt)
+            strJson = JsonWriter.formatJson(strJson);
 
-            // TODO abchecken, ob das noch nötig ist: https://github.com/jdereg/json-io/issues/19
-            return strJson.replaceAll(",\\s*\"ordinal\":\\d+", "");
-        } catch (IOException e)
-        {
-            throw new RuntimeException(e);
-        }
+        // TODO abchecken, ob das noch nötig ist: https://github.com/jdereg/json-io/issues/19
+        return strJson.replaceAll(",\\s*\"ordinal\":\\d+", "");
     }
 }

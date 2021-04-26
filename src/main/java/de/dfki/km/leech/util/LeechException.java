@@ -21,7 +21,7 @@
 
 package de.dfki.km.leech.util;
 
-public class LeechException extends Exception
+public class LeechException extends RuntimeException
 {
     private static final long serialVersionUID = 7184624329588842248L;
 

@@ -1261,7 +1261,7 @@ public class IndexAccessor
 
             int iNew = --iOld;
 
-            String strDontCloseIndexWriters = System.getProperty("de.dfki.inquisition.lucene.IndexAccessor.DontCloseIndexWriters");
+            String strDontCloseIndexWriters = System.getProperty("de.dfki.inquisitor.lucene.IndexAccessor.DontCloseIndexWriters");
             boolean bIgnoreClose = false;
             if(strDontCloseIndexWriters != null) bIgnoreClose = Boolean.parseBoolean(strDontCloseIndexWriters);
 
