@@ -7,6 +7,12 @@
 **How to write your own Parser**  
 Since LeechCrawler deals with the original Tika Parsers, you simply have to write a new Tika Parser. Tika documentation can be found at e.g. [Parser 5min Quick Start Guide](http://tika.apache.org/1.0/parser_guide.html)
 
+**How to write your own MimeType Detector**  
+Sometimes specifying a glob pattern inside Tikas custom-mimetypes.xml is not enough for detecting a mimetype, since the glob patterns are a bit limited and glob parsing is only on the URL.getPath() part, which misses relevant parts sometimes. In this case, for detecting your mimetype, you have to write and register your own MimeType Detecor:
+ 1. Implement the Tika Detector interface. Inside the detect(..) method, return MediaType.OCTET_STREAM in the case you can not make an assumption about the current MimeType, i.e. if the current case is not of your MimeType. You can use the stream or the metadata detected yet (e.g. the file path) for detection.
+ 2. Register your Detector inside a 'META-INF/services/org.apache.tika.detect.Detector' file. Put that file somewhere into the class path (e.g. with Maven inside 'src/main/resources/META-INF/services/org.apache.tika.detect.Detector'). Just add a line with your Detector class reference, e.g. 'de.dfki.leech.LeechExampleDetector'
+ 
+
 **How to write your own CrawlerParser**  
 To write your own crawler, following steps have to be considered:
  1. In the case you have a new URL protocol (as e.g. imap://), implement a new de.dfki.km.leech.io.URLStreamProvider.
