@@ -30,8 +30,10 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import de.dfki.km.leech.metadata.LeechMetadata;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
+import org.apache.tika.metadata.TikaCoreProperties;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
 import org.apache.tika.parser.ParserDecorator;
@@ -99,7 +101,7 @@ public class URLFilteringParser extends ParserDecorator
         if(crawlerContext == null) crawlerContext = new CrawlerContext();
 
         String strSource = metadata.get(Metadata.SOURCE);
-        if(strSource == null) strSource = metadata.get(Metadata.RESOURCE_NAME_KEY);
+        if(strSource == null) strSource = metadata.get(LeechMetadata.RESOURCE_NAME_KEY);
 
         // ## URLFilter - wenn unsere zu parsende entity ausserhalb der Domäne steht, dann ignorieren wir sie auch
         for (String strKey : m_hsMetadataKeys)

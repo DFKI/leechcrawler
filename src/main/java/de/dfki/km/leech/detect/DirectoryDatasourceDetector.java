@@ -28,8 +28,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+import de.dfki.km.leech.metadata.LeechMetadata;
 import org.apache.tika.detect.Detector;
 import org.apache.tika.metadata.Metadata;
+import org.apache.tika.metadata.TikaCoreProperties;
 import org.apache.tika.mime.MediaType;
 
 
@@ -54,7 +56,8 @@ public class DirectoryDatasourceDetector implements Detector
         {
 
             String strName = metadata.get(Metadata.SOURCE);
-            if(strName == null) strName = metadata.get(Metadata.RESOURCE_NAME_KEY);
+            if(strName == null) strName = metadata.get(LeechMetadata.RESOURCE_NAME_KEY);
+
 
             // octet stream wird zurück gegeben, wenn wir nix erkennen konnten
             if(strName == null) return MediaType.OCTET_STREAM;

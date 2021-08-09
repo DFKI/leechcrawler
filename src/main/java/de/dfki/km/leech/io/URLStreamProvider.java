@@ -20,6 +20,7 @@ package de.dfki.km.leech.io;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLStreamHandler;
 import java.util.HashMap;
 import java.util.ServiceLoader;
 import java.util.Set;
@@ -33,7 +34,7 @@ import org.apache.tika.metadata.DublinCore;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
 
-import ucar.nc2.util.net.URLStreamHandlerFactory;
+import java.net.URLStreamHandlerFactory;
 import de.dfki.km.leech.parser.incremental.IncrementalCrawlingHistory;
 
 
@@ -63,7 +64,8 @@ abstract public class URLStreamProvider
 
     static
     {
-        theOneAndOnlyURLStreamHandlerFactory = new URLStreamHandlerFactory();
+        // wir machen eine anonyme Klasse die einfach immer null zurück gibt - das reicht um die default-java-factory in der URL Klasse auszuknipsen
+        theOneAndOnlyURLStreamHandlerFactory = protocol -> null;
 
         registerProtocols();
     }

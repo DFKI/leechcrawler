@@ -23,6 +23,7 @@ import de.dfki.km.leech.config.CrawlerContext;
 import de.dfki.km.leech.config.DirectoryCrawlerContext;
 import de.dfki.km.leech.config.LeechConfig;
 import de.dfki.km.leech.io.URLStreamProvider;
+import de.dfki.km.leech.metadata.LeechMetadata;
 import de.dfki.km.leech.parser.DirectoryCrawlerParser;
 import de.dfki.km.leech.parser.filter.URLFilteringParser;
 import de.dfki.km.leech.parser.incremental.IncrementalCrawlingHistory;
@@ -37,6 +38,7 @@ import org.apache.tika.Tika;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.DublinCore;
 import org.apache.tika.metadata.Metadata;
+import org.apache.tika.metadata.TikaCoreProperties;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
 import org.xml.sax.ContentHandler;
@@ -730,7 +732,7 @@ public class Leech extends Tika
         {
 
             String strUid = new UID().toString();
-            metadata.add(Metadata.RESOURCE_NAME_KEY, "leechUrlList " + strUid);
+            metadata.add(LeechMetadata.RESOURCE_NAME_KEY, "leechUrlList " + strUid);
             metadata.add(DublinCore.SOURCE, strUid + "_leechUrlList.urlList");
             metadata.add(IncrementalCrawlingHistory.dataEntityId, strUid + "_leechUrlList.urlList");
             metadata.add(IncrementalCrawlingHistory.dataEntityContentFingerprint, strUid + "_leechUrlList.urlList");

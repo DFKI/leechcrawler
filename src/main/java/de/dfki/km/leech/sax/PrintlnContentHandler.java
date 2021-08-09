@@ -22,9 +22,11 @@ package de.dfki.km.leech.sax;
 
 import java.util.logging.Logger;
 
+import de.dfki.km.leech.metadata.LeechMetadata;
 import org.apache.tika.metadata.Metadata;
 
 import de.dfki.km.leech.parser.incremental.IncrementalCrawlingHistory;
+import org.apache.tika.metadata.TikaCoreProperties;
 
 
 
@@ -152,7 +154,7 @@ public class PrintlnContentHandler extends DataSinkContentHandlerDecorator
         {
             String strInfo = metadata.get(IncrementalCrawlingHistory.dataEntityId);
             if(strInfo == null) strInfo = metadata.get(Metadata.SOURCE);
-            if(strInfo == null) strInfo = metadata.get(Metadata.RESOURCE_NAME_KEY);
+            if(strInfo == null) strInfo = metadata.get(LeechMetadata.RESOURCE_NAME_KEY);
 
             strbMessage.append(strInfo).append("\n");
         }
@@ -202,7 +204,7 @@ public class PrintlnContentHandler extends DataSinkContentHandlerDecorator
             {
                 String strInfo = metadata.get(IncrementalCrawlingHistory.dataEntityId);
                 if(strInfo == null) strInfo = metadata.get(Metadata.SOURCE);
-                if(strInfo == null) strInfo = metadata.get(Metadata.RESOURCE_NAME_KEY);
+                if(strInfo == null) strInfo = metadata.get(LeechMetadata.RESOURCE_NAME_KEY);
 
                 strbMessage.append(strInfo).append("\n");
             }
@@ -253,7 +255,7 @@ public class PrintlnContentHandler extends DataSinkContentHandlerDecorator
             {
                 String strInfo = metadata.get(IncrementalCrawlingHistory.dataEntityId);
                 if(strInfo == null) strInfo = metadata.get(Metadata.SOURCE);
-                if(strInfo == null) strInfo = metadata.get(Metadata.RESOURCE_NAME_KEY);
+                if(strInfo == null) strInfo = metadata.get(LeechMetadata.RESOURCE_NAME_KEY);
 
                 strbMessage.append(strInfo).append("\n");
             }
@@ -305,7 +307,7 @@ public class PrintlnContentHandler extends DataSinkContentHandlerDecorator
             {
                 String strInfo = metadata.get(IncrementalCrawlingHistory.dataEntityId);
                 if(strInfo == null) strInfo = metadata.get(Metadata.SOURCE);
-                if(strInfo == null) strInfo = metadata.get(Metadata.RESOURCE_NAME_KEY);
+                if(strInfo == null) strInfo = metadata.get(LeechMetadata.RESOURCE_NAME_KEY);
 
                 strbMessage.append(strInfo).append("\n");
             }

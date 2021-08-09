@@ -27,8 +27,10 @@ import java.nio.channels.FileLock;
 import java.util.Iterator;
 import java.util.UUID;
 
+import de.dfki.km.leech.metadata.LeechMetadata;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
+import org.apache.tika.metadata.TikaCoreProperties;
 import org.apache.tika.mime.MediaType;
 import org.apache.tika.parser.CompositeParser;
 import org.apache.tika.parser.EmptyParser;
@@ -229,7 +231,7 @@ public class IncrementalCrawlingParser extends ParserDecorator
         catch (Exception e)
         {
             String strUrlOrSource = metadata.get(Metadata.SOURCE);
-            if(strUrlOrSource == null) strUrlOrSource = metadata.get(Metadata.RESOURCE_NAME_KEY);
+            if(strUrlOrSource == null) strUrlOrSource = metadata.get(LeechMetadata.RESOURCE_NAME_KEY);
             if(strUrlOrSource == null) strUrlOrSource = metadata.get(IncrementalCrawlingHistory.dataEntityId);
             if(strUrlOrSource == null) strUrlOrSource = "no entity id known in metadata";
 

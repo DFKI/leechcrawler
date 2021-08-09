@@ -18,6 +18,18 @@ package de.dfki.km.leech.io;
 
 
 
+import de.dfki.km.leech.config.CrawlerContext;
+import de.dfki.km.leech.metadata.LeechMetadata;
+import de.dfki.km.leech.parser.incremental.IncrementalCrawlingHistory;
+import de.dfki.km.leech.util.CookieManager;
+import de.dfki.km.leech.util.LeechException;
+import de.dfki.km.leech.util.UrlUtil;
+import org.apache.tika.io.TikaInputStream;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.metadata.TikaCoreProperties;
+import org.apache.tika.parser.ParseContext;
+
+import javax.mail.URLName;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,18 +41,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
-
-import javax.mail.URLName;
-
-import org.apache.tika.io.TikaInputStream;
-import org.apache.tika.metadata.Metadata;
-import org.apache.tika.parser.ParseContext;
-
-import de.dfki.km.leech.config.CrawlerContext;
-import de.dfki.km.leech.parser.incremental.IncrementalCrawlingHistory;
-import de.dfki.km.leech.util.CookieManager;
-import de.dfki.km.leech.util.LeechException;
-import de.dfki.km.leech.util.UrlUtil;
 
 
 
@@ -81,7 +81,7 @@ public class HttpURLStreamProvider extends URLStreamProvider
      * Adds first metadata and metadata relevant for incremental indexing to the given metadata object
      * 
      * @param url2getMetadata the url for which metadata should be extracte
-     * @param metadata2fill the metadata object. The method will put several entries, as Metadata.SOURCE, Metadata.RESOURCE_NAME_KEY,
+     * @param metadata2fill the metadata object. The method will put several entries, as Metadata.SOURCE, LeechMetadata.RESOURCE_NAME_KEY,
      *            Metadata.CONTENT_ENCODING, Metadata.CONTENT_TYPE, Metadata.CONTENT_LOCATION and, last but not least, the
      *            {@link IncrementalCrawlingHistory#dataEntityId} and {@link IncrementalCrawlingHistory#dataEntityContentFingerprint} to
      *            determine whether the content behind the url was modified since the last crawl or not. The URL path entry for Metadata.SOURCE is
@@ -101,7 +101,7 @@ public class HttpURLStreamProvider extends URLStreamProvider
 
 
         // wenn das Teil schon gefüllt ist, dann machen wir gar nix
-        if(!(metadata2fill.get(Metadata.SOURCE) == null || metadata2fill.get(Metadata.RESOURCE_NAME_KEY) == null
+        if(!(metadata2fill.get(Metadata.SOURCE) == null || metadata2fill.get(LeechMetadata.RESOURCE_NAME_KEY) == null
                 || metadata2fill.get(Metadata.CONTENT_ENCODING) == null || metadata2fill.get(Metadata.CONTENT_TYPE) == null
                 || metadata2fill.get(Metadata.CONTENT_LOCATION) == null
                 || metadata2fill.get(IncrementalCrawlingHistory.dataEntityContentFingerprint) == null || metadata2fill
@@ -258,7 +258,7 @@ public class HttpURLStreamProvider extends URLStreamProvider
 
         // die Einträge, die Tika auch in das metadata einträgt, und noch etwas dazu
 
-        metadata2fill.set(Metadata.RESOURCE_NAME_KEY, strCurrentUrl);
+        metadata2fill.set(LeechMetadata.RESOURCE_NAME_KEY, strCurrentUrl);
 
         metadata2fill.set(Metadata.SOURCE, strCurrentUrl);
         metadata2fill.set(IncrementalCrawlingHistory.dataEntityId, strCurrentUrl);

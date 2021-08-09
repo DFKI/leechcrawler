@@ -1,16 +1,16 @@
 /*
  * Leech - crawling capabilities for Apache Tika
- * 
+ *
  * Copyright (C) 2012 DFKI GmbH, Author: Christian Reuschling
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  * Contact us by mail: christian.reuschling@dfki.de
  */
 
@@ -18,14 +18,30 @@ package de.dfki.km.leech.parser.wikipedia;
 
 
 
+import de.dfki.inquisitor.collections.MultiValueBalancedTreeMap;
+import de.dfki.inquisitor.collections.MultiValueHashMap;
+import de.dfki.inquisitor.text.StringUtils;
+import de.dfki.km.leech.metadata.LeechMetadata;
+import de.dfki.km.leech.util.TikaUtils;
 import info.bliki.wiki.filter.PlainTextConverter;
 import info.bliki.wiki.model.WikiModel;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.tika.exception.TikaException;
+import org.apache.tika.io.TikaInputStream;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.metadata.TikaCoreProperties;
+import org.apache.tika.mime.MediaType;
+import org.apache.tika.parser.ParseContext;
+import org.apache.tika.parser.Parser;
+import org.apache.tika.sax.XHTMLContentHandler;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.XMLEvent;
+import java.io.*;
 import java.rmi.server.UID;
 import java.util.Collections;
 import java.util.HashMap;
@@ -37,28 +53,6 @@ import java.util.logging.Logger;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.events.XMLEvent;
-
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.tika.exception.TikaException;
-import org.apache.tika.io.TikaInputStream;
-import org.apache.tika.metadata.Metadata;
-import org.apache.tika.mime.MediaType;
-import org.apache.tika.parser.ParseContext;
-import org.apache.tika.parser.Parser;
-import org.apache.tika.sax.XHTMLContentHandler;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.SAXException;
-
-import de.dfki.inquisitor.collections.MultiValueBalancedTreeMap;
-import de.dfki.inquisitor.collections.MultiValueHashMap;
-import de.dfki.inquisitor.text.StringUtils;
-import de.dfki.km.leech.metadata.LeechMetadata;
-import de.dfki.km.leech.util.TikaUtils;
 
 
 
@@ -73,8 +67,7 @@ import de.dfki.km.leech.util.TikaUtils;
  * http://dumps.wikimedia.org/enwiki/latest/enwiki-latest-pages-articles.xml.bz2 <br>
  * <br>
  * Configure this parser inside the ParseContext: ParseContext.set(WikipediaDumpParserConfig.class, wikipediaDumpParserConfig);
- * 
- * 
+ *
  * @author Christian Reuschling, Dipl.Ing.(BA)
  */
 public class WikipediaDumpParser implements Parser
@@ -162,6 +155,8 @@ public class WikipediaDumpParser implements Parser
     }
 
 
+
+
     public static final String externalLink = "externalLink";
 
     public static final String infobox = "infobox";
@@ -183,11 +178,10 @@ public class WikipediaDumpParser implements Parser
 
     /**
      * Reads all next character events from an xmlEventReader and concatenate their data into one String
-     * 
+     *
      * @param xmlEventReader the xmlEventReader to get the events
-     * 
+     *
      * @return the data of the character events, concatenated into one String
-     * 
      * @throws XMLStreamException
      */
     static protected String readNextCharEventsText(XMLEventReader xmlEventReader) throws XMLStreamException
@@ -198,7 +192,8 @@ public class WikipediaDumpParser implements Parser
         while (xmlEventReader.hasNext())
         {
             XMLEvent nextEvent = xmlEventReader.peek();
-            if(!nextEvent.isCharacters()) break;
+            if(!nextEvent.isCharacters())
+                break;
 
             nextEvent = xmlEventReader.nextEvent();
             strbText.append(nextEvent.asCharacters().getData());
@@ -216,7 +211,8 @@ public class WikipediaDumpParser implements Parser
 
     protected String cleanAttValue(String strAttName, String strAttValue)
     {
-        if(strAttValue == null) strAttValue = "";
+        if(strAttValue == null)
+            strAttValue = "";
 
         // Angaben in Klammern kommen weg
         strAttValue = strAttValue.replaceAll("\\(.*?\\)", "");
@@ -231,10 +227,14 @@ public class WikipediaDumpParser implements Parser
             {
                 double dInDezimal = dmsToDecCoordinate(degreeMatcher.group(1), degreeMatcher.group(2), degreeMatcher.group(3));
 
-                if("E".equals(degreeMatcher.group(4))) strAttValue = String.valueOf(dInDezimal);
-                if("W".equals(degreeMatcher.group(4))) strAttValue = String.valueOf(dInDezimal * -1);
-                if("N".equals(degreeMatcher.group(4))) strAttValue = String.valueOf(dInDezimal);
-                if("S".equals(degreeMatcher.group(4))) strAttValue = String.valueOf(dInDezimal * -1);
+                if("E".equals(degreeMatcher.group(4)))
+                    strAttValue = String.valueOf(dInDezimal);
+                if("W".equals(degreeMatcher.group(4)))
+                    strAttValue = String.valueOf(dInDezimal * -1);
+                if("N".equals(degreeMatcher.group(4)))
+                    strAttValue = String.valueOf(dInDezimal);
+                if("S".equals(degreeMatcher.group(4)))
+                    strAttValue = String.valueOf(dInDezimal * -1);
             }
             else
             {
@@ -258,23 +258,26 @@ public class WikipediaDumpParser implements Parser
 
     /**
      * Converts DMS ( Degrees / minutes / seconds ) to decimal format longitude / latitude
-     * 
+     *
      * @param strDegree
      * @param strMinutes
      * @param strSeconds
-     * 
+     *
      * @return the doordinate in decimal format (longitude / latitude)
      */
     public double dmsToDecCoordinate(String strDegree, String strMinutes, String strSeconds)
     {
         double degree = 0;
-        if(!StringUtils.nullOrWhitespace(strDegree)) degree = Double.valueOf(strDegree);
+        if(!StringUtils.nullOrWhitespace(strDegree))
+            degree = Double.valueOf(strDegree);
 
         double minutes = 0;
-        if(!StringUtils.nullOrWhitespace(strMinutes)) minutes = Double.valueOf(strMinutes);
+        if(!StringUtils.nullOrWhitespace(strMinutes))
+            minutes = Double.valueOf(strMinutes);
 
         double seconds = 0;
-        if(!StringUtils.nullOrWhitespace(strSeconds)) seconds = Double.valueOf(strSeconds);
+        if(!StringUtils.nullOrWhitespace(strSeconds))
+            seconds = Double.valueOf(strSeconds);
 
 
         return degree + (((minutes * 60) + (seconds)) / 3600);
@@ -305,49 +308,60 @@ public class WikipediaDumpParser implements Parser
             XMLEvent xmlEvent = xmlEventReader.nextEvent();
 
 
-            if(!xmlEvent.isStartElement()) continue;
+            if(!xmlEvent.isStartElement())
+                continue;
             // wenn wir einen Title haben, dann merken wir uns den, falls wir ihn brauchen
             if(xmlEvent.asStartElement().getName().getLocalPart().equals("title"))
             {
                 strCurrentTitle = readNextCharEventsText(xmlEventReader);
 
                 iTitlesRead++;
-                if(iTitlesRead % 200000 == 0) Logger.getLogger(WikipediaDumpParser.class.getName()).info("read doc #" + StringUtils.beautifyNumber(iTitlesRead));
+                if(iTitlesRead % 200000 == 0)
+                    Logger.getLogger(WikipediaDumpParser.class.getName()).info("read doc #" + StringUtils.beautifyNumber(iTitlesRead));
 
                 continue;
             }
 
-            if(!xmlEvent.asStartElement().getName().getLocalPart().equals("text")) continue;
+            if(!xmlEvent.asStartElement().getName().getLocalPart().equals("text"))
+                continue;
 
             // jetzt haben wir ein text-tag. Wir schauen, ob jetzt ein redirect kommt
             // entweder kommt ein charEvent oder ein EndEvent. Leere Texte gibts wohl auch
             XMLEvent nextEvent = xmlEventReader.peek();
 
-            if(!nextEvent.isCharacters()) continue;
+            if(!nextEvent.isCharacters())
+                continue;
 
             String strCharEventData = readNextCharEventsText(xmlEventReader);
-            if(strCharEventData == null) continue;
+            if(strCharEventData == null)
+                continue;
 
 
             strCharEventData = strCharEventData.trim();
 
             boolean bRedirect = false;
 
-            if(strCharEventData.length() >= 9 && strCharEventData.substring(0, 9).equalsIgnoreCase("#redirect")) bRedirect = true;
+            if(strCharEventData.length() >= 9 && strCharEventData.substring(0, 9).equalsIgnoreCase("#redirect"))
+                bRedirect = true;
             if(!bRedirect && strCharEventData.length() >= 8 && strCharEventData.substring(0, 8).equalsIgnoreCase("redirect") && !strCharEventData.contains("\n"))
                 bRedirect = true;
-            if(!bRedirect && strCharEventData.length() >= 14 && strCharEventData.substring(0, 14).equalsIgnoreCase("#weiterleitung")) bRedirect = true;
+            if(!bRedirect && strCharEventData.length() >= 14 && strCharEventData.substring(0, 14).equalsIgnoreCase("#weiterleitung"))
+                bRedirect = true;
             if(!bRedirect && strCharEventData.length() >= 13 && strCharEventData.substring(0, 13).equalsIgnoreCase("weiterleitung") && !strCharEventData.contains("\n"))
                 bRedirect = true;
 
-            if(!bRedirect) continue;
+            if(!bRedirect)
+                continue;
 
             // wir haben einen redirect - der wird in unsere Datenstruktur eingetragen
             int iStart = strCharEventData.indexOf("[[");
             int iEnd = strCharEventData.indexOf("]]");
-            if(iStart < 0 || iEnd < 0) continue;
-            if(iEnd <= iStart) continue;
-            if((iStart + 2) > strCharEventData.length() || iEnd > strCharEventData.length()) continue;
+            if(iStart < 0 || iEnd < 0)
+                continue;
+            if(iEnd <= iStart)
+                continue;
+            if((iStart + 2) > strCharEventData.length() || iEnd > strCharEventData.length())
+                continue;
 
 
 
@@ -409,7 +423,8 @@ public class WikipediaDumpParser implements Parser
             File fWikipediaDumpFile4Stream = tikaStream.getFile();
 
             MultiValueHashMap<String, String> hsPageTitle2Redirects = new MultiValueHashMap<String, String>();
-            if(wikipediaDumpParserConfig.determinePageRedirects) hsPageTitle2Redirects = getPageTitle2Redirects(new FileInputStream(fWikipediaDumpFile4Stream));
+            if(wikipediaDumpParserConfig.determinePageRedirects)
+                hsPageTitle2Redirects = getPageTitle2Redirects(new FileInputStream(fWikipediaDumpFile4Stream));
 
 
             HashSet<String> hsRedirectPageTitles = new HashSet<String>(hsPageTitle2Redirects.values());
@@ -429,7 +444,8 @@ public class WikipediaDumpParser implements Parser
 
                 if(xmlEvent.isEndElement() && xmlEvent.asEndElement().getName().getLocalPart().equals("page"))
                 {
-                    if(metadata.size() == 0) continue;
+                    if(metadata.size() == 0)
+                        continue;
 
                     // den mimetype wollen wir auch noch in den Metadaten haben
                     metadata.add(Metadata.CONTENT_TYPE, "application/wikipedia+xml");
@@ -449,7 +465,8 @@ public class WikipediaDumpParser implements Parser
 
 
 
-                if(!xmlEvent.isStartElement()) continue;
+                if(!xmlEvent.isStartElement())
+                    continue;
 
 
 
@@ -497,29 +514,30 @@ public class WikipediaDumpParser implements Parser
                     // wenn der Titel eine redirect-Page ist, dann tragen wir die ganze Page aus der EventQueue aus, springen an das endPage, und
                     // haben somit diese Seite ignoriert. Ferner ignorieren wir auch spezielle wikipedia-Seiten
                     String strSmallTitle = strCurrentTitle.trim().toLowerCase();
-                    if(hsRedirectPageTitles.contains(strCurrentTitle) || hsRedirectPageTitles.contains(strSmallTitle)
-                            || hsRedirectPageTitles.contains(strCurrentTitle.trim()) || strSmallTitle.startsWith("category:") || strSmallTitle.startsWith("kategorie:")
-                            || strSmallTitle.startsWith("vorlage:") || strSmallTitle.startsWith("template:") || strSmallTitle.startsWith("hilfe:")
-                            || strSmallTitle.startsWith("help:") || strSmallTitle.startsWith("wikipedia:") || strSmallTitle.startsWith("portal:")
-                            || strSmallTitle.startsWith("mediawiki:"))
+                    if(hsRedirectPageTitles.contains(strCurrentTitle) || hsRedirectPageTitles.contains(strSmallTitle) || hsRedirectPageTitles.contains(strCurrentTitle.trim())
+                            || strSmallTitle.startsWith("category:") || strSmallTitle.startsWith("kategorie:") || strSmallTitle.startsWith("vorlage:") || strSmallTitle.startsWith(
+                            "template:") || strSmallTitle.startsWith("hilfe:") || strSmallTitle.startsWith("help:") || strSmallTitle.startsWith("wikipedia:")
+                            || strSmallTitle.startsWith("portal:") || strSmallTitle.startsWith("mediawiki:"))
                     {
 
                         while (true)
                         {
                             XMLEvent nextXmlEvent = xmlEventReader.nextEvent();
-                            if(nextXmlEvent.isEndElement() && nextXmlEvent.asEndElement().getName().getLocalPart().equals("page")) break;
+                            if(nextXmlEvent.isEndElement() && nextXmlEvent.asEndElement().getName().getLocalPart().equals("page"))
+                                break;
                         }
                     }
                     else
                     {
-                        metadata.add(Metadata.TITLE, strCurrentTitle);
+                        metadata.add(TikaCoreProperties.TITLE, strCurrentTitle);
                         metadata.add(Metadata.SOURCE, strBaseURL + strCurrentTitle);
 
 
                         for (String strRedirect : hsPageTitle2Redirects.get(strCurrentTitle))
                         {
                             // wir ignorieren Titel, die sich lediglich durch groß/kleinschreibung unterscheiden
-                            if(!StringUtils.containsIgnoreCase(strRedirect, metadata.getValues(Metadata.TITLE))) metadata.add(Metadata.TITLE, strRedirect);
+                            if(!StringUtils.containsIgnoreCase(strRedirect, metadata.getValues(TikaCoreProperties.TITLE)))
+                                metadata.add(TikaCoreProperties.TITLE.getName(), strRedirect);
                         }
                     }
 
@@ -535,9 +553,12 @@ public class WikipediaDumpParser implements Parser
                 {
                     String strText = readNextCharEventsText(xmlEventReader);
 
-                    if(wikipediaDumpParserConfig.parseLinksAndCategories) parseLinksAndCategories(strText, strBaseURL, metadata, handler);
-                    if(wikipediaDumpParserConfig.parseInfoBoxes) parseInfoBox(strText, metadata, handler);
-                    if(wikipediaDumpParserConfig.parseGeoCoordinates) parseGeoCoordinates(strText, metadata);
+                    if(wikipediaDumpParserConfig.parseLinksAndCategories)
+                        parseLinksAndCategories(strText, strBaseURL, metadata, handler);
+                    if(wikipediaDumpParserConfig.parseInfoBoxes)
+                        parseInfoBox(strText, metadata, handler);
+                    if(wikipediaDumpParserConfig.parseGeoCoordinates)
+                        parseGeoCoordinates(strText, metadata);
 
                     // aufgrund einiger Defizite in dem verwendeten cleaner müssen wir hier leider noch zu-und nacharbeiten
                     strText = strText.replaceAll("==\n", "==\n\n");
@@ -561,7 +582,7 @@ public class WikipediaDumpParser implements Parser
                 {
                     String strTimestamp = readNextCharEventsText(xmlEventReader);
 
-                    metadata.add(Metadata.MODIFIED, strTimestamp);
+                    metadata.add(TikaCoreProperties.MODIFIED, strTimestamp);
 
                     continue;
                 }
@@ -573,7 +594,7 @@ public class WikipediaDumpParser implements Parser
                 {
                     String strUsername = readNextCharEventsText(xmlEventReader);
 
-                    metadata.add(Metadata.CREATOR, strUsername);
+                    metadata.add(TikaCoreProperties.CREATOR, strUsername);
 
                     continue;
                 }
@@ -604,7 +625,8 @@ public class WikipediaDumpParser implements Parser
     {
         Matcher matcher = Pattern.compile("(?s)\\{\\{Coordinate (.*?)\\}\\}").matcher(strText);
 
-        coord: while (matcher.find())
+        coord:
+        while (matcher.find())
         {
             String strCoordinates = matcher.group(1);
 
@@ -614,7 +636,8 @@ public class WikipediaDumpParser implements Parser
 
             for (String strPiece : straCoordinates)
             {
-                if(strPiece.contains("text=")) continue coord;
+                if(strPiece.contains("text="))
+                    continue coord;
 
                 Matcher degreeMatcher = dmsCoordinatePattern.matcher(strPiece);
                 if(degreeMatcher.find())
@@ -622,10 +645,14 @@ public class WikipediaDumpParser implements Parser
                     // wir haben eine Angabe in DMS
                     double dInDezimal = dmsToDecCoordinate(degreeMatcher.group(1), degreeMatcher.group(2), degreeMatcher.group(3));
 
-                    if("E".equals(degreeMatcher.group(4))) metadata.add("longitude", String.valueOf(dInDezimal));
-                    if("W".equals(degreeMatcher.group(4))) metadata.add("longitude", String.valueOf(dInDezimal * -1));
-                    if("N".equals(degreeMatcher.group(4))) metadata.add("latitude", String.valueOf(dInDezimal));
-                    if("S".equals(degreeMatcher.group(4))) metadata.add("latitude", String.valueOf(dInDezimal * -1));
+                    if("E".equals(degreeMatcher.group(4)))
+                        metadata.add("longitude", String.valueOf(dInDezimal));
+                    if("W".equals(degreeMatcher.group(4)))
+                        metadata.add("longitude", String.valueOf(dInDezimal * -1));
+                    if("N".equals(degreeMatcher.group(4)))
+                        metadata.add("latitude", String.valueOf(dInDezimal));
+                    if("S".equals(degreeMatcher.group(4)))
+                        metadata.add("latitude", String.valueOf(dInDezimal * -1));
 
                 }
                 else
@@ -638,8 +665,10 @@ public class WikipediaDumpParser implements Parser
                         {
                             Double.valueOf(strAttValue);
 
-                            if(strPiece.contains("EW=")) metadata.add("longitude", strAttValue);
-                            if(strPiece.contains("NS=")) metadata.add("latitude", strAttValue);
+                            if(strPiece.contains("EW="))
+                                metadata.add("longitude", strAttValue);
+                            if(strPiece.contains("NS="))
+                                metadata.add("latitude", strAttValue);
                         }
                         catch (NumberFormatException e)
                         {
@@ -683,12 +712,14 @@ public class WikipediaDumpParser implements Parser
             return;
 
 
-        if(strText.length() < 3 || strText.length() < iEndInfoBox || iEndInfoBox <= 0 || (iStartInfoBox + 2) > iEndInfoBox) return;
+        if(strText.length() < 3 || strText.length() < iEndInfoBox || iEndInfoBox <= 0 || (iStartInfoBox + 2) > iEndInfoBox)
+            return;
 
         String strInfoBox = "";
 
         strInfoBox = strText.substring(iStartInfoBox + 2, iEndInfoBox);
-        if(strInfoBox.length() < 5) return;
+        if(strInfoBox.length() < 5)
+            return;
 
 
         String strCleanedInfoBox = m_wikiModel.render(new PlainTextConverter(), strInfoBox.replaceAll("<br />", "&lt;br /&gt;"));
@@ -700,8 +731,10 @@ public class WikipediaDumpParser implements Parser
 
         // erste Zeile bezeichnet die InfoBox
         int iIndex = strCleanedInfoBox.indexOf("|");
-        if(iIndex == -1) iIndex = strCleanedInfoBox.indexOf("\n");
-        if(iIndex == -1) return;
+        if(iIndex == -1)
+            iIndex = strCleanedInfoBox.indexOf("\n");
+        if(iIndex == -1)
+            return;
         String strInfoBoxName = strCleanedInfoBox.substring(7, iIndex).trim();
         metadata.add(infobox, strInfoBoxName);
 
@@ -717,12 +750,15 @@ public class WikipediaDumpParser implements Parser
             // die Dinger sind mit einem '=' getrennt
             String[] straAtt2Value = strAttValuePair.split("=");
 
-            if(straAtt2Value.length == 0 || straAtt2Value[0] == null) continue;
-            if(straAtt2Value.length < 2 || straAtt2Value[1] == null) continue;
+            if(straAtt2Value.length == 0 || straAtt2Value[0] == null)
+                continue;
+            if(straAtt2Value.length < 2 || straAtt2Value[1] == null)
+                continue;
 
             String strAttName = straAtt2Value[0].trim();
             String strAttValues = straAtt2Value[1];
-            if(StringUtils.nullOrWhitespace(strAttValues)) continue;
+            if(StringUtils.nullOrWhitespace(strAttValues))
+                continue;
             // Innerhalb eines values gibt es auch Zeilenumbrüche (mit '<br />' bzw. '&lt;br /&gt;') - dies gilt als Aufzählung
             String[] straAttValues = strAttValues.split(Pattern.quote("&lt;br /&gt;"));
             // XXX wir werfen zusatzangaben in Klammern erst mal weg - man könnte sie auch als attnameAddInfo in einem extra Attribut speichern -
@@ -740,7 +776,8 @@ public class WikipediaDumpParser implements Parser
                 for (String strAttValue : straAttValues)
                 {
                     String strCleanedAttValue = cleanAttValue(strAttName, strAttValue);
-                    if(strCleanedAttValue != null) metadata.add(strAttName, strCleanedAttValue);
+                    if(strCleanedAttValue != null)
+                        metadata.add(strAttName, strCleanedAttValue);
                 }
             }
             else
@@ -759,7 +796,8 @@ public class WikipediaDumpParser implements Parser
                     for (String strAttValue : straAttValues)
                     {
                         String strCleanedAttValue = cleanAttValue(strFinalAttName, strAttValue);
-                        if(strCleanedAttValue != null) metadata.add(strFinalAttName, strCleanedAttValue);
+                        if(strCleanedAttValue != null)
+                            metadata.add(strFinalAttName, strCleanedAttValue);
                     }
                 }
 
@@ -809,7 +847,8 @@ public class WikipediaDumpParser implements Parser
                 String strAttValue = attName2Value4SubDoc.getValue();
 
                 String strCleanedAttValue = cleanAttValue(strAttName, strAttValue);
-                if(strCleanedAttValue != null) metadata.add(strAttName, strCleanedAttValue);
+                if(strCleanedAttValue != null)
+                    metadata.add(strAttName, strCleanedAttValue);
             }
 
 
@@ -871,7 +910,8 @@ public class WikipediaDumpParser implements Parser
                 // wir haben einen internen link oder eine Kategorie
                 String strLinkOrCategory = strMatch.substring(1);
                 int iIndex = strLinkOrCategory.indexOf("|");
-                if(iIndex != -1) strLinkOrCategory = strLinkOrCategory.substring(0, iIndex);
+                if(iIndex != -1)
+                    strLinkOrCategory = strLinkOrCategory.substring(0, iIndex);
                 iIndex = strLinkOrCategory.indexOf(":");
                 if(iIndex == -1)
                 {
@@ -891,7 +931,8 @@ public class WikipediaDumpParser implements Parser
                     String strAttName = strLinkOrCategory.substring(0, iIndex);
                     String strCleanedAttValue = cleanAttValue(strAttName, strLinkOrCategory.substring(iIndex + 1));
 
-                    if(strCleanedAttValue != null) metadata.add(strAttName, strCleanedAttValue);
+                    if(strCleanedAttValue != null)
+                        metadata.add(strAttName, strCleanedAttValue);
                 }
 
             }
@@ -900,7 +941,8 @@ public class WikipediaDumpParser implements Parser
                 // wir haben einen externen link - wir werfen das label weg
                 String strExternalLink = strMatch;
                 int iIndex = strMatch.indexOf(" ");
-                if(iIndex != -1) strExternalLink = strMatch.substring(0, iIndex);
+                if(iIndex != -1)
+                    strExternalLink = strMatch.substring(0, iIndex);
 
                 hsExternalLinks.add(strExternalLink);
             }

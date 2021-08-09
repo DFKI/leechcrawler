@@ -27,8 +27,10 @@ import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import de.dfki.km.leech.metadata.LeechMetadata;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
+import org.apache.tika.metadata.TikaCoreProperties;
 import org.apache.tika.parser.EmptyParser;
 import org.apache.tika.parser.ParseContext;
 import org.xml.sax.ContentHandler;
@@ -98,7 +100,7 @@ public class ExceptionUtils
      * 
      * @param e thhe exception occured during the crawl
      * @param strSourceId some referencing ID - in the case it is null, the method will get Metadata.SOURCE from the metadata or, in the case this is
-     *            also null, Metadata.RESOURCE_NAME_KEY
+     *            also null, LeechMetadata.RESOURCE_NAME_KEY
      * @param metadata the metadata object for the data entity. Will be enhanced with the error message and given to the EmptyParser invocation
      * @param crawlerContext the original crawler configuration object
      * @param context the original ParseContext
@@ -123,7 +125,7 @@ public class ExceptionUtils
             String strUrlOrSource4SubEntity = strSourceId;
 
             if(strUrlOrSource4SubEntity == null) strUrlOrSource4SubEntity = metadata.get(Metadata.SOURCE);
-            if(strUrlOrSource4SubEntity == null) strUrlOrSource4SubEntity = metadata.get(Metadata.RESOURCE_NAME_KEY);
+            if(strUrlOrSource4SubEntity == null) strUrlOrSource4SubEntity = metadata.get(LeechMetadata.RESOURCE_NAME_KEY);
             if(strUrlOrSource4SubEntity == null)
                 strUrlOrSource4SubEntity =
                         "no data entity id known - in the case of a sub-entity, set it inside the metadata at your implementation of getSubDataEntitiesInformation(..) "

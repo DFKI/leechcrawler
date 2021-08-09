@@ -47,8 +47,10 @@ import javax.mail.URLName;
 import javax.mail.internet.MimeMessage;
 import javax.mail.search.FlagTerm;
 
+import de.dfki.km.leech.metadata.LeechMetadata;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
+import org.apache.tika.metadata.TikaCoreProperties;
 import org.apache.tika.mime.MediaType;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
@@ -447,7 +449,7 @@ public class ImapCrawlerParser extends CrawlerParser
         URLName urlNameWithoutPassword =
                 new URLName(urlNameWithPassword.getProtocol(), urlNameWithPassword.getHost(), urlNameWithPassword.getPort(),
                         urlNameWithPassword.getFile(), urlNameWithPassword.getUsername(), "");
-        metadata.set(Metadata.RESOURCE_NAME_KEY, urlNameWithoutPassword.toString());
+        metadata.set(LeechMetadata.RESOURCE_NAME_KEY, urlNameWithoutPassword.toString());
         if(strMessageId == null)
             metadata.set("Content-Type", DatasourceMediaTypes.IMAPFOLDER.toString());
         else

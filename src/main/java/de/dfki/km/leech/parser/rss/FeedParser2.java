@@ -11,8 +11,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.tika.exception.TikaException;
-import org.apache.tika.io.CloseShieldInputStream;
+import org.apache.commons.io.input.CloseShieldInputStream;
 import org.apache.tika.metadata.Metadata;
+import org.apache.tika.metadata.TikaCoreProperties;
 import org.apache.tika.mime.MediaType;
 import org.apache.tika.parser.AbstractParser;
 import org.apache.tika.parser.ParseContext;
@@ -73,8 +74,8 @@ public class FeedParser2 extends AbstractParser
             String title = stripTags(feed.getTitleEx().getValue());
             String description = stripTags(feed.getDescriptionEx().getValue());
 
-            metadata.set(Metadata.TITLE, title);
-            metadata.set(Metadata.DESCRIPTION, description);
+            metadata.set(TikaCoreProperties.TITLE, title);
+            metadata.set(TikaCoreProperties.DESCRIPTION, description);
             // store the other fields in the metadata
 
             XHTMLContentHandler xhtml = new XHTMLContentHandler(handler, metadata);
@@ -115,10 +116,10 @@ public class FeedParser2 extends AbstractParser
 
 
                         metadata.add(Metadata.CONTENT_TYPE, strContentType);
-                        metadata.add(Metadata.SOURCE, strLink);
-                        metadata.add(Metadata.TITLE, stripTags(entry.getTitle()));
-                        metadata.add(Metadata.CREATOR, entry.getAuthor());
-                        metadata.add(Metadata.MODIFIED, new SimpleDateFormat("yyyy.MM.dd HH:mm:ss:SSS").format(entry.getPublishedDate()));
+                        metadata.add(TikaCoreProperties.SOURCE, strLink);
+                        metadata.add(TikaCoreProperties.TITLE, stripTags(entry.getTitle()));
+                        metadata.add(TikaCoreProperties.CREATOR, entry.getAuthor());
+                        metadata.add(TikaCoreProperties.MODIFIED, new SimpleDateFormat("yyyy.MM.dd HH:mm:ss:SSS").format(entry.getPublishedDate()));
 
 
                         xhtmlSubDoc.startElement("p");

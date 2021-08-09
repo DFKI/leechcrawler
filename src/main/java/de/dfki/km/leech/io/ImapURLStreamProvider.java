@@ -21,11 +21,13 @@ package de.dfki.km.leech.io;
 import com.sun.mail.imap.IMAPFolder;
 import com.sun.mail.imap.IMAPMessage;
 import de.dfki.km.leech.detect.DatasourceMediaTypes;
+import de.dfki.km.leech.metadata.LeechMetadata;
 import de.dfki.km.leech.parser.ImapCrawlerParser;
 import de.dfki.km.leech.parser.incremental.IncrementalCrawlingHistory;
 import de.dfki.km.leech.util.UrlUtil;
 import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
+import org.apache.tika.metadata.TikaCoreProperties;
 import org.apache.tika.parser.ParseContext;
 
 import javax.mail.*;
@@ -75,7 +77,7 @@ public class ImapURLStreamProvider extends URLStreamProvider
         // wenn das Teil schon gefüllt ist, dann machen wir gar nix
         if(!(metadata2fill.get(Metadata.SOURCE) == null || metadata2fill.get(IncrementalCrawlingHistory.dataEntityId) == null
                 || metadata2fill.get(IncrementalCrawlingHistory.dataEntityContentFingerprint) == null
-                || metadata2fill.get(Metadata.RESOURCE_NAME_KEY) == null || metadata2fill.get("Content-Type") == null))
+                || metadata2fill.get(LeechMetadata.RESOURCE_NAME_KEY) == null || metadata2fill.get("Content-Type") == null))
         {
             // alle sind bereits gesetzt
             return metadata2fill;
@@ -161,7 +163,7 @@ public class ImapURLStreamProvider extends URLStreamProvider
 
             URLName urlNameWithoutPassword = UrlUtil.urlNameWithoutPassword(urlNameWithPassword);
                     
-            metadata2fill.set(Metadata.RESOURCE_NAME_KEY, urlNameWithoutPassword.toString());
+            metadata2fill.set(LeechMetadata.RESOURCE_NAME_KEY, urlNameWithoutPassword.toString());
 
 
 

@@ -31,6 +31,9 @@ import de.dfki.inquisitor.file.FileUtilz;
 import de.dfki.inquisitor.processes.StopWatch;
 import de.dfki.inquisitor.text.StringUtils;
 import de.dfki.km.leech.metadata.LeechMetadata;
+import org.apache.tika.metadata.Office;
+import org.apache.tika.metadata.PagedText;
+import org.apache.tika.metadata.TikaCoreProperties;
 
 
 
@@ -188,7 +191,7 @@ public class IndexPostprocessor
         Set<String> sAttNames4BuzzwordCalculation = new HashSet<String>();
 
         sAttNames4BuzzwordCalculation.add(LeechMetadata.body);
-        sAttNames4BuzzwordCalculation.add(Metadata.TITLE);
+        sAttNames4BuzzwordCalculation.add(TikaCoreProperties.TITLE.getName());
 
         DocumentFrqClass documentFrqClass = null;
         if(!StringUtils.nullOrWhitespace(m_strNewField4FrqClass)) documentFrqClass = new DocumentFrqClass(lookupReader, LeechMetadata.body);
@@ -214,7 +217,7 @@ public class IndexPostprocessor
                         lookupReader);
 
             if(m_bEstimatePageCounts)
-                PageCountEstimator.addHeuristicDocPageCounts(iDocNo, doc2modify, Metadata.PAGE_COUNT.getName(), LeechMetadata.isHeuristicPageCount, LeechMetadata.body,
+                PageCountEstimator.addHeuristicDocPageCounts(iDocNo, doc2modify, PagedText.N_PAGES.getName(), LeechMetadata.isHeuristicPageCount, LeechMetadata.body,
                         reader4SourceIndex);
 
             if(!StringUtils.nullOrWhitespace(m_strNewField4FrqClass)) documentFrqClass.addDocumentFrequencyClass(iDocNo, doc2modify, m_strNewField4FrqClass);
