@@ -35,7 +35,15 @@ The version corresponds to the used Tika release version. Currently, these versi
 
 1.7, 1.8, 1.8.1, 1.10.0, 1.10.1, 1.11 (groupId: de.dfki.km, artifactId: leechcrawler)
 
-1.25.0, 1.25.1, 1.26.0, 1.27.0, 2.0.0 (groupId: de.dfki.sds, artifactId: leechcrawler)
+**Nowadays:** groupId: de.dfki.sds, artifactId: leechcrawler
+
+**Tika 1:** 1.25.0, 1.25.1, 1.26.0, 1.27.0
+
+Note that Tika changed the metadata attribute names from Tika 1 to Tika 2, e.g. 'title' is 'dc:title' now.
+
+**Tika 2:** 2.0.0 
+
+---
 
 **You can also [download](https://cloud.dfki.de/owncloud/index.php/s/CzEY8kyzx2pRAwF) all needed libraries in the case you don't use maven.**
 
