@@ -18,11 +18,7 @@ package de.dfki.km.leech.detect;
 
 
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-
+import de.dfki.km.leech.util.TikaUtils;
 import org.apache.tika.config.ServiceLoader;
 import org.apache.tika.detect.CompositeDetector;
 import org.apache.tika.detect.Detector;
@@ -34,7 +30,10 @@ import org.apache.tika.parser.CompositeParser;
 import org.apache.tika.parser.EmptyParser;
 import org.apache.tika.parser.Parser;
 
-import de.dfki.km.leech.util.TikaUtils;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 
 

@@ -18,13 +18,12 @@ package de.dfki.km.leech.util;
 
 
 
+import javax.mail.URLName;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
-
-import javax.mail.URLName;
 
 
 

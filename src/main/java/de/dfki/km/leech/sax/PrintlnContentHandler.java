@@ -20,13 +20,14 @@ package de.dfki.km.leech.sax;
 
 
 
-import java.util.logging.Logger;
-
 import de.dfki.km.leech.metadata.LeechMetadata;
-import org.apache.tika.metadata.Metadata;
-
 import de.dfki.km.leech.parser.incremental.IncrementalCrawlingHistory;
-import org.apache.tika.metadata.TikaCoreProperties;
+import org.apache.tika.metadata.Metadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
+
 
 
 
@@ -39,6 +40,7 @@ import org.apache.tika.metadata.TikaCoreProperties;
 public class PrintlnContentHandler extends DataSinkContentHandlerDecorator
 {
 
+    protected static final Logger log = LoggerFactory.getLogger(PrintlnContentHandler.class.getName());
 
     static public enum Verbosity {
         all, fulltext, metadata, nothing, title, titlePlusFulltext, titlePlusMetadata
@@ -177,7 +179,8 @@ public class PrintlnContentHandler extends DataSinkContentHandlerDecorator
         if(m_verbosity != Verbosity.nothing) strbMessage.append("\n");
 
 
-        if(m_verbosity != Verbosity.nothing) Logger.getLogger(PrintlnContentHandler.class.getName()).info(strbMessage.toString());
+        // if(m_verbosity != Verbosity.nothing) LoggerFactory.getLogger(PrintlnContentHandler.class.getName()).info(strbMessage.toString());
+        if(m_verbosity != Verbosity.nothing) log.info(strbMessage.toString());
 
 
         if(m_wrappedDataSinkContentHandler != null) m_wrappedDataSinkContentHandler.processErrorData(metadata);
@@ -231,7 +234,7 @@ public class PrintlnContentHandler extends DataSinkContentHandlerDecorator
             if(m_verbosity != Verbosity.nothing) strbMessage.append("\n");
 
 
-            if(m_verbosity != Verbosity.nothing) Logger.getLogger(PrintlnContentHandler.class.getName()).info(strbMessage.toString());
+            if(m_verbosity != Verbosity.nothing) LoggerFactory.getLogger(PrintlnContentHandler.class.getName()).info(strbMessage.toString());
 
         }
 
@@ -282,7 +285,7 @@ public class PrintlnContentHandler extends DataSinkContentHandlerDecorator
             if(m_verbosity != Verbosity.nothing) strbMessage.append("\n");
 
 
-            if(m_verbosity != Verbosity.nothing) Logger.getLogger(PrintlnContentHandler.class.getName()).info(strbMessage.toString());
+            if(m_verbosity != Verbosity.nothing) LoggerFactory.getLogger(PrintlnContentHandler.class.getName()).info(strbMessage.toString());
 
         }
 
@@ -328,7 +331,7 @@ public class PrintlnContentHandler extends DataSinkContentHandlerDecorator
             if(m_verbosity != Verbosity.nothing) strbMessage.append("\n");
 
 
-            if(m_verbosity != Verbosity.nothing) Logger.getLogger(PrintlnContentHandler.class.getName()).info(strbMessage.toString());
+            if(m_verbosity != Verbosity.nothing) LoggerFactory.getLogger(PrintlnContentHandler.class.getName()).info(strbMessage.toString());
 
         }
 

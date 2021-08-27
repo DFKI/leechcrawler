@@ -23,18 +23,16 @@ package de.dfki.km.leech.detect;
 
 
 
-import java.io.IOException;
-import java.io.InputStream;
-
-import javax.mail.URLName;
-
 import de.dfki.km.leech.metadata.LeechMetadata;
+import de.dfki.km.leech.util.UrlUtil;
 import org.apache.tika.detect.Detector;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.metadata.TikaCoreProperties;
 import org.apache.tika.mime.MediaType;
 
-import de.dfki.km.leech.util.UrlUtil;
+import javax.mail.URLName;
+import java.io.IOException;
+import java.io.InputStream;
 
 
 

@@ -23,16 +23,14 @@ package de.dfki.km.leech.config;
 
 
 
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import de.dfki.km.leech.util.CookieManager;
-import org.apache.tika.parser.ParseContext;
-import org.xml.sax.ContentHandler;
-
 import de.dfki.km.leech.parser.filter.URLFilter;
 import de.dfki.km.leech.parser.incremental.IncrementalCrawlingHistory;
+import de.dfki.km.leech.util.CookieManager;
+import org.apache.tika.parser.ParseContext;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.ContentHandler;
+
+import java.util.Map;
 
 
 
@@ -264,7 +262,7 @@ public class CrawlerContext
             }
             catch (InterruptedException e)
             {
-                Logger.getLogger(CrawlerContext.class.getName()).log(Level.SEVERE, "Error", e);
+                LoggerFactory.getLogger(CrawlerContext.class.getName()).error("Error", e);
             }
         }
     }

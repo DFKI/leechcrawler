@@ -2,6 +2,26 @@ package de.dfki.km.leech.lucene;
 
 
 
+import de.dfki.inquisitor.collections.MultiValueHashMap;
+import de.dfki.inquisitor.processes.StopWatch;
+import de.dfki.inquisitor.text.StringUtils;
+import de.dfki.km.leech.Leech;
+import de.dfki.km.leech.config.CrawlerContext;
+import de.dfki.km.leech.lucene.basic.FieldConfig;
+import de.dfki.km.leech.parser.wikipedia.WikipediaDumpParser.WikipediaDumpParserConfig;
+import de.dfki.km.leech.sax.CrawlReportContentHandler;
+import de.dfki.km.leech.sax.PrintlnContentHandler;
+import de.dfki.km.leech.sax.PrintlnContentHandler.Verbosity;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.IndexWriterConfig.OpenMode;
+import org.apache.lucene.store.SimpleFSDirectory;
+import org.apache.tika.exception.TikaException;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.parser.ParseContext;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
+
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -9,29 +29,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Logger;
-
-import de.dfki.km.leech.lucene.basic.FieldConfig;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.index.IndexWriterConfig.OpenMode;
-import org.apache.lucene.store.SimpleFSDirectory;
-import org.apache.lucene.util.Version;
-import org.apache.tika.exception.TikaException;
-import org.apache.tika.metadata.Metadata;
-import org.apache.tika.parser.ParseContext;
-import org.xml.sax.SAXException;
-
-import de.dfki.inquisitor.collections.MultiValueHashMap;
-// import de.dfki.inquisitor.lucene.FieldConfig;
-import de.dfki.inquisitor.processes.StopWatch;
-import de.dfki.inquisitor.text.StringUtils;
-import de.dfki.km.leech.Leech;
-import de.dfki.km.leech.config.CrawlerContext;
-import de.dfki.km.leech.parser.wikipedia.WikipediaDumpParser.WikipediaDumpParserConfig;
-import de.dfki.km.leech.sax.CrawlReportContentHandler;
-import de.dfki.km.leech.sax.PrintlnContentHandler;
-import de.dfki.km.leech.sax.PrintlnContentHandler.Verbosity;
 
 
 
@@ -76,16 +73,16 @@ public class LuceneIndexCreator
             lUrls2Crawl = null;
 
             bOnlyPostProcessing = true;
-            Logger.getLogger(LuceneIndexCreator.class.getName()).info(
+            LoggerFactory.getLogger(LuceneIndexCreator.class.getName()).info(
                     "Will perform only postprocessing (buzzwords and/or calculated page counts, as configured) on " + strLuceneIndexPath);
 
         }
         else
         {
-            Logger.getLogger(LuceneIndexCreator.class.getName()).info("Crawling " + lUrls2Crawl);
+            LoggerFactory.getLogger(LuceneIndexCreator.class.getName()).info("Crawling " + lUrls2Crawl);
 
             if(hsStaticAttValuePairs.keySize() > 0)
-                Logger.getLogger(LuceneIndexCreator.class.getName()).info("Will add static attribute value pairs to each document: " + hsStaticAttValuePairs);
+                LoggerFactory.getLogger(LuceneIndexCreator.class.getName()).info("Will add static attribute value pairs to each document: " + hsStaticAttValuePairs);
 
 
 
@@ -135,14 +132,14 @@ public class LuceneIndexCreator
 
             if(indexWriter != null)
             {
-                Logger.getLogger(LuceneIndexCreator.class.getName()).info("Will commit and merge");
+                LoggerFactory.getLogger(LuceneIndexCreator.class.getName()).info("Will commit and merge");
                 indexWriter.commit();
                 indexWriter.forceMerge(1, true);
                 indexWriter.close();
 
                 StopWatch.stopAndLogDistance(startTime, LuceneIndexCreator.class);
 
-                Logger.getLogger(LuceneIndexCreator.class.getName()).info("..finished crawling " + lUrls2Crawl);
+                LoggerFactory.getLogger(LuceneIndexCreator.class.getName()).info("..finished crawling " + lUrls2Crawl);
             }
         }
 
@@ -186,7 +183,7 @@ public class LuceneIndexCreator
         if(bPerformPostProcessing)
             postprocessor.postprocessIndex(strLuceneIndexPath, new LeechDefaultFieldConfig(), llLookupIndexPaths.toArray(new String[0]));
         else
-            Logger.getLogger(LuceneIndexCreator.class.getName()).info("no postprocessing necessary");
+            LoggerFactory.getLogger(LuceneIndexCreator.class.getName()).info("no postprocessing necessary");
     }
 
 
@@ -302,7 +299,7 @@ public class LuceneIndexCreator
 
         }
 
-        Logger.getLogger(LuceneIndexCreator.class.getName()).info("crawling depth is " + iCrawlingDepth);
+        LoggerFactory.getLogger(LuceneIndexCreator.class.getName()).info("crawling depth is " + iCrawlingDepth);
 
 
         CrawlerContext crawlerContext = new CrawlerContext().setCrawlingDepth(iCrawlingDepth);

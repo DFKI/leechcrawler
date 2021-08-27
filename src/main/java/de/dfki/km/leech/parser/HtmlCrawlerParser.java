@@ -18,20 +18,16 @@ package de.dfki.km.leech.parser;
 
 
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Set;
-import java.util.logging.Logger;
-
-import javax.mail.URLName;
-
+import de.dfki.inquisitor.collections.MultiValueHashMap;
+import de.dfki.inquisitor.text.StringUtils;
+import de.dfki.km.leech.Leech;
+import de.dfki.km.leech.config.CrawlerContext;
+import de.dfki.km.leech.config.HtmlCrawlerContext;
+import de.dfki.km.leech.io.URLStreamProvider;
+import de.dfki.km.leech.parser.incremental.IncrementalCrawlingHistory;
+import de.dfki.km.leech.parser.incremental.IncrementalCrawlingHistory.Exist;
+import de.dfki.km.leech.parser.incremental.IncrementalCrawlingParser;
+import de.dfki.km.leech.util.UrlUtil;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MediaType;
@@ -41,20 +37,16 @@ import org.apache.tika.parser.Parser;
 import org.apache.tika.parser.html.HtmlParser;
 import org.apache.tika.sax.Link;
 import org.apache.tika.sax.LinkContentHandler;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
-import de.dfki.inquisitor.collections.MultiValueHashMap;
-import de.dfki.inquisitor.processes.StopWatch;
-import de.dfki.inquisitor.text.StringUtils;
-import de.dfki.km.leech.Leech;
-import de.dfki.km.leech.config.CrawlerContext;
-import de.dfki.km.leech.config.HtmlCrawlerContext;
-import de.dfki.km.leech.io.URLStreamProvider;
-import de.dfki.km.leech.parser.incremental.IncrementalCrawlingHistory;
-import de.dfki.km.leech.parser.incremental.IncrementalCrawlingParser;
-import de.dfki.km.leech.parser.incremental.IncrementalCrawlingHistory.Exist;
-import de.dfki.km.leech.util.UrlUtil;
+import javax.mail.URLName;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.*;
 
 
 
@@ -102,7 +94,7 @@ public class HtmlCrawlerParser extends CrawlerParser
         if(strContainerURL.startsWith("file:") && !strURL2Check.startsWith("file:") && !htmlCrawlerContext.getFollowRemoteLinksIfLocalFileCrawl())
         {
             if(crawlerContext.getVerbose())
-                Logger.getLogger(CrawlerParser.class.getName()).info(
+                LoggerFactory.getLogger(CrawlerParser.class.getName()).info(
                         "URL " + strURL2Check + " is a remote link and thus will not followed while crawling a local html file (as configured). Skipping.");
 
             return false;
@@ -112,7 +104,7 @@ public class HtmlCrawlerParser extends CrawlerParser
         if(!crawlerContext.getURLFilter().accept(strURL2Check))
         {
             if(crawlerContext.getVerbose())
-                Logger.getLogger(CrawlerParser.class.getName()).info("URL " + strURL2Check + " is outside the URL constraints for this data source. Skipping.");
+                LoggerFactory.getLogger(CrawlerParser.class.getName()).info("URL " + strURL2Check + " is outside the URL constraints for this data source. Skipping.");
 
             return false;
         }

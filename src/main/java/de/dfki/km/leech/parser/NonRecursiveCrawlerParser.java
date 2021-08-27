@@ -2,16 +2,15 @@ package de.dfki.km.leech.parser;
 
 
 
-import java.io.InputStream;
-import java.util.Map.Entry;
-
+import de.dfki.inquisitor.collections.MultiValueHashMap;
+import de.dfki.km.leech.SubDataEntityContentHandler;
+import de.dfki.km.leech.metadata.LeechMetadata;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
 import org.xml.sax.ContentHandler;
 
-import de.dfki.inquisitor.collections.MultiValueHashMap;
-import de.dfki.km.leech.SubDataEntityContentHandler;
-import de.dfki.km.leech.metadata.LeechMetadata;
+import java.io.InputStream;
+import java.util.Map.Entry;
 
 
 

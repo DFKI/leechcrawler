@@ -23,6 +23,21 @@ package de.dfki.km.leech.parser;
 
 
 
+import de.dfki.inquisitor.collections.MultiValueHashMap;
+import de.dfki.km.leech.Leech;
+import de.dfki.km.leech.config.CrawlerContext;
+import de.dfki.km.leech.config.DirectoryCrawlerContext;
+import de.dfki.km.leech.detect.DatasourceMediaTypes;
+import de.dfki.km.leech.io.URLStreamProvider;
+import de.dfki.km.leech.util.OSUtils;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.mime.MediaType;
+import org.apache.tika.parser.ParseContext;
+import org.apache.tika.parser.Parser;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.ContentHandler;
+
+import javax.mail.URLName;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -33,24 +48,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.concurrent.SynchronousQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.mail.URLName;
-
-import org.apache.tika.metadata.Metadata;
-import org.apache.tika.mime.MediaType;
-import org.apache.tika.parser.ParseContext;
-import org.apache.tika.parser.Parser;
-import org.xml.sax.ContentHandler;
-
-import de.dfki.inquisitor.collections.MultiValueHashMap;
-import de.dfki.km.leech.Leech;
-import de.dfki.km.leech.config.CrawlerContext;
-import de.dfki.km.leech.config.DirectoryCrawlerContext;
-import de.dfki.km.leech.detect.DatasourceMediaTypes;
-import de.dfki.km.leech.io.URLStreamProvider;
-import de.dfki.km.leech.util.OSUtils;
 
 
 
@@ -84,7 +81,7 @@ public class DirectoryCrawlerParser extends CrawlerParser
             }
             catch (InterruptedException e)
             {
-                Logger.getLogger(DirectoryCrawlerParser.OneAfterOneIterator.class.getName()).log(Level.SEVERE, "Error", e);
+                LoggerFactory.getLogger(DirectoryCrawlerParser.OneAfterOneIterator.class.getName()).error("Error", e);
             }
 
         }
@@ -107,7 +104,7 @@ public class DirectoryCrawlerParser extends CrawlerParser
             }
             catch (InterruptedException e)
             {
-                Logger.getLogger(DirectoryCrawlerParser.OneAfterOneIterator.class.getName()).log(Level.SEVERE, "Error", e);
+                LoggerFactory.getLogger(DirectoryCrawlerParser.OneAfterOneIterator.class.getName()).error("Error", e);
             }
 
 
@@ -169,7 +166,7 @@ public class DirectoryCrawlerParser extends CrawlerParser
             if(!directoryCrawlerContext.getFollowSymbolicLinks() && !strAbsolutePath.equals(strCanonicalPath))
             {
                 if(crawlerContext.getVerbose())
-                    Logger.getLogger(DirectoryCrawlerParser.class.getName()).info(
+                    LoggerFactory.getLogger(DirectoryCrawlerParser.class.getName()).info(
                             "File " + fFile2Check.toURI() + " is a symbolic link that should be ignored. Skipping.");
                 return null;
             }
@@ -180,7 +177,7 @@ public class DirectoryCrawlerParser extends CrawlerParser
         }
         catch (IOException e)
         {
-            Logger.getLogger(DirectoryCrawlerParser.class.getName()).log(Level.WARNING,
+            LoggerFactory.getLogger(DirectoryCrawlerParser.class.getName()).warn(
                     "Unable to resolve file to its canonical form, continuing with original file: " + fFile2Check, e);
         }
 
@@ -188,7 +185,7 @@ public class DirectoryCrawlerParser extends CrawlerParser
         if(!crawlerContext.getURLFilter().accept(finalFile.toURI().toString()))
         {
             if(crawlerContext.getVerbose())
-                Logger.getLogger(CrawlerParser.class.getName()).info(
+                LoggerFactory.getLogger(CrawlerParser.class.getName()).info(
                         "File " + finalFile.toURI() + " is outside the URL constraints for this data source. Skipping.");
             return null;
         }
@@ -208,7 +205,7 @@ public class DirectoryCrawlerParser extends CrawlerParser
         if(!finalFile.canRead())
         {
             if(crawlerContext.getVerbose())
-                Logger.getLogger(DirectoryCrawlerParser.class.getName()).info("Can't read file " + finalFile.toURI() + ". Skipping.");
+                LoggerFactory.getLogger(DirectoryCrawlerParser.class.getName()).info("Can't read file " + finalFile.toURI() + ". Skipping.");
             return null;
         }
 

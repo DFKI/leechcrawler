@@ -18,20 +18,19 @@ package de.dfki.km.leech.sax;
 
 
 
+import de.dfki.inquisitor.collections.CollectionUtilz;
+import de.dfki.inquisitor.collections.MultiValueTreeMap;
+import de.dfki.inquisitor.processes.StopWatch;
+import de.dfki.inquisitor.text.StringUtils;
+import org.apache.tika.metadata.Metadata;
+import org.slf4j.LoggerFactory;
+
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map.Entry;
-import java.util.logging.Logger;
-
-import org.apache.tika.metadata.Metadata;
-
-import de.dfki.inquisitor.collections.CollectionUtilz;
-import de.dfki.inquisitor.collections.MultiValueTreeMap;
-import de.dfki.inquisitor.processes.StopWatch;
-import de.dfki.inquisitor.text.StringUtils;
 
 
 
@@ -215,7 +214,7 @@ public class CrawlReportContentHandler extends DataSinkContentHandlerDecorator
     {
         if(m_wrappedDataSinkContentHandler != null) m_wrappedDataSinkContentHandler.crawlFinished();
 
-        Logger.getLogger(CrawlReportContentHandler.class.getName()).info("Crawl finished:\n" + getReport().toString());
+        LoggerFactory.getLogger(CrawlReportContentHandler.class.getName()).info("Crawl finished:\n" + getReport().toString());
     }
 
 
@@ -434,7 +433,7 @@ public class CrawlReportContentHandler extends DataSinkContentHandlerDecorator
 
         if(System.currentTimeMillis() >= m_lastReportTime + m_lCyclicReportMilliseconds)
         {
-            Logger.getLogger(CrawlReportContentHandler.class.getName()).info(m_crawlReport.toString());
+            LoggerFactory.getLogger(CrawlReportContentHandler.class.getName()).info(m_crawlReport.toString());
 
             m_lastReportTime = System.currentTimeMillis();
         }

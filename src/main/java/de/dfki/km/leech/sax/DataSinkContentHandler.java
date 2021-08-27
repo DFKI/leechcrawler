@@ -26,7 +26,6 @@ import de.dfki.km.leech.parser.incremental.IncrementalCrawlingParser;
 import de.dfki.km.leech.util.UrlUtil;
 import org.apache.tika.metadata.HttpHeaders;
 import org.apache.tika.metadata.Metadata;
-import org.apache.tika.metadata.TikaCoreProperties;
 import org.apache.tika.sax.BodyContentHandler;
 import org.apache.tika.sax.ContentHandlerDecorator;
 import org.apache.tika.sax.WriteOutContentHandler;

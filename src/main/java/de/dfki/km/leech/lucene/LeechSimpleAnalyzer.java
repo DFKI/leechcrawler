@@ -1,11 +1,9 @@
 package de.dfki.km.leech.lucene;
 
-import java.io.Reader;
+
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.LowerCaseFilter;
-import org.apache.lucene.analysis.core.LowerCaseTokenizer;
-import org.apache.lucene.util.Version;
 
 
 

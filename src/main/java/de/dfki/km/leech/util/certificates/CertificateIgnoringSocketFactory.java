@@ -21,20 +21,21 @@
 
 package de.dfki.km.leech.util.certificates;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
+import org.slf4j.LoggerFactory;
 
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import java.io.File;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 
 
 
@@ -65,7 +66,7 @@ public class CertificateIgnoringSocketFactory extends SSLSocketFactory
         }
         catch (Exception e)
         {
-            Logger.getLogger(CertificateIgnoringSocketFactory.class.getName()).log(Level.SEVERE, "Error", e);
+            LoggerFactory.getLogger(CertificateIgnoringSocketFactory.class.getName()).error("Error", e);
         }
     }
 
@@ -89,7 +90,7 @@ public class CertificateIgnoringSocketFactory extends SSLSocketFactory
         }
         catch (Exception e)
         {
-            Logger.getLogger(CertificateIgnoringSocketFactory.class.getName()).log(Level.SEVERE, "Error", e);
+            LoggerFactory.getLogger(CertificateIgnoringSocketFactory.class.getName()).error("Error", e);
         }
     }
 

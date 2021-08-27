@@ -3,22 +3,18 @@ package de.dfki.km.leech.lucene.basic;
 
 
 // import de.dfki.inquisitor.lucene.DynamicFieldType;
+
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
-import org.apache.lucene.index.IndexOptions;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.MultiFields;
-import org.apache.lucene.index.Terms;
-import org.apache.lucene.index.TermsEnum;
+import org.apache.lucene.index.*;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
+import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 
@@ -48,7 +44,7 @@ public class DocumentFrqClass implements Closeable
 
         try
         {
-            Logger.getLogger(DocumentFrqClass.class.getName()).info("load overall term index frequencies");
+            LoggerFactory.getLogger(DocumentFrqClass.class.getName()).info("load overall term index frequencies");
 
 
             // OLD: m_mapDB = DBMaker.newTempFileDB().deleteFilesAfterClose().closeOnJvmShutdown().transactionDisable().make();
@@ -82,12 +78,12 @@ public class DocumentFrqClass implements Closeable
             }
 
 
-            Logger.getLogger(DocumentFrqClass.class.getName()).info("...finished");
+            LoggerFactory.getLogger(DocumentFrqClass.class.getName()).info("...finished");
 
         }
         catch (Throwable e)
         {
-            Logger.getLogger(DocumentFrqClass.class.getName()).log(Level.SEVERE, "Error", e);
+            LoggerFactory.getLogger(DocumentFrqClass.class.getName()).error("Error", e);
         }
 
     }

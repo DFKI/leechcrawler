@@ -5,10 +5,13 @@ package de.dfki.km.leech.lucene.basic;
 
 // import de.dfki.inquisitor.lucene.DynamicFieldType;
 // import de.dfki.inquisitor.lucene.FieldConfig;
+
 import de.dfki.inquisitor.text.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
 import org.apache.lucene.util.Version;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -17,8 +20,6 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 
@@ -26,7 +27,7 @@ import java.util.logging.Logger;
 public class LuceneAnalyzerFactory
 {
 
-    protected static Logger m_logger = Logger.getLogger(LuceneAnalyzerFactory.class.getName());
+    protected static Logger m_logger = LoggerFactory.getLogger(LuceneAnalyzerFactory.class.getName());
 
 
 
@@ -57,7 +58,7 @@ public class LuceneAnalyzerFactory
             }
             catch (Exception e)
             {
-                Logger.getLogger(LuceneAnalyzerFactory.class.getName()).warning("could not create analyzer from config of field '" + strFieldName + "'");
+                LoggerFactory.getLogger(LuceneAnalyzerFactory.class.getName()).warn("could not create analyzer from config of field '" + strFieldName + "'");
             }
         }
 
@@ -93,7 +94,7 @@ public class LuceneAnalyzerFactory
                     constructor = analyzerClass.getConstructor(parameterClasses);
 
 
-                    m_logger.finer("creating Analyzer " + analyzerClassName + " with stopword file " + userGivenStopWordFileName);
+                    m_logger.debug("creating Analyzer " + analyzerClassName + " with stopword file " + userGivenStopWordFileName);
                     InputStreamReader inReader = new InputStreamReader(new FileInputStream(userGivenStopWordFileName), "UTF-8");
                     BufferedReader reader = new BufferedReader(inReader);
                     ArrayList<String> wordList = new ArrayList<String>();
@@ -113,7 +114,7 @@ public class LuceneAnalyzerFactory
                 }
                 catch (NoSuchMethodException e)
                 {
-                    m_logger.warning("Analyzer '" + analyzerClassName + "' cannot be parameterized with stop word list. Specified stop word list will be ignored");
+                    m_logger.warn("Analyzer '" + analyzerClassName + "' cannot be parameterized with stop word list. Specified stop word list will be ignored");
                     constructor = analyzerClass.getConstructor(new Class[0]);
                     Object[] parameters = {};
                     analyzer = (Analyzer) constructor.newInstance(parameters);
@@ -122,7 +123,7 @@ public class LuceneAnalyzerFactory
             }
             else
             {
-                m_logger.finer("creating Analyzer " + analyzerClassName + " without stopword file");
+                m_logger.debug("creating Analyzer " + analyzerClassName + " without stopword file");
 
 
                 try
@@ -148,7 +149,7 @@ public class LuceneAnalyzerFactory
         }
         catch (Exception e)
         {
-            m_logger.log(Level.WARNING, "Unable to instantiate Analyzer '" + analyzerClassName + "'.", e);
+            m_logger.warn("Unable to instantiate Analyzer '" + analyzerClassName + "'.", e);
             throw new Exception("Unable to instantiate Analyzer '" + analyzerClassName + "'.", e);
         }
     }

@@ -18,11 +18,12 @@ package de.dfki.km.leech.parser;
 
 
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Iterator;
-import java.util.LinkedList;
-
+import de.dfki.inquisitor.collections.MultiValueHashMap;
+import de.dfki.km.leech.config.CrawlerContext;
+import de.dfki.km.leech.parser.incremental.IncrementalCrawlingParser;
+import de.dfki.km.leech.sax.DataSinkContentHandler;
+import de.dfki.km.leech.util.ExceptionUtils;
+import de.dfki.km.leech.util.TikaUtils;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
@@ -31,12 +32,10 @@ import org.apache.tika.parser.Parser;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
-import de.dfki.inquisitor.collections.MultiValueHashMap;
-import de.dfki.km.leech.config.CrawlerContext;
-import de.dfki.km.leech.parser.incremental.IncrementalCrawlingParser;
-import de.dfki.km.leech.sax.DataSinkContentHandler;
-import de.dfki.km.leech.util.ExceptionUtils;
-import de.dfki.km.leech.util.TikaUtils;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 
 

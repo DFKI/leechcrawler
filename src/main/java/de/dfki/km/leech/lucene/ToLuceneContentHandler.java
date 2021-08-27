@@ -33,6 +33,7 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.store.SimpleFSDirectory;
 import org.apache.tika.metadata.Metadata;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,8 +45,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 
@@ -95,7 +94,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
                         }
                     } catch (Exception e)
                     {
-                        Logger.getLogger(ToLuceneContentHandler.DocConsumer.class.getName()).log(Level.WARNING,
+                        LoggerFactory.getLogger(ToLuceneContentHandler.DocConsumer.class.getName()).warn(
                                 "Error during writing a document to the index (lucene exception while addDocument) - will ignore it. This is a hint to a lucene bug." + llDocs);
                     }
                 }
@@ -104,7 +103,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
                 // NOP
             } catch (Exception e)
             {
-                Logger.getLogger(ToLuceneContentHandler.DocConsumer.class.getName()).log(Level.SEVERE, "Error", e);
+                LoggerFactory.getLogger(ToLuceneContentHandler.DocConsumer.class.getName()).error("Error", e);
             } finally
             {
                 try
@@ -112,7 +111,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
                     m_cyclicBarrier4DocConsumerThreads.await();
                 } catch (Exception e2)
                 {
-                    Logger.getLogger(ToLuceneContentHandler.DocConsumer.class.getName()).log(Level.SEVERE, "Error", e2);
+                    LoggerFactory.getLogger(ToLuceneContentHandler.DocConsumer.class.getName()).error("Error", e2);
                 }
             }
         }
@@ -248,8 +247,8 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
             if (field != null)
                 doc.add(field);
             else
-                Logger.getLogger(ToLuceneContentHandler.class.getName())
-                        .warning("Could not create lucene field for " + fieldName2Value.getKey() + ":" + fieldName2Value.getValue() + ". Will ignore it.");
+                LoggerFactory.getLogger(ToLuceneContentHandler.class.getName())
+                        .warn("Could not create lucene field for " + fieldName2Value.getKey() + ":" + fieldName2Value.getValue() + ". Will ignore it.");
         }
     }
 
@@ -293,7 +292,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
             if (llIndicesDirs2Merge.size() == 0)
                 return;
 
-            Logger.getLogger(ToLuceneContentHandler.class.getName()).info("Will merge " + llIndicesDirs2Merge.size() + " temporary indices to the final one.");
+            LoggerFactory.getLogger(ToLuceneContentHandler.class.getName()).info("Will merge " + llIndicesDirs2Merge.size() + " temporary indices to the final one.");
 
 
             m_initialLuceneWriter.addIndexes(llIndicesDirs2Merge.toArray(new Directory[0]));
@@ -304,7 +303,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
                 FileUtilz.deleteDirectory(new File(strTmpPath));
         } catch (Exception e)
         {
-            Logger.getLogger(ToLuceneContentHandler.class.getName()).log(Level.SEVERE, "Error", e);
+            LoggerFactory.getLogger(ToLuceneContentHandler.class.getName()).error("Error", e);
         }
     }
 
@@ -373,8 +372,8 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
                     if (field != null)
                         doc.add(field);
                     else
-                        Logger.getLogger(ToLuceneContentHandler.class.getName())
-                                .warning("Could not create lucene field for " + strFieldName + ":" + strValue + ". Will ignore it.");
+                        LoggerFactory.getLogger(ToLuceneContentHandler.class.getName())
+                                .warn("Could not create lucene field for " + strFieldName + ":" + strValue + ". Will ignore it.");
                 }
             }
 
@@ -388,8 +387,8 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
                         if (field != null)
                             doc.add(field);
                         else
-                            Logger.getLogger(ToLuceneContentHandler.class.getName())
-                                    .warning("Could not create lucene field for " + strFieldCopy + ":" + strValue + ". Will ignore it.");
+                            LoggerFactory.getLogger(ToLuceneContentHandler.class.getName())
+                                    .warn("Could not create lucene field for " + strFieldCopy + ":" + strValue + ". Will ignore it.");
                     }
                 }
         }
@@ -418,8 +417,8 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
                     if (field != null)
                         doc.add(field);
                     else
-                        Logger.getLogger(ToLuceneContentHandler.class.getName())
-                                .warning("Could not create lucene field for " + strTargetAtt + ":" + strNewValue + ". Will ignore it.");
+                        LoggerFactory.getLogger(ToLuceneContentHandler.class.getName())
+                                .warn("Could not create lucene field for " + strTargetAtt + ":" + strNewValue + ". Will ignore it.");
 
                     break;
                 }
@@ -513,7 +512,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
             fOurTmpDir = Paths.get(parentDir.getAbsolutePath() + "/leechTmp/" + UUID.randomUUID().toString().replaceAll("\\W", "_"));
         }
 
-        Logger.getLogger(ToLuceneContentHandler.class.getName())
+        LoggerFactory.getLogger(ToLuceneContentHandler.class.getName())
                 .info("Current index exceeds " + m_iSplitIndexDocumentCount + " documents. Will create another temporary one under " + fOurTmpDir);
 
 
@@ -623,7 +622,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
     @Override
     protected void init()
     {
-        Logger.getLogger(ToLuceneContentHandler.class.getName()).info("Will write crawled data into " + m_luceneWriter.getDirectory().toString());
+        LoggerFactory.getLogger(ToLuceneContentHandler.class.getName()).info("Will write crawled data into " + m_luceneWriter.getDirectory().toString());
 
         ensureConsumerThreadsRunning();
     }
@@ -656,7 +655,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
             m_initialLuceneWriter.updateDocument(new Term(IncrementalCrawlingHistory.dataEntityId, metadata.get(IncrementalCrawlingHistory.dataEntityId)), luceneDocument);
         } catch (Exception e)
         {
-            Logger.getLogger(ToLuceneContentHandler.class.getName()).log(Level.SEVERE, "Error during writing into the index", e);
+            LoggerFactory.getLogger(ToLuceneContentHandler.class.getName()).error("Error during writing into the index", e);
         }
     }
 
@@ -721,7 +720,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
             }
         } catch (Exception e)
         {
-            Logger.getLogger(ToLuceneContentHandler.class.getName()).log(Level.SEVERE, "Error", e);
+            LoggerFactory.getLogger(ToLuceneContentHandler.class.getName()).error("Error", e);
         }
     }
 
@@ -783,7 +782,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
             }
         } catch (Exception e)
         {
-            Logger.getLogger(ToLuceneContentHandler.class.getName()).log(Level.SEVERE, "Error", e);
+            LoggerFactory.getLogger(ToLuceneContentHandler.class.getName()).error("Error", e);
         }
     }
 
@@ -809,7 +808,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
             m_initialLuceneWriter.deleteDocuments(new Term(IncrementalCrawlingHistory.dataEntityId, metadata.get(IncrementalCrawlingHistory.dataEntityId)));
         } catch (Exception e)
         {
-            Logger.getLogger(ToLuceneContentHandler.class.getName()).log(Level.SEVERE, "Error during writing into the index", e);
+            LoggerFactory.getLogger(ToLuceneContentHandler.class.getName()).error("Error during writing into the index", e);
         }
     }
 

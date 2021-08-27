@@ -3,13 +3,14 @@ package de.dfki.km.leech.lucene.basic;
 
 
 import de.dfki.inquisitor.collections.TwoValuesBox;
-// import de.dfki.inquisitor.lucene.FieldConfig;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.index.*;
 import org.apache.lucene.index.DocValuesType;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexableField;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.*;
 import org.apache.lucene.search.MultiTermQuery.RewriteMethod;

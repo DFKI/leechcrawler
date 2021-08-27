@@ -2,16 +2,15 @@ package de.dfki.km.leech.parser.rss;
 
 
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.apache.tika.exception.TikaException;
+import com.rometools.rome.feed.synd.SyndEntry;
+import com.rometools.rome.feed.synd.SyndFeed;
+import com.rometools.rome.io.SyndFeedInput;
+import de.dfki.km.leech.config.CrawlerContext;
+import de.dfki.km.leech.parser.incremental.IncrementalCrawlingHistory;
+import de.dfki.km.leech.parser.incremental.IncrementalCrawlingParser;
+import de.dfki.km.leech.util.TikaUtils;
 import org.apache.commons.io.input.CloseShieldInputStream;
+import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.metadata.TikaCoreProperties;
 import org.apache.tika.mime.MediaType;
@@ -22,14 +21,13 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import com.rometools.rome.feed.synd.SyndEntry;
-import com.rometools.rome.feed.synd.SyndFeed;
-import com.rometools.rome.io.SyndFeedInput;
-
-import de.dfki.km.leech.config.CrawlerContext;
-import de.dfki.km.leech.parser.incremental.IncrementalCrawlingHistory;
-import de.dfki.km.leech.parser.incremental.IncrementalCrawlingParser;
-import de.dfki.km.leech.util.TikaUtils;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 
 
@@ -74,8 +72,8 @@ public class FeedParser2 extends AbstractParser
             String title = stripTags(feed.getTitleEx().getValue());
             String description = stripTags(feed.getDescriptionEx().getValue());
 
-            metadata.set(TikaCoreProperties.TITLE, title);
-            metadata.set(TikaCoreProperties.DESCRIPTION, description);
+            metadata.set(TikaCoreProperties.TITLE.getName(), title);
+            metadata.set(TikaCoreProperties.DESCRIPTION.getName(), description);
             // store the other fields in the metadata
 
             XHTMLContentHandler xhtml = new XHTMLContentHandler(handler, metadata);
@@ -116,10 +114,10 @@ public class FeedParser2 extends AbstractParser
 
 
                         metadata.add(Metadata.CONTENT_TYPE, strContentType);
-                        metadata.add(TikaCoreProperties.SOURCE, strLink);
-                        metadata.add(TikaCoreProperties.TITLE, stripTags(entry.getTitle()));
-                        metadata.add(TikaCoreProperties.CREATOR, entry.getAuthor());
-                        metadata.add(TikaCoreProperties.MODIFIED, new SimpleDateFormat("yyyy.MM.dd HH:mm:ss:SSS").format(entry.getPublishedDate()));
+                        metadata.add(TikaCoreProperties.SOURCE.getName(), strLink);
+                        metadata.add(TikaCoreProperties.TITLE.getName(), stripTags(entry.getTitle()));
+                        metadata.add(TikaCoreProperties.CREATOR.getName(), entry.getAuthor());
+                        metadata.add(TikaCoreProperties.MODIFIED.getName(), new SimpleDateFormat("yyyy.MM.dd HH:mm:ss:SSS").format(entry.getPublishedDate()));
 
 
                         xhtmlSubDoc.startElement("p");

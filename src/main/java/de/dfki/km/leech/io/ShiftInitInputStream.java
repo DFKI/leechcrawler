@@ -23,10 +23,10 @@ package de.dfki.km.leech.io;
 
 
 
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 
@@ -80,7 +80,7 @@ public abstract class ShiftInitInputStream extends InputStream
         }
         catch (Exception e)
         {
-            Logger.getLogger(ShiftInitInputStream.class.getName()).log(Level.SEVERE, "Error", e);
+            LoggerFactory.getLogger(ShiftInitInputStream.class.getName()).error("Error", e);
         }
 
 
@@ -129,7 +129,7 @@ public abstract class ShiftInitInputStream extends InputStream
         }
         catch (Exception e)
         {
-            Logger.getLogger(ShiftInitInputStream.class.getName()).log(Level.SEVERE, "Error", e);
+            LoggerFactory.getLogger(ShiftInitInputStream.class.getName()).error("Error", e);
         }
     }
 
@@ -150,7 +150,7 @@ public abstract class ShiftInitInputStream extends InputStream
         }
         catch (Exception e)
         {
-            Logger.getLogger(ShiftInitInputStream.class.getName()).log(Level.SEVERE, "Error", e);
+            LoggerFactory.getLogger(ShiftInitInputStream.class.getName()).error("Error", e);
         }
 
 
@@ -174,7 +174,7 @@ public abstract class ShiftInitInputStream extends InputStream
         }
         catch (Exception e)
         {
-            Logger.getLogger(ShiftInitInputStream.class.getName()).log(Level.SEVERE, "Error", e);
+            LoggerFactory.getLogger(ShiftInitInputStream.class.getName()).error("Error", e);
         }
 
 
@@ -197,7 +197,7 @@ public abstract class ShiftInitInputStream extends InputStream
         }
         catch (Exception e)
         {
-            Logger.getLogger(ShiftInitInputStream.class.getName()).log(Level.SEVERE, "Error", e);
+            LoggerFactory.getLogger(ShiftInitInputStream.class.getName()).error("Error", e);
         }
 
 
@@ -221,7 +221,7 @@ public abstract class ShiftInitInputStream extends InputStream
         }
         catch (Exception e)
         {
-            Logger.getLogger(ShiftInitInputStream.class.getName()).log(Level.SEVERE, "Error", e);
+            LoggerFactory.getLogger(ShiftInitInputStream.class.getName()).error("Error", e);
         }
 
 
@@ -245,7 +245,7 @@ public abstract class ShiftInitInputStream extends InputStream
         }
         catch (Exception e)
         {
-            Logger.getLogger(ShiftInitInputStream.class.getName()).log(Level.SEVERE, "Error", e);
+            LoggerFactory.getLogger(ShiftInitInputStream.class.getName()).error("Error", e);
         }
 
 
@@ -269,7 +269,7 @@ public abstract class ShiftInitInputStream extends InputStream
         }
         catch (Exception e)
         {
-            Logger.getLogger(ShiftInitInputStream.class.getName()).log(Level.SEVERE, "Error", e);
+            LoggerFactory.getLogger(ShiftInitInputStream.class.getName()).error("Error", e);
         }
 
 

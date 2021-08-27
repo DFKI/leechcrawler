@@ -2,25 +2,19 @@ package de.dfki.km.leech.parser;
 
 
 
-import java.io.InputStream;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Scanner;
-import java.util.Set;
-import java.util.logging.Logger;
-
-import javax.mail.URLName;
-
+import de.dfki.inquisitor.collections.MultiValueHashMap;
+import de.dfki.km.leech.Leech;
+import de.dfki.km.leech.io.URLStreamProvider;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MediaType;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.ContentHandler;
 
-import de.dfki.inquisitor.collections.MultiValueHashMap;
-import de.dfki.km.leech.Leech;
-import de.dfki.km.leech.io.URLStreamProvider;
+import javax.mail.URLName;
+import java.io.InputStream;
+import java.util.*;
 
 
 
@@ -101,7 +95,7 @@ public class UrlListCrawlerParser extends CrawlerParser
 
             if(m_leech == null) m_leech = new Leech();
 
-            Logger.getLogger(UrlListCrawlerParser.class.getName()).info("Will crawl " + strUrl);
+            LoggerFactory.getLogger(UrlListCrawlerParser.class.getName()).info("Will crawl " + strUrl);
 
             Parser parser = m_leech.getParser();
 

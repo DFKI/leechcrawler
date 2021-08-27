@@ -3,23 +3,16 @@ package de.dfki.km.leech.lucene.basic;
 
 
 import de.dfki.inquisitor.collections.MultiValueTreeMap;
-// import de.dfki.inquisitor.lucene.DynamicFieldType;
-// import de.dfki.inquisitor.lucene.*;
 import de.dfki.inquisitor.text.Levenshtein;
-import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
 import org.apache.lucene.index.*;
-import org.apache.lucene.index.IndexOptions;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.similarities.ClassicSimilarity;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.*;
 import java.util.Map.Entry;
 

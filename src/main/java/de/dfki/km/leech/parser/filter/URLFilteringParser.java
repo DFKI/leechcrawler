@@ -23,25 +23,23 @@ package de.dfki.km.leech.parser.filter;
 
 
 
+import de.dfki.km.leech.config.CrawlerContext;
+import de.dfki.km.leech.metadata.LeechMetadata;
+import de.dfki.km.leech.parser.CrawlerParser;
+import org.apache.tika.exception.TikaException;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.parser.ParseContext;
+import org.apache.tika.parser.Parser;
+import org.apache.tika.parser.ParserDecorator;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Logger;
-
-import de.dfki.km.leech.metadata.LeechMetadata;
-import org.apache.tika.exception.TikaException;
-import org.apache.tika.metadata.Metadata;
-import org.apache.tika.metadata.TikaCoreProperties;
-import org.apache.tika.parser.ParseContext;
-import org.apache.tika.parser.Parser;
-import org.apache.tika.parser.ParserDecorator;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.SAXException;
-
-import de.dfki.km.leech.config.CrawlerContext;
-import de.dfki.km.leech.parser.CrawlerParser;
 
 
 
@@ -110,7 +108,7 @@ public class URLFilteringParser extends ParserDecorator
             if(!crawlerContext.getURLFilter().accept(strValue))
             {
                 if(crawlerContext.getVerbose())
-                    Logger.getLogger(CrawlerParser.class.getName()).info(
+                    LoggerFactory.getLogger(CrawlerParser.class.getName()).info(
                             "Data entity " + strSource + " is outside the URL constraints for this data source. Skipping.");
 
                 return;

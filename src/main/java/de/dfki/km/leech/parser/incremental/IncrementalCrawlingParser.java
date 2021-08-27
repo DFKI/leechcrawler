@@ -18,33 +18,23 @@ package de.dfki.km.leech.parser.incremental;
 
 
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.channels.FileLock;
-import java.util.Iterator;
-import java.util.UUID;
-
-import de.dfki.km.leech.metadata.LeechMetadata;
-import org.apache.tika.exception.TikaException;
-import org.apache.tika.metadata.Metadata;
-import org.apache.tika.metadata.TikaCoreProperties;
-import org.apache.tika.mime.MediaType;
-import org.apache.tika.parser.CompositeParser;
-import org.apache.tika.parser.EmptyParser;
-import org.apache.tika.parser.ParseContext;
-import org.apache.tika.parser.Parser;
-import org.apache.tika.parser.ParserDecorator;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.SAXException;
-
 import de.dfki.km.leech.Leech;
 import de.dfki.km.leech.config.CrawlerContext;
+import de.dfki.km.leech.metadata.LeechMetadata;
 import de.dfki.km.leech.parser.CrawlerParser;
 import de.dfki.km.leech.parser.incremental.IncrementalCrawlingHistory.Exist;
 import de.dfki.km.leech.util.TikaUtils;
+import org.apache.tika.exception.TikaException;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.mime.MediaType;
+import org.apache.tika.parser.*;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
+
+import java.io.*;
+import java.nio.channels.FileLock;
+import java.util.Iterator;
+import java.util.UUID;
 
 
 
@@ -178,7 +168,7 @@ public class IncrementalCrawlingParser extends ParserDecorator
                 else
                 {
                     // das Teil ist unmodified, wir machen nix
-                    // Logger.getLogger(IncrementalCrawlingParser.class.getName()).info("unmodified entity, will skip it. " + metadata);
+                    // LoggerFactory.getLogger(IncrementalCrawlingParser.class.getName()).info("unmodified entity, will skip it. " + metadata);
                     InputStream dummyStream = new ByteArrayInputStream("leech sucks - hopefully :)".getBytes("UTF-8"));
                     EmptyParser.INSTANCE.parse(dummyStream, handler, metadata, context);
                 }
@@ -186,7 +176,7 @@ public class IncrementalCrawlingParser extends ParserDecorator
             else
             {
                 // das Teil war in diesem run schon mal dran - Zykel oder ein einfaches Duplikat
-                // Logger.getLogger(IncrementalCrawlingParser.class.getName()).info("entity was processed this crawl yet, will skip it. " + metadata);
+                // LoggerFactory.getLogger(IncrementalCrawlingParser.class.getName()).info("entity was processed this crawl yet, will skip it. " + metadata);
                 InputStream dummyStream = new ByteArrayInputStream("leech sucks - hopefully :)".getBytes("UTF-8"));
                 EmptyParser.INSTANCE.parse(dummyStream, handler, metadata, context);
             }

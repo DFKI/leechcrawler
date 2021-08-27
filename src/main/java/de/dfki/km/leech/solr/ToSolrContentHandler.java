@@ -2,23 +2,21 @@ package de.dfki.km.leech.solr;
 
 
 
-import java.rmi.server.UID;
-import java.util.HashMap;
-import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.apache.solr.client.solrj.SolrClient;
-import org.apache.solr.client.solrj.impl.CloudSolrClient;
-import org.apache.solr.client.solrj.impl.ConcurrentUpdateSolrClient;
-import org.apache.solr.common.SolrInputDocument;
-import org.apache.tika.metadata.Metadata;
-
 import de.dfki.inquisitor.collections.MultiValueHashMap;
 import de.dfki.inquisitor.text.StringUtils;
 import de.dfki.km.leech.metadata.LeechMetadata;
 import de.dfki.km.leech.parser.incremental.IncrementalCrawlingHistory;
 import de.dfki.km.leech.sax.DataSinkContentHandler;
+import org.apache.solr.client.solrj.SolrClient;
+import org.apache.solr.client.solrj.impl.CloudSolrClient;
+import org.apache.solr.client.solrj.impl.ConcurrentUpdateSolrClient;
+import org.apache.solr.common.SolrInputDocument;
+import org.apache.tika.metadata.Metadata;
+import org.slf4j.LoggerFactory;
+
+import java.rmi.server.UID;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 
 
@@ -105,7 +103,7 @@ public class ToSolrContentHandler extends DataSinkContentHandler
                 public void handleError(Throwable ex)
                 {
                     m_iErrorEntityCount++;
-                    Logger.getLogger(ToSolrContentHandler.class.getName()).log(Level.SEVERE,
+                    LoggerFactory.getLogger(ToSolrContentHandler.class.getName()).error(
                             "Error while insertion to SOLR (" + m_iErrorEntityCount + " errors yet). Check the SOLR logs. Error message: " + ex.getMessage());
                 }
             };
@@ -129,17 +127,17 @@ public class ToSolrContentHandler extends DataSinkContentHandler
 
 
             if(m_hsField2MultiValDocCount.size() > 0)
-                Logger.getLogger(ToSolrContentHandler.class.getName()).info("Fields with according doc number with multivalued entries: " + m_hsField2MultiValDocCount);
+                LoggerFactory.getLogger(ToSolrContentHandler.class.getName()).info("Fields with according doc number with multivalued entries: " + m_hsField2MultiValDocCount);
 
             if(m_iErrorEntityCount > 0)
-                Logger.getLogger(ToSolrContentHandler.class.getName()).warning(
+                LoggerFactory.getLogger(ToSolrContentHandler.class.getName()).warn(
                         StringUtils.beautifyNumber(m_iErrorEntityCount) + " errors while inserting to SOLR. Check the SOLR logs.");
             else
-                Logger.getLogger(ToSolrContentHandler.class.getName()).info(m_iErrorEntityCount + " errors while inserting to SOLR");
+                LoggerFactory.getLogger(ToSolrContentHandler.class.getName()).info(m_iErrorEntityCount + " errors while inserting to SOLR");
         }
         catch (Exception e)
         {
-            Logger.getLogger(ToSolrContentHandler.class.getName()).log(Level.SEVERE, "Error", e);
+            LoggerFactory.getLogger(ToSolrContentHandler.class.getName()).error("Error", e);
         }
     }
 
@@ -224,7 +222,7 @@ public class ToSolrContentHandler extends DataSinkContentHandler
         }
         catch (Exception e)
         {
-            Logger.getLogger(ToSolrContentHandler.class.getName()).log(Level.SEVERE, "Error", e);
+            LoggerFactory.getLogger(ToSolrContentHandler.class.getName()).error("Error", e);
         }
 
     }
@@ -249,7 +247,7 @@ public class ToSolrContentHandler extends DataSinkContentHandler
         }
         catch (Exception e)
         {
-            Logger.getLogger(ToSolrContentHandler.class.getName()).log(Level.SEVERE, "Error", e);
+            LoggerFactory.getLogger(ToSolrContentHandler.class.getName()).error("Error", e);
         }
 
     }

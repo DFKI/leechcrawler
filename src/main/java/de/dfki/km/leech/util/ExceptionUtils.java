@@ -18,29 +18,21 @@ package de.dfki.km.leech.util;
 
 
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import de.dfki.km.leech.metadata.LeechMetadata;
-import org.apache.tika.exception.TikaException;
-import org.apache.tika.metadata.Metadata;
-import org.apache.tika.metadata.TikaCoreProperties;
-import org.apache.tika.parser.EmptyParser;
-import org.apache.tika.parser.ParseContext;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.SAXException;
-
 import de.dfki.km.leech.config.CrawlerContext;
+import de.dfki.km.leech.metadata.LeechMetadata;
 import de.dfki.km.leech.parser.CrawlerParser;
 import de.dfki.km.leech.parser.incremental.IncrementalCrawlingHistory;
 import de.dfki.km.leech.parser.incremental.IncrementalCrawlingParser;
 import de.dfki.km.leech.sax.DataSinkContentHandler;
+import org.apache.tika.exception.TikaException;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.parser.EmptyParser;
+import org.apache.tika.parser.ParseContext;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
+
+import java.io.*;
 
 
 
@@ -147,7 +139,7 @@ public class ExceptionUtils
             if(crawlerContext.getInterruptIfException())
             {
                 if(iCurrentCrawlingDepth == 0)
-                    Logger.getLogger(CrawlerParser.class.getName()).log(Level.SEVERE, "Error while processing " + strUrlOrSource4SubEntity, e);
+                    LoggerFactory.getLogger(CrawlerParser.class.getName()).error("Error while processing " + strUrlOrSource4SubEntity, e);
 
                 // wir geben nun einfach den Error weiter - in der Metadata
                 EmptyParser.INSTANCE.parse(dummyStream, handler2use4recursiveCall, metadata, context);
@@ -162,7 +154,7 @@ public class ExceptionUtils
         }
         catch (UnsupportedEncodingException e1)
         {
-            Logger.getLogger(ExceptionUtils.class.getName()).log(Level.SEVERE, "Error", e);
+            LoggerFactory.getLogger(ExceptionUtils.class.getName()).error("Error", e);
         }
 
     }

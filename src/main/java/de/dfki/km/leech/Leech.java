@@ -38,9 +38,9 @@ import org.apache.tika.Tika;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.DublinCore;
 import org.apache.tika.metadata.Metadata;
-import org.apache.tika.metadata.TikaCoreProperties;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
@@ -50,8 +50,6 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.rmi.server.UID;
 import java.util.LinkedList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 
@@ -96,7 +94,7 @@ public class Leech extends Tika
 
     public static void main(String[] args) throws IOException, SAXException, TikaException
     {
-        Logger.getLogger(Leech.class.getName())
+        LoggerFactory.getLogger(Leech.class.getName())
                 .info("Usage: leech <source2crawl_1> <source2crawl_2> ... <source2crawl_N>\n\n" + "A source can be an URL for file://, http://, imap:// or -maybe in future- " +
                         "other urls (e.g. for databases, webDAV, etc...).\n" + "In the case the string is no correct url string, the method will use the string as file path and "
                         + "then generates an\n" + "according URL. Examples: 'file://myDataDir', 'file://bla.pdf', 'http://reuschling.github.com/leech/',\n" + "'imap://usr:pswd" + "@myImapServer.de:993/inbox', 'imaps://usr:pswd@myImapServer.de:993/inbox;uid=22'\n\n" + "This executable crawls all data and simply shows the metadata " + "on the screen. Because leech is designed to be used as a\n" + "java library, this exec is for quick testing purposes.\n\n");
@@ -108,7 +106,7 @@ public class Leech extends Tika
 
         for (String strSource2Crawl : args)
         {
-            Logger.getLogger(Leech.class.getName()).info("Will start crawling " + strSource2Crawl + '\n');
+            LoggerFactory.getLogger(Leech.class.getName()).info("Will start crawling " + strSource2Crawl + '\n');
             leech.parse(strSource2Crawl, reportContentHandler, crawlerContext.createParseContext());
         }
     }
@@ -170,7 +168,7 @@ public class Leech extends Tika
             return detect(stream, metadata);
         } catch (Throwable e)
         {
-            Logger.getLogger(Leech.class.getName()).log(Level.SEVERE, "Error", e);
+            LoggerFactory.getLogger(Leech.class.getName()).error("Error", e);
 
             return null;
         } finally
@@ -193,7 +191,7 @@ public class Leech extends Tika
             return detect(UrlUtil.sourceString2URL(name));
         } catch (Throwable e)
         {
-            Logger.getLogger(Leech.class.getName()).log(Level.SEVERE, "Error", e);
+            LoggerFactory.getLogger(Leech.class.getName()).error("Error", e);
             return null;
         }
     }
@@ -217,8 +215,8 @@ public class Leech extends Tika
                 handler2use4recursiveCall = (ContentHandler) Class.forName(crawlerContext.getContentHandlerClassName()).newInstance();
             } catch (Throwable e)
             {
-                Logger.getLogger(DirectoryCrawlerParser.class.getName())
-                        .log(Level.SEVERE, "Error during the instantiation of the configured content handler " + crawlerContext.getContentHandlerClassName(), e);
+                LoggerFactory.getLogger(DirectoryCrawlerParser.class.getName())
+                        .error("Error during the instantiation of the configured content handler " + crawlerContext.getContentHandlerClassName(), e);
             }
 
 
@@ -571,7 +569,7 @@ public class Leech extends Tika
             return parse(stream, metadata);
         } catch (Throwable e)
         {
-            Logger.getLogger(Leech.class.getName()).log(Level.SEVERE, "Error", e);
+            LoggerFactory.getLogger(Leech.class.getName()).error("Error", e);
 
             return null;
         }
@@ -733,7 +731,7 @@ public class Leech extends Tika
 
             String strUid = new UID().toString();
             metadata.add(LeechMetadata.RESOURCE_NAME_KEY, "leechUrlList " + strUid);
-            metadata.add(DublinCore.SOURCE, strUid + "_leechUrlList.urlList");
+            metadata.add(DublinCore.SOURCE.getName(), strUid + "_leechUrlList.urlList");
             metadata.add(IncrementalCrawlingHistory.dataEntityId, strUid + "_leechUrlList.urlList");
             metadata.add(IncrementalCrawlingHistory.dataEntityContentFingerprint, strUid + "_leechUrlList.urlList");
             metadata.add(Metadata.CONTENT_TYPE, "application/leechUrlList");

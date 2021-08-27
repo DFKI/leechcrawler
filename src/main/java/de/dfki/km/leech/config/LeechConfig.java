@@ -23,11 +23,10 @@ package de.dfki.km.leech.config;
 
 
 
-import java.io.IOException;
-import java.util.LinkedList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import de.dfki.km.leech.detect.LeechDefaultDetector;
+import de.dfki.km.leech.parser.DirectoryCrawlerParser;
+import de.dfki.km.leech.parser.HtmlCrawlerParser;
+import de.dfki.km.leech.parser.ImapCrawlerParser;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.detect.Detector;
 import org.apache.tika.exception.TikaException;
@@ -36,10 +35,8 @@ import org.apache.tika.mime.MimeTypes;
 import org.apache.tika.parser.CompositeParser;
 import org.apache.tika.parser.Parser;
 
-import de.dfki.km.leech.detect.LeechDefaultDetector;
-import de.dfki.km.leech.parser.DirectoryCrawlerParser;
-import de.dfki.km.leech.parser.HtmlCrawlerParser;
-import de.dfki.km.leech.parser.ImapCrawlerParser;
+import java.io.IOException;
+import java.util.LinkedList;
 
 
 
@@ -85,7 +82,7 @@ public class LeechConfig extends TikaConfig
     protected CompositeParser m_parser;
 
 
-    private LinkedList<Logger> m_llPdfBoxLogger = new LinkedList<>();
+    // private LinkedList<Logger> m_llPdfBoxLogger = new LinkedList<>();
 
 
 
@@ -150,22 +147,22 @@ public class LeechConfig extends TikaConfig
 
         
         // die kommen in ein field, da die Einstellung wohl nur so lange gültig ist, wie es noch eine gültige Referenz zu diesen Objekten gibt
-        m_llPdfBoxLogger.add(Logger.getLogger("org.apache.pdfbox.util.PDFStreamEngine"));
-        m_llPdfBoxLogger.add(Logger.getLogger("org.apache.pdfbox.encoding.Encoding"));
-        m_llPdfBoxLogger.add(Logger.getLogger("org.apache.pdfbox.pdfparser.BaseParser"));
-        m_llPdfBoxLogger.add(Logger.getLogger("org.apache.pdfbox.pdmodel.font.PDSimpleFont"));
-        m_llPdfBoxLogger.add(Logger.getLogger("org.apache.pdfbox.pdfparser.XrefTrailerResolver"));
-        m_llPdfBoxLogger.add(Logger.getLogger("org.apache.pdfbox.filter.FlateFilter"));
-        m_llPdfBoxLogger.add(Logger.getLogger("org.apache.pdfbox.pdfparser.PDFParser"));
-        m_llPdfBoxLogger.add(Logger.getLogger("org.apache.pdfbox.util.operator.SetTextFont"));
-        m_llPdfBoxLogger.add(Logger.getLogger("org.apache.pdfbox.*"));
-        
-        
-        
-        
-        
-        for(Logger logger : m_llPdfBoxLogger)
-            logger.setLevel(Level.OFF);
+        // m_llPdfBoxLogger.add(LoggerFactory.getLogger("org.apache.pdfbox.util.PDFStreamEngine"));
+        // m_llPdfBoxLogger.add(LoggerFactory.getLogger("org.apache.pdfbox.encoding.Encoding"));
+        // m_llPdfBoxLogger.add(LoggerFactory.getLogger("org.apache.pdfbox.pdfparser.BaseParser"));
+        // m_llPdfBoxLogger.add(LoggerFactory.getLogger("org.apache.pdfbox.pdmodel.font.PDSimpleFont"));
+        // m_llPdfBoxLogger.add(LoggerFactory.getLogger("org.apache.pdfbox.pdfparser.XrefTrailerResolver"));
+        // m_llPdfBoxLogger.add(LoggerFactory.getLogger("org.apache.pdfbox.filter.FlateFilter"));
+        // m_llPdfBoxLogger.add(LoggerFactory.getLogger("org.apache.pdfbox.pdfparser.PDFParser"));
+        // m_llPdfBoxLogger.add(LoggerFactory.getLogger("org.apache.pdfbox.util.operator.SetTextFont"));
+        // m_llPdfBoxLogger.add(LoggerFactory.getLogger("org.apache.pdfbox.*"));
+        //
+        //
+        //
+        //
+        //
+        // for(Logger logger : m_llPdfBoxLogger)
+        //     logger.setLevel(Level.OFF);
 
     }
 

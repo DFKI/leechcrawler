@@ -32,14 +32,13 @@ import org.apache.tika.parser.CompositeParser;
 import org.apache.tika.parser.DefaultParser;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 
@@ -125,8 +124,8 @@ public class TikaUtils
             }
             catch (Exception e)
             {
-                Logger.getLogger(DirectoryCrawlerParser.class.getName())
-                        .log(Level.SEVERE, "Error during the instantiation of the configured content handler " + crawlerContext.getContentHandlerClassName(), e);
+                LoggerFactory.getLogger(DirectoryCrawlerParser.class.getName())
+                        .error("Error during the instantiation of the configured content handler " + crawlerContext.getContentHandlerClassName(), e);
             }
 
 

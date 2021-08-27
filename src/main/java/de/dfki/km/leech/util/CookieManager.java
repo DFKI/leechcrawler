@@ -2,10 +2,12 @@ package de.dfki.km.leech.util;
 
 
 
-import java.net.*;
-import java.io.*;
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
-import java.text.*;
 
 
 

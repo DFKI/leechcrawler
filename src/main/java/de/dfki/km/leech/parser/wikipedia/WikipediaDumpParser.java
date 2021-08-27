@@ -22,6 +22,7 @@ import de.dfki.inquisitor.collections.MultiValueBalancedTreeMap;
 import de.dfki.inquisitor.collections.MultiValueHashMap;
 import de.dfki.inquisitor.text.StringUtils;
 import de.dfki.km.leech.metadata.LeechMetadata;
+import de.dfki.km.leech.parser.incremental.IncrementalCrawlingHistory;
 import de.dfki.km.leech.util.TikaUtils;
 import info.bliki.wiki.filter.PlainTextConverter;
 import info.bliki.wiki.model.WikiModel;
@@ -34,6 +35,7 @@ import org.apache.tika.mime.MediaType;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
 import org.apache.tika.sax.XHTMLContentHandler;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
@@ -48,8 +50,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -70,7 +70,7 @@ import java.util.regex.Pattern;
  *
  * @author Christian Reuschling, Dipl.Ing.(BA)
  */
-public class WikipediaDumpParser implements Parser
+@SuppressWarnings("RegExpRedundantEscape") public class WikipediaDumpParser implements Parser
 {
 
     public static class WikipediaDumpParserConfig
@@ -166,7 +166,20 @@ public class WikipediaDumpParser implements Parser
 
 
 
-    static protected final WikiModel m_wikiModel = new WikiModel("http://www.mywiki.com/wiki/${image}", "http://www.mywiki.com/wiki/${title}");
+    static protected final WikiModel m_wikiModel = new WikiModel("http://www.mywiki.com/wiki/${image}", "http://www.mywiki.com/wiki/${title}")
+    {
+
+        @Override
+        public void appendInternalLink(String topic, String hashSection, String topicDescription, String cssClass, boolean parseRecursive)
+        {
+            // wir arbeiten hier nochmal etwas zu, ansonsten gibt der cleaner häßliche stacktraces raus (ohne logging), und wir verlieren auch die ganzen Seiten
+
+            String strDescCleanded = topicDescription;
+            if(topicDescription.contains("[[File:"))
+                strDescCleanded = topicDescription.replaceAll("\\[\\[.*\\]\\]", "");
+            super.appendInternalLink(topic, hashSection, strDescCleanded, cssClass, parseRecursive);
+        }
+    };
 
 
 
@@ -182,11 +195,10 @@ public class WikipediaDumpParser implements Parser
      * @param xmlEventReader the xmlEventReader to get the events
      *
      * @return the data of the character events, concatenated into one String
-     * @throws XMLStreamException
      */
     static protected String readNextCharEventsText(XMLEventReader xmlEventReader) throws XMLStreamException
     {
-        StringBuilder strbText = new StringBuilder("");
+        StringBuilder strbText = new StringBuilder();
 
 
         while (xmlEventReader.hasNext())
@@ -259,25 +271,21 @@ public class WikipediaDumpParser implements Parser
     /**
      * Converts DMS ( Degrees / minutes / seconds ) to decimal format longitude / latitude
      *
-     * @param strDegree
-     * @param strMinutes
-     * @param strSeconds
-     *
      * @return the doordinate in decimal format (longitude / latitude)
      */
     public double dmsToDecCoordinate(String strDegree, String strMinutes, String strSeconds)
     {
         double degree = 0;
         if(!StringUtils.nullOrWhitespace(strDegree))
-            degree = Double.valueOf(strDegree);
+            degree = Double.parseDouble(strDegree);
 
         double minutes = 0;
         if(!StringUtils.nullOrWhitespace(strMinutes))
-            minutes = Double.valueOf(strMinutes);
+            minutes = Double.parseDouble(strMinutes);
 
         double seconds = 0;
         if(!StringUtils.nullOrWhitespace(strSeconds))
-            seconds = Double.valueOf(strSeconds);
+            seconds = Double.parseDouble(strSeconds);
 
 
         return degree + (((minutes * 60) + (seconds)) / 3600);
@@ -285,7 +293,8 @@ public class WikipediaDumpParser implements Parser
 
 
 
-    public MultiValueHashMap<String, String> getPageTitle2Redirects(InputStream sWikipediaDump) throws FileNotFoundException, XMLStreamException
+    @SuppressWarnings("RedundantIfStatement")
+    public MultiValueHashMap<String, String> getPageTitle2Redirects(InputStream sWikipediaDump) throws XMLStreamException
     {
         // <text xml:space="preserve">#REDIRECT [[Autopoiesis]]</text>
         // <text xml:space="preserve">#REDIRECT:[[Hans Leo Haßler]]</text>
@@ -294,7 +303,7 @@ public class WikipediaDumpParser implements Parser
         // <page>
         // <title>Autopoiesis</title>
 
-        Logger.getLogger(WikipediaDumpParser.class.getName()).info("will collect redirects from wikipedia dump...");
+        LoggerFactory.getLogger(WikipediaDumpParser.class.getName()).info("will collect redirects from wikipedia dump...");
 
         MultiValueHashMap<String, String> hsPageTitle2Redirects = new MultiValueBalancedTreeMap<String, String>();
 
@@ -317,7 +326,7 @@ public class WikipediaDumpParser implements Parser
 
                 iTitlesRead++;
                 if(iTitlesRead % 200000 == 0)
-                    Logger.getLogger(WikipediaDumpParser.class.getName()).info("read doc #" + StringUtils.beautifyNumber(iTitlesRead));
+                    LoggerFactory.getLogger(WikipediaDumpParser.class.getName()).info("read doc #" + StringUtils.beautifyNumber(iTitlesRead));
 
                 continue;
             }
@@ -333,8 +342,6 @@ public class WikipediaDumpParser implements Parser
                 continue;
 
             String strCharEventData = readNextCharEventsText(xmlEventReader);
-            if(strCharEventData == null)
-                continue;
 
 
             strCharEventData = strCharEventData.trim();
@@ -370,15 +377,11 @@ public class WikipediaDumpParser implements Parser
             hsPageTitle2Redirects.add(strRedirectTarget, strCurrentTitle);
 
 
-
-            // if("Venceslav Konstantinov".equalsIgnoreCase(strCurrentTitle) || "Venceslav Konstantinov".equalsIgnoreCase(strRedirectTarget))
-            // System.out.println("redirect found: (" + hsPageTitle2Redirects.keySize() + ") " + strCurrentTitle + " => '" + strRedirectTarget + "'");
-
         }
 
 
 
-        Logger.getLogger(WikipediaDumpParser.class.getName()).info("Redirects found: " + StringUtils.beautifyNumber(hsPageTitle2Redirects.valueSize()));
+        LoggerFactory.getLogger(WikipediaDumpParser.class.getName()).info("Redirects found: " + StringUtils.beautifyNumber(hsPageTitle2Redirects.valueSize()));
 
 
 
@@ -397,6 +400,7 @@ public class WikipediaDumpParser implements Parser
 
 
 
+    @SuppressWarnings({ "UnnecessaryContinue", "deprecation" })
     @Override
     public void parse(InputStream stream, ContentHandler handler, Metadata metadata, ParseContext context) throws IOException, SAXException, TikaException
     {
@@ -412,7 +416,7 @@ public class WikipediaDumpParser implements Parser
 
             if(wikipediaDumpParserConfig == null)
             {
-                Logger.getLogger(WikipediaDumpParser.class.getName()).info("No wikipedia parser config found. Will take the default one.");
+                LoggerFactory.getLogger(WikipediaDumpParser.class.getName()).info("No wikipedia parser config found. Will take the default one.");
                 wikipediaDumpParserConfig = new WikipediaDumpParserConfig();
             }
 
@@ -435,9 +439,12 @@ public class WikipediaDumpParser implements Parser
 
             XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
             XMLEventReader xmlEventReader = xmlInputFactory.createXMLEventReader(new FileInputStream(fWikipediaDumpFile4Stream), "Utf-8");
+
+            // StopWatch stopWatch = new StopWatch().setPrevix4report("Wikipedia pages processed: ");
             while (xmlEventReader.hasNext())
             {
 
+                // stopWatch.notifyEvent();
 
                 XMLEvent xmlEvent = xmlEventReader.nextEvent();
 
@@ -500,16 +507,6 @@ public class WikipediaDumpParser implements Parser
                     // wir merken uns immer den aktuellen Titel
                     String strCurrentTitle = readNextCharEventsText(xmlEventReader);
 
-                    if(strCurrentTitle.equalsIgnoreCase("DuckDuckGo"))
-                    {
-                        int fasd = 8;
-                    }
-
-                    if(strCurrentTitle.toLowerCase().contains("duck") && strCurrentTitle.toLowerCase().contains("go"))
-                    {
-                        int is = 666;
-                    }
-
 
                     // wenn der Titel eine redirect-Page ist, dann tragen wir die ganze Page aus der EventQueue aus, springen an das endPage, und
                     // haben somit diese Seite ignoriert. Ferner ignorieren wir auch spezielle wikipedia-Seiten
@@ -529,8 +526,9 @@ public class WikipediaDumpParser implements Parser
                     }
                     else
                     {
-                        metadata.add(TikaCoreProperties.TITLE, strCurrentTitle);
+                        metadata.add(TikaCoreProperties.TITLE.getName(), strCurrentTitle);
                         metadata.add(Metadata.SOURCE, strBaseURL + strCurrentTitle);
+                        metadata.add(IncrementalCrawlingHistory.dataEntityId, strBaseURL + strCurrentTitle);
 
 
                         for (String strRedirect : hsPageTitle2Redirects.get(strCurrentTitle))
@@ -554,7 +552,7 @@ public class WikipediaDumpParser implements Parser
                     String strText = readNextCharEventsText(xmlEventReader);
 
                     if(wikipediaDumpParserConfig.parseLinksAndCategories)
-                        parseLinksAndCategories(strText, strBaseURL, metadata, handler);
+                        parseLinksAndCategories(strText, strBaseURL, metadata);
                     if(wikipediaDumpParserConfig.parseInfoBoxes)
                         parseInfoBox(strText, metadata, handler);
                     if(wikipediaDumpParserConfig.parseGeoCoordinates)
@@ -582,7 +580,8 @@ public class WikipediaDumpParser implements Parser
                 {
                     String strTimestamp = readNextCharEventsText(xmlEventReader);
 
-                    metadata.add(TikaCoreProperties.MODIFIED, strTimestamp);
+                    metadata.add(TikaCoreProperties.MODIFIED.getName(), strTimestamp);
+                    metadata.add(IncrementalCrawlingHistory.dataEntityContentFingerprint, strTimestamp);
 
                     continue;
                 }
@@ -594,13 +593,14 @@ public class WikipediaDumpParser implements Parser
                 {
                     String strUsername = readNextCharEventsText(xmlEventReader);
 
-                    metadata.add(TikaCoreProperties.CREATOR, strUsername);
+                    metadata.add(TikaCoreProperties.CREATOR.getName(), strUsername);
 
                     continue;
                 }
 
 
 
+                // stopWatch.logReport();
 
 
 
@@ -610,7 +610,7 @@ public class WikipediaDumpParser implements Parser
         }
         catch (Exception e)
         {
-            Logger.getLogger(WikipediaDumpParser.class.getName()).log(Level.SEVERE, "Error", e);
+            LoggerFactory.getLogger(WikipediaDumpParser.class.getName()).error("Error", e);
         }
 
 
@@ -633,6 +633,7 @@ public class WikipediaDumpParser implements Parser
             String[] straCoordinates = strCoordinates.split("\\|");
 
 
+            StringBuilder strbCoordinateLatLon = new StringBuilder(",");
 
             for (String strPiece : straCoordinates)
             {
@@ -646,13 +647,29 @@ public class WikipediaDumpParser implements Parser
                     double dInDezimal = dmsToDecCoordinate(degreeMatcher.group(1), degreeMatcher.group(2), degreeMatcher.group(3));
 
                     if("E".equals(degreeMatcher.group(4)))
-                        metadata.add("longitude", String.valueOf(dInDezimal));
+                    {
+                        String strLon = String.valueOf(dInDezimal);
+                        strbCoordinateLatLon.append(strLon);
+                        metadata.add("longitude", strLon);
+                    }
                     if("W".equals(degreeMatcher.group(4)))
-                        metadata.add("longitude", String.valueOf(dInDezimal * -1));
+                    {
+                        String strLon =String.valueOf(dInDezimal * -1);
+                        strbCoordinateLatLon.append(strLon);
+                        metadata.add("longitude", strLon);
+                    }
                     if("N".equals(degreeMatcher.group(4)))
-                        metadata.add("latitude", String.valueOf(dInDezimal));
+                    {
+                        String strLat =String.valueOf(dInDezimal);
+                        strbCoordinateLatLon.insert(0, strLat);
+                        metadata.add("latitude", strLat);
+                    }
                     if("S".equals(degreeMatcher.group(4)))
-                        metadata.add("latitude", String.valueOf(dInDezimal * -1));
+                    {
+                        String strLat =String.valueOf(dInDezimal * -1);
+                        strbCoordinateLatLon.insert(0, strLat);
+                        metadata.add("latitude", strLat);
+                    }
 
                 }
                 else
@@ -666,19 +683,29 @@ public class WikipediaDumpParser implements Parser
                             Double.valueOf(strAttValue);
 
                             if(strPiece.contains("EW="))
+                            {
+                                strbCoordinateLatLon.append(strAttValue);
                                 metadata.add("longitude", strAttValue);
+                            }
                             if(strPiece.contains("NS="))
+                            {
+                                strbCoordinateLatLon.insert(0, strAttValue);
                                 metadata.add("latitude", strAttValue);
+                            }
                         }
                         catch (NumberFormatException e)
                         {
                             // NOP - the geo coordinate entry is broken
                         }
                     }
-
                 }
             }
-
+            String strCoordinateLatLon = strbCoordinateLatLon.toString();
+            if( !strCoordinateLatLon.startsWith("," ) && !strCoordinateLatLon.endsWith("," ))
+            {
+                metadata.add("location", strbCoordinateLatLon.toString());
+                strbCoordinateLatLon = new StringBuilder(",");
+            }
         }
 
     }
@@ -801,9 +828,6 @@ public class WikipediaDumpParser implements Parser
                     }
                 }
 
-                // System.out.println("prefix " + strPrefix);
-                // System.out.println("num " + strDataSetId);
-                // System.out.println("suffix " + strSuffix);
                 MultiValueHashMap<String, String> hsAttname2ValueOfSubDoc = hsSubDocId2AttValuePairsOfSubDoc.get(strDataSetId);
                 if(hsAttname2ValueOfSubDoc == null)
                 {
@@ -872,7 +896,8 @@ public class WikipediaDumpParser implements Parser
 
 
 
-    protected void parseLinksAndCategories(String strText, String strBaseURL, Metadata metadata, ContentHandler handler) throws SAXException
+    @SuppressWarnings("UnnecessaryContinue")
+    protected void parseLinksAndCategories(String strText, String strBaseURL, Metadata metadata)
     {
         // wir parsen jetzt auch noch die Infoboxen, und tragen auch die Kategorien mit in die Metadaten ein. Kinga fände auch noch die
         // Links aus dem Text ganz hübsch

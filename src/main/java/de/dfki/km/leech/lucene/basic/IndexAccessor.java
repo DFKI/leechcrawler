@@ -12,8 +12,8 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.LockObtainFailedException;
-import org.apache.lucene.store.NativeFSLockFactory;
-import org.apache.lucene.util.Version;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,8 +21,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 
@@ -90,7 +88,7 @@ public class IndexAccessor
                     // System.err.print(".");
                     Thread.sleep(m_lReaderRefreshIntervall);
 
-                    Logger.getLogger(this.getClass().getName()).fine("will refresh all index readers");
+                    LoggerFactory.getLogger(this.getClass().getName()).debug("will refresh all index readers");
 
                     IndexAccessor.refreshAllIndexReaders();
                 }
@@ -106,7 +104,7 @@ public class IndexAccessor
 
     private static String m_strIdAttributeName;
 
-    protected static Logger logger = Logger.getLogger(IndexAccessor.class.getName());
+    protected static Logger logger = LoggerFactory.getLogger(IndexAccessor.class.getName());
 
     protected static Analyzer m_analyzer4writer;
 
@@ -186,7 +184,7 @@ public class IndexAccessor
         }
         catch (Exception e)
         {
-            Logger.getLogger(IndexAccessor.class.getName()).log(Level.SEVERE, "Error", e);
+            LoggerFactory.getLogger(IndexAccessor.class.getName()).error("Error", e);
         }
 
     }
@@ -249,7 +247,7 @@ public class IndexAccessor
 
 
 
-        logger.fine("will open indexWriter for '" + strIndexPathOrURL + "'");
+        logger.debug("will open indexWriter for '" + strIndexPathOrURL + "'");
 
         // wenn fäschlicherweise z.B. ein video-attachment als fulltext verarbeitet wird, haben wir riesige Docs, viel Speicher, lange Zeiten...aus
         // diesem Grund setzte ich die MaxFieldLength mal wieder auf limited
@@ -445,7 +443,7 @@ public class IndexAccessor
     //         if(searcher4Index == null)
     //         {
     //
-    //             logger.fine("will create new remote searcher for index '" + strIndexPathOrURL + "'");
+    //             logger.debug("will create new remote searcher for index '" + strIndexPathOrURL + "'");
     //
     //             strIndexPathOrURL = strIndexPathOrURL.replaceAll("/$", "");
     //             String strHandlerName = strIndexPathOrURL.substring(strIndexPathOrURL.lastIndexOf('/') + 1) + "_searcher";
@@ -484,7 +482,7 @@ public class IndexAccessor
      */
     synchronized static public IndexWriter getIndexWriter(String strIndexPathOrURL) throws CorruptIndexException, LockObtainFailedException, IOException
     {
-        if(getDefaultAnalyzer() == null) logger.severe("default analyzer is not set - this will cause a Nullpointer Exception. Set it before creating an IndexWriter.");
+        if(getDefaultAnalyzer() == null) logger.error("default analyzer is not set - this will cause a Nullpointer Exception. Set it before creating an IndexWriter.");
         return getIndexWriter(strIndexPathOrURL, getDefaultAnalyzer());
     }
 
@@ -525,7 +523,7 @@ public class IndexAccessor
 
             FSDirectory dir = createFSDirectory(new File(strIndexPathOrURL));
 
-            logger.fine("will open indexWriter for '" + strIndexPathOrURL + "'");
+            logger.debug("will open indexWriter for '" + strIndexPathOrURL + "'");
 
             ourIndexWriter = new IndexWriter(dir, new IndexWriterConfig( analyzer).setOpenMode(OpenMode.APPEND));
 
@@ -539,7 +537,7 @@ public class IndexAccessor
         else
             m_hsIndexWriter2WriterRefCount.put(ourIndexWriter, ++iOld);
 
-        if(logger.isLoggable(Level.FINEST)) logger.finest("get indexWriter for '" + strIndexPathOrURL + "'\n" + LoggingUtils.getCurrentStackTrace());
+        if(logger.isDebugEnabled()) logger.debug("get indexWriter for '" + strIndexPathOrURL + "'\n" + LoggingUtils.getCurrentStackTrace());
 
         return ourIndexWriter;
     }
@@ -589,7 +587,7 @@ public class IndexAccessor
         if(reader == null)
         {
 
-            logger.fine("will create new reader for index '" + strIndexPathOrURL + "'");
+            logger.debug("will create new reader for index '" + strIndexPathOrURL + "'");
 
 
             File fIndex = null;
@@ -627,7 +625,7 @@ public class IndexAccessor
             m_hsIndexReader2ReaderRefCount.put(reader, ++iOld);
 
 
-        if(logger.isLoggable(Level.FINEST)) logger.finest("get reader for index '" + strIndexPathOrURL + "'\n" + LoggingUtils.getCurrentStackTrace());
+        if(logger.isDebugEnabled()) logger.debug("get reader for index '" + strIndexPathOrURL + "'\n" + LoggingUtils.getCurrentStackTrace());
 
         return reader;
     }
@@ -636,7 +634,7 @@ public class IndexAccessor
 
     synchronized static public IndexSearcher getLuceneIndexSearcher(String strIndexPathOrURL) throws CorruptIndexException, IOException, URISyntaxException
     {
-        logger.fine("will create new searcher for index '" + strIndexPathOrURL + "'");
+        logger.debug("will create new searcher for index '" + strIndexPathOrURL + "'");
 
         IndexSearcher searcher4Index = new IndexSearcher(getLuceneIndexReader(strIndexPathOrURL, false));
 
@@ -650,7 +648,7 @@ public class IndexAccessor
     synchronized static public IndexSearcher getLuceneMultiSearcher(LinkedHashSet<String> sIndexPathsOrURLs) throws CorruptIndexException, IOException,
             URISyntaxException
     {
-        logger.fine("will create new searcher for index '" + sIndexPathsOrURLs + "'");
+        logger.debug("will create new searcher for index '" + sIndexPathsOrURLs + "'");
 
         IndexSearcher searcher4Index = new IndexSearcher(getLuceneMultiReader(sIndexPathsOrURLs, false));
 
@@ -779,8 +777,8 @@ public class IndexAccessor
     //         }
     //         catch (Exception e)
     //         {
-    //             logger.log(Level.SEVERE, "Exception while creating a remote index reader. The index '" + strRemoteURL + "' will be ignored. ('" + e.getMessage() + "')");
-    //             logger.log(Level.FINE, "Exception for index '" + strRemoteURL + "': ", e);
+    //             logger.error("Exception while creating a remote index reader. The index '" + strRemoteURL + "' will be ignored. ('" + e.getMessage() + "')");
+    //             logger.debug("Exception for index '" + strRemoteURL + "': ", e);
     //         }
     //     }
     //
@@ -920,8 +918,8 @@ public class IndexAccessor
     //         }
     //         catch (Exception e)
     //         {
-    //             logger.log(Level.SEVERE, "Exception while creating a MultiReader. The index '" + strIndexPathOrURL + "' will be ignored. ('" + e.getMessage() + "')");
-    //             logger.log(Level.FINE, "Exception for index '" + strIndexPathOrURL + "': ", e);
+    //             logger.error("Exception while creating a MultiReader. The index '" + strIndexPathOrURL + "' will be ignored. ('" + e.getMessage() + "')");
+    //             logger.debug("Exception for index '" + strIndexPathOrURL + "': ", e);
     //         }
     //     }
     //
@@ -984,8 +982,8 @@ public class IndexAccessor
     //         }
     //         catch (Exception e)
     //         {
-    //             logger.log(Level.SEVERE, "Exception while creating a MultiSearcher. The index '" + strRemoteURL + "' will be ignored. ('" + e.getMessage() + "')");
-    //             logger.log(Level.FINE, "Exception for index '" + strRemoteURL + "': ", e);
+    //             logger.error("Exception while creating a MultiSearcher. The index '" + strRemoteURL + "' will be ignored. ('" + e.getMessage() + "')");
+    //             logger.debug("Exception for index '" + strRemoteURL + "': ", e);
     //         }
     //     }
     //
@@ -1017,8 +1015,8 @@ public class IndexAccessor
     //     // }
     //     // catch (Exception e)
     //     // {
-    //     // logger.log(Level.SEVERE, "Exception while creating a MultiSearcher. The index '" + strIndexPathOrURL + "' will be ignored. ('" + e.getMessage() + "')");
-    //     // logger.log(Level.FINE, "Exception for index '" + strIndexPathOrURL + "': ", e);
+    //     // logger.error("Exception while creating a MultiSearcher. The index '" + strIndexPathOrURL + "' will be ignored. ('" + e.getMessage() + "')");
+    //     // logger.debug("Exception for index '" + strIndexPathOrURL + "': ", e);
     //     // }
     //     // }
     //     //
@@ -1221,7 +1219,7 @@ public class IndexAccessor
         }
         catch (org.apache.lucene.store.AlreadyClosedException e)
         {
-            logger.warning("reader for '" + strIndexPath + "' was closed at refresh time");
+            logger.warn("reader for '" + strIndexPath + "' was closed at refresh time");
         }
         finally
         {
@@ -1249,7 +1247,7 @@ public class IndexAccessor
             Integer iOld = m_hsIndexWriter2WriterRefCount.get(indexWriter);
             if(iOld == null || iOld == 0)
             {
-                logger.warning("have no writer index token for '" + indexWriter + "'");
+                logger.warn("have no writer index token for '" + indexWriter + "'");
                 return;
             }
 
@@ -1280,7 +1278,7 @@ public class IndexAccessor
                 m_hsIndexWriter2WriterRefCount.remove(indexWriter);
 
 
-                logger.fine("will close indexWriter for '" + strIndexPathOrURL + "'");
+                logger.debug("will close indexWriter for '" + strIndexPathOrURL + "'");
 
                 indexWriter.commit();
                 if(isLocalPath(strIndexPathOrURL)) indexWriter.close();
@@ -1288,17 +1286,17 @@ public class IndexAccessor
             else
                 m_hsIndexWriter2WriterRefCount.put(indexWriter, iNew);
 
-            if(logger.isLoggable(Level.FINEST))
+            if(logger.isDebugEnabled())
             {
                 if(bIgnoreClose)
-                    logger.finest("indexWriter '" + strIndexPathOrURL + "' released - closing IGNORED (writer is still open)\n" + LoggingUtils.getCurrentStackTrace());
+                    logger.debug("indexWriter '" + strIndexPathOrURL + "' released - closing IGNORED (writer is still open)\n" + LoggingUtils.getCurrentStackTrace());
                 else
-                    logger.finest("indexWriter '" + strIndexPathOrURL + "' released\n" + LoggingUtils.getCurrentStackTrace());
+                    logger.debug("indexWriter '" + strIndexPathOrURL + "' released\n" + LoggingUtils.getCurrentStackTrace());
             }
 
         } catch (IOException e)
         {
-            logger.severe(ExceptionUtils.createStackTraceString(e));
+            logger.error(ExceptionUtils.createStackTraceString(e));
         }
     }
 
@@ -1327,14 +1325,14 @@ public class IndexAccessor
 
             String strIndexPathOrURL4Reader = m_hsIndexReader2IndexPath.get(reader);
             if(strIndexPathOrURL4Reader == null)
-                logger.severe("have no path entry for reader. This is a hint to an error, e.g. you have released the reader too often, or the reader was not created with IndexAccessor.");
+                logger.error("have no path entry for reader. This is a hint to an error, e.g. you have released the reader too often, or the reader was not created with IndexAccessor.");
 
 
             Integer iOldRefCount = m_hsIndexReader2ReaderRefCount.get(reader);
 
             if(iOldRefCount == null || iOldRefCount == 0)
             {
-                logger.warning("have no reader index token for '" + strIndexPathOrURL4Reader + "'");
+                logger.warn("have no reader index token for '" + strIndexPathOrURL4Reader + "'");
                 return;
             }
 
@@ -1368,13 +1366,13 @@ public class IndexAccessor
                 m_hsIndexReader2ReaderRefCount.put(reader, iNew);
 
 
-            if(logger.isLoggable(Level.FINEST)) logger.finest("indexReader '" + strIndexPathOrURL4Reader + "' released\n" + LoggingUtils.getCurrentStackTrace());
+            if(logger.isDebugEnabled()) logger.debug("indexReader '" + strIndexPathOrURL4Reader + "' released\n" + LoggingUtils.getCurrentStackTrace());
 
 
         }
         catch (IOException e)
         {
-            logger.severe(ExceptionUtils.createStackTraceString(e));
+            logger.error(ExceptionUtils.createStackTraceString(e));
         }
     }
 
@@ -1404,7 +1402,7 @@ public class IndexAccessor
 
         if(m_hsIndexReader2ReaderRefCount.get(reader) == null)
         {
-            logger.fine("will close indexReader '" + strIndexPathOrURL + "'");
+            logger.debug("will close indexReader '" + strIndexPathOrURL + "'");
             m_hsIndexPathOrId2CurrentIndexReader.remove(strIndexPathOrURL);
             m_hsStaticIndexReaderSet.remove(reader);
 
@@ -1444,7 +1442,7 @@ public class IndexAccessor
 
         if(m_hsIndexReader2ReaderRefCount.get(reader) == null)
         {
-            logger.fine("will close indexReader '" + strIndexPathOrURL + "'");
+            logger.debug("will close indexReader '" + strIndexPathOrURL + "'");
             m_hsIndexPathOrId2CurrentIndexReader.remove(strIndexPathOrURL);
             m_hsStaticIndexReaderSet.remove(reader);
 

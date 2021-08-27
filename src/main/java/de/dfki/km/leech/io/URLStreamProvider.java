@@ -18,24 +18,20 @@ package de.dfki.km.leech.io;
 
 
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLStreamHandler;
-import java.util.HashMap;
-import java.util.ServiceLoader;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.mail.URLName;
-
+import de.dfki.km.leech.parser.incremental.IncrementalCrawlingHistory;
 import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.DublinCore;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
+import org.slf4j.LoggerFactory;
 
+import javax.mail.URLName;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLStreamHandlerFactory;
-import de.dfki.km.leech.parser.incremental.IncrementalCrawlingHistory;
+import java.util.HashMap;
+import java.util.ServiceLoader;
+import java.util.Set;
 
 
 
@@ -144,8 +140,8 @@ abstract public class URLStreamProvider
         {
             if(!bFactoryRegistered)
             {
-                Logger.getLogger(URLStreamProvider.class.getName())
-                        .log(Level.SEVERE,
+                LoggerFactory.getLogger(URLStreamProvider.class.getName())
+                        .error(
                                 "The URLStreamHandlerFactory could not registered to the URL class. Ignore this message in the case you take care yet for stream creation on new protocols with the URL class.",
                                 e);
             }

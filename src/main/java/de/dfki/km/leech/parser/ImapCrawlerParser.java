@@ -23,40 +23,6 @@ package de.dfki.km.leech.parser;
 
 
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Properties;
-import java.util.Set;
-import java.util.logging.Logger;
-
-import javax.mail.FetchProfile;
-import javax.mail.Flags;
-import javax.mail.Folder;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Store;
-import javax.mail.UIDFolder;
-import javax.mail.URLName;
-import javax.mail.internet.MimeMessage;
-import javax.mail.search.FlagTerm;
-
-import de.dfki.km.leech.metadata.LeechMetadata;
-import org.apache.tika.exception.TikaException;
-import org.apache.tika.metadata.Metadata;
-import org.apache.tika.metadata.TikaCoreProperties;
-import org.apache.tika.mime.MediaType;
-import org.apache.tika.parser.ParseContext;
-import org.apache.tika.parser.Parser;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.SAXException;
-
 import de.dfki.inquisitor.collections.MultiValueHashMap;
 import de.dfki.inquisitor.text.StringUtils;
 import de.dfki.km.leech.Leech;
@@ -65,9 +31,26 @@ import de.dfki.km.leech.config.ImapCrawlerContext;
 import de.dfki.km.leech.detect.DatasourceMediaTypes;
 import de.dfki.km.leech.io.ImapURLStreamProvider;
 import de.dfki.km.leech.io.URLStreamProvider;
+import de.dfki.km.leech.metadata.LeechMetadata;
 import de.dfki.km.leech.parser.incremental.IncrementalCrawlingHistory;
 import de.dfki.km.leech.util.ExceptionUtils;
 import de.dfki.km.leech.util.certificates.CertificateIgnoringSocketFactory;
+import org.apache.tika.exception.TikaException;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.mime.MediaType;
+import org.apache.tika.parser.ParseContext;
+import org.apache.tika.parser.Parser;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
+
+import javax.mail.*;
+import javax.mail.internet.MimeMessage;
+import javax.mail.search.FlagTerm;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
 
 
 
@@ -189,7 +172,7 @@ public class ImapCrawlerParser extends CrawlerParser
             if(message != null) strType = "IMAP message ";
 
             if(crawlerContext.getVerbose())
-                Logger.getLogger(CrawlerParser.class.getName()).info(
+                LoggerFactory.getLogger(CrawlerParser.class.getName()).info(
                         strType + strURL2Check + " is outside the URL constraints for this data source. Skipping.");
 
             return false;

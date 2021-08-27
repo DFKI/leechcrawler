@@ -26,7 +26,6 @@ import de.dfki.km.leech.util.LeechException;
 import de.dfki.km.leech.util.UrlUtil;
 import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
-import org.apache.tika.metadata.TikaCoreProperties;
 import org.apache.tika.parser.ParseContext;
 
 import javax.mail.URLName;

@@ -23,16 +23,15 @@ package de.dfki.km.leech.detect;
 
 
 
+import de.dfki.km.leech.metadata.LeechMetadata;
+import org.apache.tika.detect.Detector;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.mime.MediaType;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-
-import de.dfki.km.leech.metadata.LeechMetadata;
-import org.apache.tika.detect.Detector;
-import org.apache.tika.metadata.Metadata;
-import org.apache.tika.metadata.TikaCoreProperties;
-import org.apache.tika.mime.MediaType;
 
 
 

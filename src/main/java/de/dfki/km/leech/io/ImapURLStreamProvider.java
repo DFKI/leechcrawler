@@ -27,8 +27,8 @@ import de.dfki.km.leech.parser.incremental.IncrementalCrawlingHistory;
 import de.dfki.km.leech.util.UrlUtil;
 import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
-import org.apache.tika.metadata.TikaCoreProperties;
 import org.apache.tika.parser.ParseContext;
+import org.slf4j.LoggerFactory;
 
 import javax.mail.*;
 import java.io.FileNotFoundException;
@@ -37,8 +37,6 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 
@@ -274,7 +272,7 @@ public class ImapURLStreamProvider extends URLStreamProvider
                 }
                 catch (MessagingException e)
                 {
-                    Logger.getLogger(ImapURLStreamProvider.class.getName()).log(Level.SEVERE, "Error", e);
+                    LoggerFactory.getLogger(ImapURLStreamProvider.class.getName()).error("Error", e);
                 }
             }
         });

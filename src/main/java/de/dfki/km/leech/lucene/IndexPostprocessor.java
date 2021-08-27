@@ -2,19 +2,11 @@ package de.dfki.km.leech.lucene;
 
 
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.logging.Logger;
-
+import de.dfki.inquisitor.file.FileUtilz;
+import de.dfki.inquisitor.processes.StopWatch;
+import de.dfki.inquisitor.text.StringUtils;
 import de.dfki.km.leech.lucene.basic.*;
+import de.dfki.km.leech.metadata.LeechMetadata;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.*;
@@ -26,14 +18,20 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.SimpleFSDirectory;
 import org.apache.lucene.util.automaton.CompiledAutomaton;
 import org.apache.tika.metadata.Metadata;
-
-import de.dfki.inquisitor.file.FileUtilz;
-import de.dfki.inquisitor.processes.StopWatch;
-import de.dfki.inquisitor.text.StringUtils;
-import de.dfki.km.leech.metadata.LeechMetadata;
-import org.apache.tika.metadata.Office;
 import org.apache.tika.metadata.PagedText;
 import org.apache.tika.metadata.TikaCoreProperties;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 
 
@@ -142,14 +140,14 @@ public class IndexPostprocessor
         // gegebenen aus
 
         if(StringUtils.nullOrWhitespace(m_strNewField4Buzzwords) && !m_bEstimatePageCounts)
-            Logger.getLogger(IndexPostprocessor.class.getName()).warning("Will do nothing - nothing is enabled.");
+            LoggerFactory.getLogger(IndexPostprocessor.class.getName()).warn("Will do nothing - nothing is enabled.");
 
         if(!StringUtils.nullOrWhitespace(m_strNewField4Buzzwords))
-            Logger.getLogger(LuceneIndexCreator.class.getName()).info("Index postprocessing: Will create buzzwords");
-        if(m_bEstimatePageCounts) Logger.getLogger(LuceneIndexCreator.class.getName()).info("Index postprocessing: Will calculate heuristic page counts");
+            LoggerFactory.getLogger(LuceneIndexCreator.class.getName()).info("Index postprocessing: Will create buzzwords");
+        if(m_bEstimatePageCounts) LoggerFactory.getLogger(LuceneIndexCreator.class.getName()).info("Index postprocessing: Will calculate heuristic page counts");
 
         if(!StringUtils.nullOrWhitespace(m_strNewField4FrqClass))
-            Logger.getLogger(LuceneIndexCreator.class.getName()).info("Index postprocessing: Will calculate document frequency classes");
+            LoggerFactory.getLogger(LuceneIndexCreator.class.getName()).info("Index postprocessing: Will calculate document frequency classes");
 
         long lStart = System.currentTimeMillis();
 
@@ -183,9 +181,9 @@ public class IndexPostprocessor
         ToLuceneContentHandler toLuceneContentHandler = new ToLuceneContentHandler(fieldConfig, firstTmpWriter);
 
 
-        Logger.getLogger(LuceneIndexCreator.class.getName()).info("Will get the doc ids...");
+        LoggerFactory.getLogger(LuceneIndexCreator.class.getName()).info("Will get the doc ids...");
         List<String> llAllIds = terms(LeechMetadata.id, "", Integer.MAX_VALUE, reader4SourceIndex);
-        Logger.getLogger(LuceneIndexCreator.class.getName()).info("...finished");
+        LoggerFactory.getLogger(LuceneIndexCreator.class.getName()).info("...finished");
 
 
         Set<String> sAttNames4BuzzwordCalculation = new HashSet<String>();
@@ -234,10 +232,10 @@ public class IndexPostprocessor
 
             toLuceneContentHandler.processNewDocument(doc2modify);
 
-            if(++i % 100000 == 0) Logger.getLogger(LuceneIndexCreator.class.getName()).info(StringUtils.beautifyNumber(i) + " docs postprocessed");
+            if(++i % 100000 == 0) LoggerFactory.getLogger(LuceneIndexCreator.class.getName()).info(StringUtils.beautifyNumber(i) + " docs postprocessed");
 
         }
-        Logger.getLogger(LuceneIndexCreator.class.getName()).info(StringUtils.beautifyNumber(i) + " docs postprocessed");
+        LoggerFactory.getLogger(LuceneIndexCreator.class.getName()).info(StringUtils.beautifyNumber(i) + " docs postprocessed");
 
 
         toLuceneContentHandler.crawlFinished();
@@ -282,7 +280,7 @@ public class IndexPostprocessor
 
 
 
-        Logger.getLogger(LuceneIndexCreator.class.getName()).info(
+        LoggerFactory.getLogger(LuceneIndexCreator.class.getName()).info(
                 "...postprocessing finished. Needed " + StopWatch.formatTimeDistance(System.currentTimeMillis() - lStart));
 
 

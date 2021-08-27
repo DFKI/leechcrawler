@@ -2,16 +2,6 @@ package de.dfki.km.leech.solr;
 
 
 
-import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.logging.Logger;
-
-import org.apache.tika.exception.TikaException;
-import org.apache.tika.parser.ParseContext;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.SAXException;
-
 import de.dfki.inquisitor.collections.MultiValueHashMap;
 import de.dfki.inquisitor.processes.StopWatch;
 import de.dfki.km.leech.Leech;
@@ -22,6 +12,15 @@ import de.dfki.km.leech.sax.DataSinkContentHandler;
 import de.dfki.km.leech.sax.DataSinkContentHandlerDecorator;
 import de.dfki.km.leech.sax.PrintlnContentHandler;
 import de.dfki.km.leech.sax.PrintlnContentHandler.Verbosity;
+import org.apache.tika.exception.TikaException;
+import org.apache.tika.parser.ParseContext;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
+
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 
 
@@ -64,10 +63,10 @@ public class SolrIndexCreator
         if(hsStaticAttValuePairs == null) hsStaticAttValuePairs = new MultiValueHashMap<>();
 
 
-        Logger.getLogger(SolrIndexCreator.class.getName()).info("Crawling " + lUrls2Crawl);
+        LoggerFactory.getLogger(SolrIndexCreator.class.getName()).info("Crawling " + lUrls2Crawl);
 
         if(hsStaticAttValuePairs.keySize() > 0)
-            Logger.getLogger(SolrIndexCreator.class.getName()).info("Will add static attribute value pairs to each document: " + hsStaticAttValuePairs);
+            LoggerFactory.getLogger(SolrIndexCreator.class.getName()).info("Will add static attribute value pairs to each document: " + hsStaticAttValuePairs);
 
 
 
@@ -231,7 +230,7 @@ public class SolrIndexCreator
 
         }
 
-        Logger.getLogger(SolrIndexCreator.class.getName()).info("crawling depth is " + iCrawlingDepth);
+        LoggerFactory.getLogger(SolrIndexCreator.class.getName()).info("crawling depth is " + iCrawlingDepth);
 
 
         CrawlerContext crawlerContext = new CrawlerContext().setCrawlingDepth(iCrawlingDepth);

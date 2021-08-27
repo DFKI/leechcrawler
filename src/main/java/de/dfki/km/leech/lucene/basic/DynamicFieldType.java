@@ -10,10 +10,9 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.*;
 import org.apache.lucene.index.DocValuesType;
 import org.apache.lucene.index.IndexOptions;
+import org.slf4j.LoggerFactory;
 
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 // import de.dfki.inquisitor.lucene.LuceneAnalyzerFactory;
 
@@ -101,7 +100,7 @@ public class DynamicFieldType extends FieldType
                 return null;
         } catch (Exception e)
         {
-            Logger.getLogger(FieldConfig.class.getName()).log(Level.SEVERE, "Error", e);
+            LoggerFactory.getLogger(FieldConfig.class.getName()).error("Error", e);
             return null;
         }
     }
@@ -135,7 +134,7 @@ public class DynamicFieldType extends FieldType
             return LuceneAnalyzerFactory.createAnalyzer(getAnalyzer(), null);
         } catch (Exception e)
         {
-            Logger.getLogger(DynamicFieldType.class.getName()).log(Level.SEVERE, "Error", e);
+            LoggerFactory.getLogger(DynamicFieldType.class.getName()).error("Error", e);
             return null;
         }
     }

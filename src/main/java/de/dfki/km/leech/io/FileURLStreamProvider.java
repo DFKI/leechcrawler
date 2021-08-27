@@ -18,6 +18,14 @@ package de.dfki.km.leech.io;
 
 
 
+import de.dfki.km.leech.metadata.LeechMetadata;
+import de.dfki.km.leech.parser.incremental.IncrementalCrawlingHistory;
+import org.apache.tika.io.TikaInputStream;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.metadata.TikaCoreProperties;
+import org.apache.tika.parser.ParseContext;
+
+import javax.mail.URLName;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -26,16 +34,6 @@ import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
-
-import javax.mail.URLName;
-
-import de.dfki.km.leech.metadata.LeechMetadata;
-import org.apache.tika.io.TikaInputStream;
-import org.apache.tika.metadata.Metadata;
-import org.apache.tika.metadata.TikaCoreProperties;
-import org.apache.tika.parser.ParseContext;
-
-import de.dfki.km.leech.parser.incremental.IncrementalCrawlingHistory;
 
 
 
@@ -69,7 +67,7 @@ public class FileURLStreamProvider extends URLStreamProvider
         // Für Leech
         metadata2fill.set(Metadata.SOURCE, file.toURI().toURL().toString());
         // Optional
-        metadata2fill.set(TikaCoreProperties.MODIFIED,
+        metadata2fill.set(TikaCoreProperties.MODIFIED.getName(),
                 new SimpleDateFormat("yyyy.MM.dd HH:mm:ss:SSS").format(new Date(file.lastModified())));
 
         // Für das inkrementelle indexieren
