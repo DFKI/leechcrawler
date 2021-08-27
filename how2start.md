@@ -41,7 +41,7 @@ The version corresponds to the used Tika release version. Currently, these versi
 
 Note that Tika changed the metadata attribute names from Tika 1 to Tika 2, e.g. 'title' is 'dc:title' now.
 
-**Tika 2:** 2.0.0 
+**Tika 2:** 2.0.0, 2.1.0
 
 ---
 
