@@ -13,7 +13,7 @@ The German Research Center for Artificial Intelligence (Deutsches Forschungszent
 
 Deutsches Forschungszentrum für Künstliche Intelligenz (DFKI)  
 Phone: +49 (0)631 / 205 75-0   
-E-Mail: info@dfki.de, [Legal Information](https://github.com/leechcrawler/leech/blob/master/people.md))
+E-Mail: info@dfki.de [Legal Information](https://www.dfki.de/en/web/legal-notice/)
 
  
 
