@@ -217,7 +217,7 @@ import java.util.regex.Pattern;
 
 
 
-    protected Pattern dmsCoordinatePattern = Pattern.compile("(\\d+\\.?\\d*)/(\\d*+\\.?\\d*)/(\\d*\\.?\\d*)/([NESW])");
+    protected Pattern dmsCoordinatePattern = Pattern.compile("(\\d+\\.?\\d*)/(\\d+\\.?\\d*)/(\\d+\\.?\\d*)/([NESW])");
 
 
 
@@ -623,6 +623,7 @@ import java.util.regex.Pattern;
 
     protected void parseGeoCoordinates(String strText, Metadata metadata)
     {
+        // (?s) am Anfang heißt Pattern.DOTALL => Punkt matcht auch über mehrere Zeilen
         Matcher matcher = Pattern.compile("(?s)\\{\\{Coordinate (.*?)\\}\\}").matcher(strText);
 
         coord:
@@ -648,24 +649,32 @@ import java.util.regex.Pattern;
 
                     if("E".equals(degreeMatcher.group(4)))
                     {
+                        if(dInDezimal > 180 || dInDezimal < -180) continue;
+
                         String strLon = String.valueOf(dInDezimal);
                         strbCoordinateLatLon.append(strLon);
                         metadata.add("longitude", strLon);
                     }
                     if("W".equals(degreeMatcher.group(4)))
                     {
+                        if(dInDezimal > 180 || dInDezimal < -180) continue;
+
                         String strLon =String.valueOf(dInDezimal * -1);
                         strbCoordinateLatLon.append(strLon);
                         metadata.add("longitude", strLon);
                     }
                     if("N".equals(degreeMatcher.group(4)))
                     {
+                        if(dInDezimal > 90 || dInDezimal < -90) continue;
+
                         String strLat =String.valueOf(dInDezimal);
                         strbCoordinateLatLon.insert(0, strLat);
                         metadata.add("latitude", strLat);
                     }
                     if("S".equals(degreeMatcher.group(4)))
                     {
+                        if(dInDezimal > 90 || dInDezimal < -90) continue;
+
                         String strLat =String.valueOf(dInDezimal * -1);
                         strbCoordinateLatLon.insert(0, strLat);
                         metadata.add("latitude", strLat);
@@ -680,15 +689,19 @@ import java.util.regex.Pattern;
                         String strAttValue = strPiece.substring(3).trim();
                         try
                         {
-                            Double.valueOf(strAttValue);
+                            double dValue = Double.parseDouble(strAttValue);
 
                             if(strPiece.contains("EW="))
                             {
+                                if(dValue > 180 || dValue < -180) continue;
+
                                 strbCoordinateLatLon.append(strAttValue);
                                 metadata.add("longitude", strAttValue);
                             }
                             if(strPiece.contains("NS="))
                             {
+                                if(dValue > 90 || dValue < -90) continue;
+
                                 strbCoordinateLatLon.insert(0, strAttValue);
                                 metadata.add("latitude", strAttValue);
                             }

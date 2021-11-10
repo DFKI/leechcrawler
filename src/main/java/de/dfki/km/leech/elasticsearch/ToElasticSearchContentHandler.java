@@ -13,6 +13,7 @@ import org.apache.http.client.fluent.Content;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.entity.ContentType;
 import org.apache.tika.metadata.Metadata;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 
@@ -82,6 +83,8 @@ public class ToElasticSearchContentHandler extends DataSinkContentHandler
         }
         catch (Exception e)
         {
+            LoggerFactory.getLogger(ToElasticSearchContentHandler.class.getName()).error("Error in Elasticsearch bulk request:\n" + m_strbCurrentNdJsonBulk, e);
+
             throw new RuntimeException(e);
         }
     }
@@ -241,9 +244,10 @@ public class ToElasticSearchContentHandler extends DataSinkContentHandler
             StringBuilder strbLines4Bulk = new StringBuilder();
 
             if(strId != null)
-                strbLines4Bulk.append(String.format( "{\"create\":{\"_id\":\"%s\"}}\n", strId));
+                strbLines4Bulk.append(String.format("{\"create\":{\"_id\":\"%s\"}}\n", JSONValue.escape(strId)));
             else
-                strbLines4Bulk.append("{\"create\":{}}\n"); strbLines4Bulk.append('{');
+                strbLines4Bulk.append("{\"create\":{}}\n");
+            strbLines4Bulk.append('{');
             boolean bFirstKey = true;
             for (String strKey : metadata.names())
             {
@@ -271,7 +275,9 @@ public class ToElasticSearchContentHandler extends DataSinkContentHandler
 
             if(!bFirstKey)
                 strbLines4Bulk.append(',');
-            strbLines4Bulk.append('"').append(m_hsRenameAtts.getOrDefault(LeechMetadata.body, LeechMetadata.body)).append('"');
+
+            String strKeyCleaned = JSONValue.escape(m_hsRenameAtts.getOrDefault(LeechMetadata.body, LeechMetadata.body));
+            strbLines4Bulk.append('"').append(strKeyCleaned).append('"');
             String strValueCleaned = JSONValue.escape(strFulltext);
             strbLines4Bulk.append(":\"").append(strValueCleaned).append('"');
 
@@ -290,19 +296,19 @@ public class ToElasticSearchContentHandler extends DataSinkContentHandler
                     .bodyString(m_strbCurrentNdJsonBulk.toString(), ContentType.APPLICATION_JSON).execute().returnContent();
 
 
-            m_strbCurrentNdJsonBulk = new StringBuilder();
-            m_iCurrentBulkSize = 0;
-
-
             Boolean bError = JsonPath.read(returnContent.toString(), "$.errors");
             if(bError)
                 throw new LeechException(returnContent.toString());
+
+            m_strbCurrentNdJsonBulk = new StringBuilder();
+            m_iCurrentBulkSize = 0;
 
 
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            LoggerFactory.getLogger(ToElasticSearchContentHandler.class.getName()).error("Error in Elasticsearch bulk request:\n" + m_strbCurrentNdJsonBulk, e);
+
             throw new RuntimeException(e);
         }
 

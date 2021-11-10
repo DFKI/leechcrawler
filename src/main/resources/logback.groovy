@@ -2,6 +2,8 @@ import ch.qos.logback.classic.AsyncAppender
 //import ch.qos.logback.classic.PatternLayout
 //import static ch.qos.logback.classic.Level.INFO
 
+
+
 scan("30 seconds")
 
 def LOG_PATH = "logs"
@@ -59,9 +61,11 @@ appender("RollingAsyncFileAppender", AsyncAppender) {
 //OFF, ERROR, WARN, INFO, DEBUG, TRACE, or ALL
 root(INFO, appenderList)
 
+// doesn't work for the initial logback massages: logger("ch.qos.logback.classic.*", OFF, appenderList, false)
+// doesn't work for the initial logback massages: logger("ch.qos.logback.core.rolling.*", OFF, appenderList, false)
+
+
 logger("de.dfki.inquisitor.processes.StopWatch", ALL, appenderList, false)
-
-
 
 //logger("org.apache.pdfbox.util.PDFStreamEngine", OFF, appenderList, false)
 //logger("org.apache.pdfbox.encoding.Encoding", OFF, appenderList, false)
