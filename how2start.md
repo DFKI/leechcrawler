@@ -24,7 +24,7 @@ and in the \<dependencies\> section
         <dependency>
             <groupId>de.dfki.sds</groupId>
             <artifactId>leechcrawler</artifactId>
-            <version>2.1.0</version>
+            <version>2.4.1</version>
         </dependency>
 
 
@@ -41,7 +41,7 @@ The version corresponds to the used Tika release version. Currently, these versi
 
 Note that Tika changed the metadata attribute names from Tika 1 to Tika 2, e.g. 'title' is 'dc:title' now.
 
-**Tika 2:** 2.0.0, 2.1.0
+**Tika 2:** 2.0.0, 2.1.0, 2.4.1
 
 ---
 
