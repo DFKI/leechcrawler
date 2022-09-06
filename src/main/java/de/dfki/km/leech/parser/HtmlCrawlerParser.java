@@ -46,6 +46,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 
@@ -243,7 +244,7 @@ public class HtmlCrawlerParser extends CrawlerParser
                 {
                     metadata.set(IncrementalCrawlingParser.DATA_ENTITY_MODIFICATION_STATE, IncrementalCrawlingParser.PROCESSED);
                     
-                    InputStream dummyStream = new ByteArrayInputStream("leech sucks - hopefully :)".getBytes("UTF-8"));
+                    InputStream dummyStream = new ByteArrayInputStream("leech sucks - hopefully :)".getBytes(StandardCharsets.UTF_8));
                     EmptyParser.INSTANCE.parse(dummyStream, handler2use4recursiveCall, metadata, context);
                     
                     return;
@@ -254,10 +255,9 @@ public class HtmlCrawlerParser extends CrawlerParser
 
 
         metadata = URLStreamProvider.getURLStreamProvider(url).addFirstMetadata(url, metadata, context);
-        InputStream stream = URLStreamProvider.getURLStreamProvider(url).getStream(url, metadata, context);
 
 
-        try
+        try (InputStream stream = URLStreamProvider.getURLStreamProvider(url).getStream(url, metadata, context))
         {
 
             if(m_leech == null) m_leech = new Leech();
@@ -266,11 +266,6 @@ public class HtmlCrawlerParser extends CrawlerParser
             Parser parser = m_leech.getParser();
 
             parser.parse(stream, handler2use4recursiveCall, metadata, context);
-
-        }
-        finally
-        {
-            if(stream != null) stream.close();
         }
 
     }

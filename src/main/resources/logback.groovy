@@ -12,6 +12,9 @@ def HOSTNAME=hostname
 def appenderList = ["Console-Appender","RollingAsyncFileAppender"]
 //def appenderList = ["Console-Appender"]
 
+// keine Status-Ballast-Ausgabe am Programmstart
+statusListener(NopStatusListener)
+
 
 appender("Console-Appender", ConsoleAppender) {
 

@@ -20,8 +20,10 @@ package de.dfki.km.leech.util;
 
 import de.dfki.inquisitor.collections.ValueBox;
 import de.dfki.inquisitor.text.StringUtils;
+import de.dfki.km.leech.Leech;
 import de.dfki.km.leech.SubDataEntityContentHandler;
 import de.dfki.km.leech.config.CrawlerContext;
+import de.dfki.km.leech.io.URLStreamProvider;
 import de.dfki.km.leech.parser.DirectoryCrawlerParser;
 import de.dfki.km.leech.sax.DataSinkContentHandler;
 import de.dfki.km.leech.sax.DataSinkContentHandlerAdapter;
@@ -36,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
+import javax.mail.URLName;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
@@ -47,7 +50,9 @@ public class TikaUtils
 
 
 
-    protected static DefaultParser defaultParser = new DefaultParser();
+    protected static DefaultParser defaultParserWithoutHistoryAndUrl = new DefaultParser();
+
+    protected static Parser defaultLeechParser = new Leech().getParser();
 
 
 
@@ -110,27 +115,24 @@ public class TikaUtils
     static public ContentHandler createContentHandler4SubCrawl(CrawlerContext crawlerContext)
     {
 
-        if(crawlerContext == null)
-            throw new IllegalStateException("no crawlerContext was set");
+        if(crawlerContext == null) throw new IllegalStateException("no crawlerContext was set");
 
 
         ContentHandler handler2use4recursiveCall = crawlerContext.getContentHandler();
 
 
-        if(!StringUtils.nullOrWhitespace(crawlerContext.getContentHandlerClassName()))
-            try
-            {
-                handler2use4recursiveCall = (ContentHandler) Class.forName(crawlerContext.getContentHandlerClassName()).newInstance();
-            }
-            catch (Exception e)
-            {
-                LoggerFactory.getLogger(DirectoryCrawlerParser.class.getName())
-                        .error("Error during the instantiation of the configured content handler " + crawlerContext.getContentHandlerClassName(), e);
-            }
+        if(!StringUtils.nullOrWhitespace(crawlerContext.getContentHandlerClassName())) try
+        {
+            handler2use4recursiveCall = (ContentHandler) Class.forName(crawlerContext.getContentHandlerClassName()).newInstance();
+        }
+        catch (Exception e)
+        {
+            LoggerFactory.getLogger(DirectoryCrawlerParser.class.getName())
+                    .error("Error during the instantiation of the configured content handler " + crawlerContext.getContentHandlerClassName(), e);
+        }
 
 
-        if(handler2use4recursiveCall == null)
-            throw new IllegalStateException("No ContentHandler was set. Have a look into the class CrawlerContext");
+        if(handler2use4recursiveCall == null) throw new IllegalStateException("No ContentHandler was set. Have a look into the class CrawlerContext");
 
 
         return handler2use4recursiveCall;
@@ -140,7 +142,8 @@ public class TikaUtils
 
     /**
      * Delegates parsing a stream with according metadata to the Tika default parser which selects the right parser implementation automatically according the mimetype in the given
-     * metadata. The metadata object will be filled with new metadata from the selected parser. The parsed fulltext is returned.
+     * metadata. The metadata object will be filled with new metadata from the selected parser. The parsed fulltext is returned. This is all WITHOUT history, etc. so you can use
+     * this method without side effects inside own parser implementations
      */
     public static String delegateParsing(InputStream stream, Metadata metadata) throws TikaException, IOException, SAXException
     {
@@ -154,10 +157,48 @@ public class TikaUtils
             }
         };
 
-        defaultParser.parse(stream, newHandler, metadata, new ParseContext());
+        defaultParserWithoutHistoryAndUrl.parse(stream, newHandler, metadata, new ParseContext());
 
         return strBodyTextBox.getValue();
     }
+
+
+
+    /**
+     * Can be used to delegate recursive crawling with history and url filtering - i.e. full fletched leech crawling. Configure the crawl as usual inside the ParseContext
+     * parameter object. This method makes the same as Leech.parse() with the difference that you can add own metadata attributes to the result
+     */
+    public static void delegateCrawling(String strUrl, Metadata metadata2use4recursiveCall, ContentHandler handler2use4recursiveCall, ParseContext context) throws Exception
+    {
+        URLName url = new URLName(strUrl);
+
+
+        url = UrlUtil.normalizeURL(url);
+
+        context.set(Parser.class, defaultLeechParser);
+
+        CrawlerContext crawlerContext = context.get(CrawlerContext.class);
+        if (crawlerContext == null)
+        {
+            crawlerContext = new CrawlerContext();
+            context.set(CrawlerContext.class, crawlerContext);
+        }
+        crawlerContext.setContentHandler(handler2use4recursiveCall);
+
+
+
+
+        metadata2use4recursiveCall = URLStreamProvider.getURLStreamProvider(url).addFirstMetadata(url, metadata2use4recursiveCall, context);
+
+        try (InputStream stream = URLStreamProvider.getURLStreamProvider(url).getStream(url, metadata2use4recursiveCall, context))
+        {
+            defaultLeechParser.parse(stream, handler2use4recursiveCall, metadata2use4recursiveCall, context);
+        }
+
+
+    }
+
+
 
     /**
      * Convenience method to trigger an (subdata )entity handling. This is also usefull if you want to delegate parsing tasks to another parser in your own parser. This method
@@ -184,14 +225,11 @@ public class TikaUtils
     {
         Map<MediaType, Parser> map;
 
-        if(context != null)
-            map = compoParser.getParsers(context);
-        else
-            map = compoParser.getParsers();
+        if(context != null) map = compoParser.getParsers(context);
+        else map = compoParser.getParsers();
 
         // We always work on the normalised, canonical form
-        if(type != null)
-            type = compoParser.getMediaTypeRegistry().normalize(type);
+        if(type != null) type = compoParser.getMediaTypeRegistry().normalize(type);
 
         while (type != null)
         {
@@ -199,8 +237,7 @@ public class TikaUtils
             Parser parser = map.get(type);
             if(parser != null)
             {
-                if(parser instanceof CompositeParser)
-                    return getParser4Type((CompositeParser) parser, type, context);
+                if(parser instanceof CompositeParser) return getParser4Type((CompositeParser) parser, type, context);
 
                 return parser;
             }

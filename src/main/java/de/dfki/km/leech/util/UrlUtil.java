@@ -1,16 +1,16 @@
 /*
  * Leech - crawling capabilities for Apache Tika
- * 
+ *
  * Copyright (C) 2012 DFKI GmbH, Author: Christian Reuschling
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  * Contact us by mail: christian.reuschling@dfki.de
  */
 
@@ -65,9 +65,9 @@ public class UrlUtil
 
     public static URLName urlNameWithoutPassword(URLName urlNameWithPassword)
     {
-        URLName urlNameWithoutPassword =
-                new URLName(urlNameWithPassword.getProtocol(), urlNameWithPassword.getHost(), urlNameWithPassword.getPort(),
-                        urlNameWithPassword.getFile(), urlNameWithPassword.getUsername(), "");
+        String strOldPwd = urlNameWithPassword.getPassword() == null ? "" : urlNameWithPassword.getPassword();
+        URLName urlNameWithoutPassword = new URLName(urlNameWithPassword.getProtocol(), urlNameWithPassword.getHost(), urlNameWithPassword.getPort(), urlNameWithPassword.getFile(),
+                urlNameWithPassword.getUsername(), strOldPwd.trim().length() == 0 ? "" : "possiblePwdRemoved");
 
 
         return urlNameWithoutPassword;
@@ -78,9 +78,9 @@ public class UrlUtil
     /**
      * If the given String can be parsed as an URL, the method will return another URL String without a possible password. In the case the String can
      * not be parsed as URL, the method will return the given original String.
-     * 
+     *
      * @param strPossibleUrlNameWithPassword a String that possibly is an URL String with password
-     * 
+     *
      * @return the original String in the case it could not be parsed as an Url, an Url String with removed password otherwise.
      */
     public static String urlNameWithoutPassword(String strPossibleUrlNameWithPassword)
@@ -103,7 +103,7 @@ public class UrlUtil
 
     /**
      * Remove relative references and "mistakes" like double slashes from the path.
-     * 
+     *
      * @param path The path to normalize.
      * @return The normalized path.
      */
@@ -127,7 +127,7 @@ public class UrlUtil
 
     /**
      * Normalizes a query string by sorting the query parameters alpabetically.
-     * 
+     *
      * @param query The query string to normalize.
      * @return The normalized query string.
      */
@@ -163,7 +163,7 @@ public class UrlUtil
 
     /**
      * Normalizes a URL. The following steps are taken to normalize a URL:
-     * 
+     *
      * <ul>
      * <li>The protocol is made lower-case.
      * <li>The host is made lower-case.
@@ -171,9 +171,9 @@ public class UrlUtil
      * <li>Any query parameters are sorted alphabetically.
      * <li>Any anchor information is removed.
      * </ul>
-     * 
+     *
      * @param url the url that should be normalized
-     * 
+     *
      * @return the normalized url
      */
     public static URLName normalizeURL(URLName url)
@@ -219,7 +219,7 @@ public class UrlUtil
 
     /**
      * Substitute String "old" by String "new" in String "text" everywhere.
-     * 
+     *
      * @param olds The String to be substituted.
      * @param news The String containing the new content.
      * @param text The String in which the substitution is done.

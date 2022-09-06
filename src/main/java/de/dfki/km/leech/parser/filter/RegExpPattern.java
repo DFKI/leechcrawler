@@ -45,7 +45,7 @@ public class RegExpPattern implements URLFilterPattern
     
     public RegExpPattern(String pattern)
     {
-        this(Pattern.compile(pattern));
+        this(Pattern.compile(pattern, Pattern.UNICODE_CHARACTER_CLASS));
     }
 
 
@@ -104,7 +104,7 @@ public class RegExpPattern implements URLFilterPattern
 
     public void setPattern(String pattern)
     {
-        this.pattern = Pattern.compile(pattern);
+        this.pattern = Pattern.compile(pattern, Pattern.UNICODE_CHARACTER_CLASS);
     }
 
 

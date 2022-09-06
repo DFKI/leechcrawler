@@ -88,7 +88,7 @@ import java.util.LinkedList;
 
 
 
-public class Leech extends Tika
+@SuppressWarnings("JavadocLinkAsPlainText") public class Leech extends Tika
 {
 
 
@@ -212,7 +212,7 @@ public class Leech extends Tika
         if (!StringUtils.nullOrWhitespace(crawlerContext.getContentHandlerClassName()))
             try
             {
-                handler2use4recursiveCall = (ContentHandler) Class.forName(crawlerContext.getContentHandlerClassName()).newInstance();
+                handler2use4recursiveCall = (ContentHandler) Class.forName(crawlerContext.getContentHandlerClassName()).getConstructor().newInstance();
             } catch (Throwable e)
             {
                 LoggerFactory.getLogger(DirectoryCrawlerParser.class.getName())
@@ -293,9 +293,6 @@ public class Leech extends Tika
      * @param file    the file you want to crawl/extract content from
      * @param handler the handler that should handle the extracted data
      *
-     * @throws IOException
-     * @throws SAXException
-     * @throws TikaException
      */
     public void parse(File file, ContentHandler handler) throws IOException, SAXException, TikaException
     {
@@ -345,9 +342,6 @@ public class Leech extends Tika
      * @param context the parsing context to use. An entry with the configured parser will be added by the method. You can pass in an CrawlerContext instance to e.g. set
      *                the contentHandler for recursive crawls or enable incremental crawling.
      *
-     * @throws IOException
-     * @throws SAXException
-     * @throws TikaException
      */
     public void parse(File file, ContentHandler handler, ParseContext context) throws IOException, SAXException, TikaException
     {
@@ -398,9 +392,6 @@ public class Leech extends Tika
      * @param context the parsing context to use. An entry with the configured parser will be added by the method. You can pass in an CrawlerContext instance to e.g. set
      *                the contentHandler for recursive crawls or enable incremental crawling.
      *
-     * @throws IOException
-     * @throws SAXException
-     * @throws TikaException
      */
     public void parse(File file, ParseContext context) throws IOException, SAXException, TikaException
     {
@@ -451,9 +442,6 @@ public class Leech extends Tika
      *                        'imaps://usr:pswd@myImapServer.de:993/inbox;uid=22'
      * @param handler         the handler that should handle the extracted data
      *
-     * @throws IOException
-     * @throws SAXException
-     * @throws TikaException
      */
     public void parse(String strSourceString, ContentHandler handler) throws IOException, SAXException, TikaException
     {
@@ -478,9 +466,6 @@ public class Leech extends Tika
      * @param context         the parsing context to use. An entry with the configured parser will be added by the method. You can pass in an CrawlerContext instance to e.g. set
      *                        the contentHandler for recursive crawls or enable incremental crawling.
      *
-     * @throws IOException
-     * @throws SAXException
-     * @throws TikaException
      */
     public void parse(String strSourceString, ContentHandler handler, ParseContext context) throws IOException, SAXException, TikaException
     {
@@ -505,9 +490,6 @@ public class Leech extends Tika
      * @param context        the parsing context to use. An entry with the configured parser will be added by the method. You can pass in an CrawlerContext instance to e.g. set
      *                       the contentHandler for recursive crawls or enable incremental crawling.
      *
-     * @throws IOException
-     * @throws SAXException
-     * @throws TikaException
      */
     public void parse(String[] lSourceStrings, ContentHandler handler, ParseContext context) throws IOException, SAXException, TikaException
     {
@@ -533,9 +515,6 @@ public class Leech extends Tika
      * @param context         the parsing context to use. An entry with the configured parser will be added by the method. You can pass in an CrawlerContext instance to e.g. set
      *                        the contentHandler for recursive crawls or enable incremental crawling.
      *
-     * @throws IOException
-     * @throws SAXException
-     * @throws TikaException
      */
     public void parse(String strSourceString, ParseContext context) throws IOException, SAXException, TikaException
     {
@@ -588,9 +567,6 @@ public class Leech extends Tika
      *                etc...)
      * @param handler the handler that should handle the extracted data
      *
-     * @throws IOException
-     * @throws SAXException
-     * @throws TikaException
      */
     public void parse(URLName url, ContentHandler handler) throws IOException, SAXException, TikaException
     {
@@ -642,9 +618,6 @@ public class Leech extends Tika
      * @param context the parsing context to use. An entry with the configured parser will be added by the method. You can pass in an CrawlerContext instance to e.g. set
      *                the contentHandler for recursive crawls or enable incremental crawling.
      *
-     * @throws IOException
-     * @throws SAXException
-     * @throws TikaException
      */
     public void parse(URLName url, ContentHandler handler, ParseContext context) throws IOException, SAXException, TikaException
     {
@@ -701,9 +674,6 @@ public class Leech extends Tika
      * @param context the parsing context to use. An entry with the configured parser will be added by the method. You can pass in an CrawlerContext instance to e.g. set
      *                the contentHandler for recursive crawls or enable incremental crawling.
      *
-     * @throws IOException
-     * @throws SAXException
-     * @throws TikaException
      */
     public void parse(URLName[] urls, ContentHandler handler, ParseContext context) throws IOException, SAXException, TikaException
     {
@@ -736,11 +706,11 @@ public class Leech extends Tika
             metadata.add(IncrementalCrawlingHistory.dataEntityContentFingerprint, strUid + "_leechUrlList.urlList");
             metadata.add(Metadata.CONTENT_TYPE, "application/leechUrlList");
 
-            String strSourcesString = "";
+            StringBuilder strSourcesString = new StringBuilder();
             for (URLName url : urls)
-                strSourcesString += url.toString() + "\n";
+                strSourcesString.append(url.toString()).append("\n");
 
-            stream = new ByteArrayInputStream(strSourcesString.getBytes());
+            stream = new ByteArrayInputStream(strSourcesString.toString().getBytes());
 
 
             // wir müssen noch aufpassen: wenn wir eine Liste übergeben und mit dem URListParser arbeiten, dann dürfen wir die erste Rekursionsstufe nicht dazuzählen
@@ -773,9 +743,6 @@ public class Leech extends Tika
      * @param context the parsing context to use. An entry with the configured parser will be added by the method. You can pass in an CrawlerContext instance to e.g. set
      *                the contentHandler for recursive crawls or enable incremental crawling.
      *
-     * @throws IOException
-     * @throws SAXException
-     * @throws TikaException
      */
     public void parse(URLName url, ParseContext context) throws IOException, SAXException, TikaException
     {

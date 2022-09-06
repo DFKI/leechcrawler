@@ -14,6 +14,7 @@ import org.xml.sax.ContentHandler;
 
 import javax.mail.URLName;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 
@@ -37,7 +38,7 @@ public class UrlListCrawlerParser extends CrawlerParser
 
         LinkedList<MultiValueHashMap<String, Object>> llSubEntityData = new LinkedList<>();
 
-        try (Scanner s = new Scanner(stream, "UTF-8").useDelimiter("\n"))
+        try (Scanner s = new Scanner(stream, StandardCharsets.UTF_8).useDelimiter("\n"))
         {
             while (s.hasNext())
             {
