@@ -188,7 +188,7 @@
         <dependency>
             <groupId>de.dfki.sds</groupId>
             <artifactId>inquisitor</artifactId>
-            <version>23_5-SNAPSHOT</version>
+            <version>23_6-SNAPSHOT</version>
         </dependency>
 
 
