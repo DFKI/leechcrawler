@@ -32,6 +32,10 @@ public interface LeechMetadata
     // depending the Tika version, this is Metadata.RESOURCE_NAME_KEY or LeechMetadata.RESOURCE_NAME_KEY. Sadly they doesn't mark it deprecated and did a breaking change
     public static final String RESOURCE_NAME_KEY = "resourceName";
 
+    // if there was a redirect, the given origin of this redirect
+    public static final String originSource = "originSource";
+
+
     
 
 }

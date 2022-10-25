@@ -172,7 +172,7 @@ public class ImapCrawlerParser extends CrawlerParser
             if(message != null) strType = "IMAP message ";
 
             if(crawlerContext.getVerbose())
-                LoggerFactory.getLogger(CrawlerParser.class.getName()).info(
+                LoggerFactory.getLogger(ImapCrawlerParser.class.getName()).info(
                         strType + strURL2Check + " is outside the URL constraints for this data source. Skipping.");
 
             return false;

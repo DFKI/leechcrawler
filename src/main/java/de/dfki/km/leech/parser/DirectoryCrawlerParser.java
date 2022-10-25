@@ -185,7 +185,7 @@ public class DirectoryCrawlerParser extends CrawlerParser
         if(!crawlerContext.getURLFilter().accept(finalFile.toURI().toString()))
         {
             if(crawlerContext.getVerbose())
-                LoggerFactory.getLogger(CrawlerParser.class.getName()).info(
+                LoggerFactory.getLogger(DirectoryCrawlerParser.class.getName()).info(
                         "File " + finalFile.toURI() + " is outside the URL constraints for this data source. Skipping.");
             return null;
         }

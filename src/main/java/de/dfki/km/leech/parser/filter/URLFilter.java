@@ -35,7 +35,7 @@ import java.util.List;
 
 /**
  * URLFilter uses patterns (regular expressions or substrings checks) to determine whether a URL/source string belongs to a datasource domain or not.
- * 
+ *
  * <p>
  * Each URLFilter maintains lists of include and exclude patterns. A URL/source string is matched against these two pattern lists to determine whether
  * it is inside or outside the domain. A URL/source string is inside the domain when it matches at least one of the include patterns but none of the
@@ -83,8 +83,9 @@ public class URLFilter implements FilenameFilter
 
     /**
      * Checks whether the supplied URL/source string falls inside the specified boundaries.
-     * 
+     *
      * @param strUrlOrSource The URL/source string to check.
+     *
      * @return 'true' if the URL/source string is inside the crawl domain, 'false' otherwise.
      */
     public boolean accept(String strUrlOrSource)
@@ -132,8 +133,9 @@ public class URLFilter implements FilenameFilter
 
     /**
      * Checks whether the supplied URL falls inside the specified boundaries.
-     * 
+     *
      * @param url The URL
+     *
      * @return 'true' if the URL/source string is inside the crawl domain, 'false' otherwise.
      */
     public boolean accept(URL url)
@@ -145,9 +147,9 @@ public class URLFilter implements FilenameFilter
 
     /**
      * Adds an exclude pattern
-     * 
+     *
      * @param pattern the new exclude pattern
-     * 
+     *
      * @return this with the new entry. For convenience.
      */
     public URLFilter addExcludePattern(URLFilterPattern... pattern)
@@ -161,9 +163,9 @@ public class URLFilter implements FilenameFilter
 
     /**
      * Adds an include pattern
-     * 
+     *
      * @param pattern the new include pattern
-     * 
+     *
      * @return this with the new entry. For convenience.
      */
     public URLFilter addIncludePattern(URLFilterPattern... pattern)
@@ -197,7 +199,7 @@ public class URLFilter implements FilenameFilter
 
     /**
      * Removes all exclude pattern
-     * 
+     *
      * @return this for convenience
      */
     public URLFilter removeAllExcludePatterns()
@@ -211,7 +213,7 @@ public class URLFilter implements FilenameFilter
 
     /**
      * Removes all include pattern
-     * 
+     *
      * @return this for convenience
      */
     public URLFilter removeAllIncludePatterns()
@@ -225,7 +227,7 @@ public class URLFilter implements FilenameFilter
 
     /**
      * Removes all pattern
-     * 
+     *
      * @return this for convenience
      */
     public URLFilter removeAllPatterns()
@@ -254,9 +256,9 @@ public class URLFilter implements FilenameFilter
 
     /**
      * Sets a new exclude pattern list
-     * 
+     *
      * @param lExcludePatterns the new exclude patterns
-     * 
+     *
      * @return this with the new entry. For convenience.
      */
     public URLFilter setExcludePatterns(List<URLFilterPattern> lExcludePatterns)
@@ -270,9 +272,9 @@ public class URLFilter implements FilenameFilter
 
     /**
      * Sets a new exclude pattern list
-     * 
+     *
      * @param lIncludePatterns the new exclude patterns
-     * 
+     *
      * @return this with the new entry. For convenience.
      */
     public URLFilter setIncludePatterns(List<URLFilterPattern> lIncludePatterns)

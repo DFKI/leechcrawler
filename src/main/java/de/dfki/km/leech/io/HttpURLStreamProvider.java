@@ -1,16 +1,16 @@
 /*
  * Leech - crawling capabilities for Apache Tika
- * 
+ *
  * Copyright (C) 2012 DFKI GmbH, Author: Christian Reuschling
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  * Contact us by mail: christian.reuschling@dfki.de
  */
 
@@ -57,10 +57,8 @@ public class HttpURLStreamProvider extends URLStreamProvider
     protected static String getRedirectedUrl(URL url, URLConnection connection) throws IOException
     {
         String newLocation = connection.getHeaderField("Location");
-        if(newLocation == null)
-            throw new IOException("missing redirection location");
-        else
-            return new URL(url, newLocation).toString();
+        if(newLocation == null) throw new IOException("missing redirection location");
+        else return new URL(url, newLocation).toString();
     }
 
 
@@ -69,8 +67,8 @@ public class HttpURLStreamProvider extends URLStreamProvider
 
     protected static boolean isRedirected(int responseCode)
     {
-        return responseCode == HttpURLConnection.HTTP_MULT_CHOICE || responseCode == HttpURLConnection.HTTP_MOVED_PERM
-                || responseCode == HttpURLConnection.HTTP_MOVED_TEMP || responseCode == HttpURLConnection.HTTP_SEE_OTHER;
+        return responseCode == HttpURLConnection.HTTP_MULT_CHOICE || responseCode == HttpURLConnection.HTTP_MOVED_PERM || responseCode == HttpURLConnection.HTTP_MOVED_TEMP
+                || responseCode == HttpURLConnection.HTTP_SEE_OTHER;
     }
 
 
@@ -78,17 +76,17 @@ public class HttpURLStreamProvider extends URLStreamProvider
 
     /**
      * Adds first metadata and metadata relevant for incremental indexing to the given metadata object
-     * 
+     *
      * @param url2getMetadata the url for which metadata should be extracte
-     * @param metadata2fill the metadata object. The method will put several entries, as Metadata.SOURCE, LeechMetadata.RESOURCE_NAME_KEY,
-     *            Metadata.CONTENT_ENCODING, Metadata.CONTENT_TYPE, Metadata.CONTENT_LOCATION and, last but not least, the
-     *            {@link IncrementalCrawlingHistory#dataEntityId} and {@link IncrementalCrawlingHistory#dataEntityContentFingerprint} to
-     *            determine whether the content behind the url was modified since the last crawl or not. The URL path entry for Metadata.SOURCE is
-     *            the last URL behind potential previous redirects (in the case its an http connection). The origin URL will be written into an
-     *            attribute "originalsource" in the case it differs from the one into Metadata.SOURCE. To determine whether an url was modified or
-     *            not, the method needs a configured crawling history.
-     * @param parseContext the parsing context to specify a crawling history. Can be null, in this case no history will be used (of course ;) )
-     * 
+     * @param metadata2fill   the metadata object. The method will put several entries, as Metadata.SOURCE, LeechMetadata.RESOURCE_NAME_KEY,
+     *                        Metadata.CONTENT_ENCODING, Metadata.CONTENT_TYPE, Metadata.CONTENT_LOCATION and, last but not least, the
+     *                        {@link IncrementalCrawlingHistory#dataEntityId} and {@link IncrementalCrawlingHistory#dataEntityContentFingerprint} to
+     *                        determine whether the content behind the url was modified since the last crawl or not. The URL path entry for Metadata.SOURCE is
+     *                        the last URL behind potential previous redirects (in the case its an http connection). The origin URL will be written into an
+     *                        attribute "originSource" in the case it differs from the one into Metadata.SOURCE. To determine whether an url was modified or
+     *                        not, the method needs a configured crawling history.
+     * @param parseContext    the parsing context to specify a crawling history. Can be null, in this case no history will be used (of course ;) )
+     *
      * @return the metadata object, enriched with new metadata (in the case this metadata was not set yet)
      */
     @Override
@@ -100,11 +98,9 @@ public class HttpURLStreamProvider extends URLStreamProvider
 
 
         // wenn das Teil schon gefüllt ist, dann machen wir gar nix
-        if(!(metadata2fill.get(Metadata.SOURCE) == null || metadata2fill.get(LeechMetadata.RESOURCE_NAME_KEY) == null
-                || metadata2fill.get(Metadata.CONTENT_ENCODING) == null || metadata2fill.get(Metadata.CONTENT_TYPE) == null
-                || metadata2fill.get(Metadata.CONTENT_LOCATION) == null
-                || metadata2fill.get(IncrementalCrawlingHistory.dataEntityContentFingerprint) == null || metadata2fill
-                    .get(IncrementalCrawlingHistory.dataEntityId) == null))
+        if(!(metadata2fill.get(Metadata.SOURCE) == null || metadata2fill.get(LeechMetadata.RESOURCE_NAME_KEY) == null || metadata2fill.get(Metadata.CONTENT_ENCODING) == null
+                || metadata2fill.get(Metadata.CONTENT_TYPE) == null || metadata2fill.get(Metadata.CONTENT_LOCATION) == null
+                || metadata2fill.get(IncrementalCrawlingHistory.dataEntityContentFingerprint) == null || metadata2fill.get(IncrementalCrawlingHistory.dataEntityId) == null))
         {
             // alle sind bereits gesetzt
             return metadata2fill;
@@ -132,9 +128,9 @@ public class HttpURLStreamProvider extends URLStreamProvider
         int nrRedirections = 0;
 
         String strCurrentUrl = url2getMetadata.toString();
-        
+
         CookieManager cookies = crawlerContext.getCookieManager();
-        
+
         // We're going to loop, accessing urls until we arrive at a url that is not redirected. The
         // redirection is followed manually rather than automatically, which is HttpURLConnection's
         // default behaviour, so that we know the actual url we arrive at.
@@ -173,14 +169,16 @@ public class HttpURLStreamProvider extends URLStreamProvider
                 connection.setRequestProperty("Accept-Encoding", "gzip");
 
                 Map<String, String> userHeaders = crawlerContext.getUserHeaders();
-                if (userHeaders != null) {
-                    for (Map.Entry<String, String> entry : userHeaders.entrySet()) {
+                if(userHeaders != null)
+                {
+                    for (Map.Entry<String, String> entry : userHeaders.entrySet())
+                    {
                         connection.setRequestProperty(entry.getKey(), entry.getValue());
                     }
                 }
 
                 String userAgent = crawlerContext.getUserAgent();
-                if (userAgent != null && !userAgent.isEmpty())
+                if(userAgent != null && !userAgent.isEmpty())
                 {
                     connection.setRequestProperty("User-Agent", userAgent);
                 }
@@ -262,7 +260,7 @@ public class HttpURLStreamProvider extends URLStreamProvider
         metadata2fill.set(Metadata.SOURCE, strCurrentUrl);
         metadata2fill.set(IncrementalCrawlingHistory.dataEntityId, strCurrentUrl);
 
-        if(strOriginalUrlString.indexOf(strCurrentUrl) == -1) metadata2fill.set("originalsource", strOriginalUrlString);
+        if(strOriginalUrlString.indexOf(strCurrentUrl) == -1) metadata2fill.set(LeechMetadata.originSource, strOriginalUrlString);
 
 
 
@@ -292,7 +290,19 @@ public class HttpURLStreamProvider extends URLStreamProvider
     @Override
     public TikaInputStream getStream(URLName url2getStream, Metadata metadata, ParseContext parseContext) throws Exception
     {
-        final URL asUrl = new URL(url2getStream.toString());
+
+        final URL url4Stream;
+        // if there is/was a redirect, there is an originSource entry
+        if(metadata.get(LeechMetadata.originSource) != null)
+        {
+            URLName urlAfterRedirects = UrlUtil.normalizeURL(UrlUtil.sourceString2URL(metadata.get(Metadata.SOURCE)));
+            url4Stream = new URL(urlAfterRedirects.toString());
+        }
+        else
+        {
+            url4Stream = new URL(url2getStream.toString());
+        }
+
         final CrawlerContext crawlerContext = parseContext.get(CrawlerContext.class, new CrawlerContext());
 
         return TikaInputStream.get(new ShiftInitInputStream()
@@ -301,8 +311,8 @@ public class HttpURLStreamProvider extends URLStreamProvider
             protected InputStream initBeforeFirstStreamDataAccess() throws Exception
             {
                 CookieManager cookies = crawlerContext.getCookieManager();
-                
-                URLConnection connection = asUrl.openConnection();
+
+                URLConnection connection = url4Stream.openConnection();
                 cookies.setCookies(connection);
 
                 connection.setConnectTimeout(connectTimeout);
@@ -310,14 +320,16 @@ public class HttpURLStreamProvider extends URLStreamProvider
                 connection.setRequestProperty("Accept-Encoding", "gzip");
 
                 Map<String, String> userHeaders = crawlerContext.getUserHeaders();
-                if (userHeaders != null) {
-                    for (Map.Entry<String, String> entry : userHeaders.entrySet()) {
+                if(userHeaders != null)
+                {
+                    for (Map.Entry<String, String> entry : userHeaders.entrySet())
+                    {
                         connection.setRequestProperty(entry.getKey(), entry.getValue());
                     }
                 }
 
                 String userAgent = crawlerContext.getUserAgent();
-                if (userAgent != null && !userAgent.isEmpty())
+                if(userAgent != null && !userAgent.isEmpty())
                 {
                     connection.setRequestProperty("User-Agent", userAgent);
                 }
@@ -330,10 +342,8 @@ public class HttpURLStreamProvider extends URLStreamProvider
                 if(strContentEncoding != null) strContentEncoding = strContentEncoding.toLowerCase().trim();
 
 
-                if("gzip".equals(strContentEncoding))
-                    ourStream = new BufferedInputStream(new GZIPInputStream(ourStream));
-                else
-                    ourStream = new BufferedInputStream(ourStream);
+                if("gzip".equals(strContentEncoding)) ourStream = new BufferedInputStream(new GZIPInputStream(ourStream));
+                else ourStream = new BufferedInputStream(ourStream);
 
                 return ourStream;
             }

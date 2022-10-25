@@ -178,7 +178,7 @@ public class TikaUtils
         context.set(Parser.class, defaultLeechParser);
 
         CrawlerContext crawlerContext = context.get(CrawlerContext.class);
-        if (crawlerContext == null)
+        if(crawlerContext == null)
         {
             crawlerContext = new CrawlerContext();
             context.set(CrawlerContext.class, crawlerContext);

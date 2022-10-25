@@ -1,16 +1,16 @@
 /*
  * Leech - crawling capabilities for Apache Tika
- * 
+ *
  * Copyright (C) 2012 DFKI GmbH, Author: Christian Reuschling
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  * Contact us by mail: christian.reuschling@dfki.de
  */
 
@@ -55,18 +55,16 @@ import java.util.*;
  * A CrawlerParser implementation that can crawl html files. The content of the html file is simply delegated to {@link HtmlParser}, then all links will be extracted with
  * {@link LinkContentHandler} and recursively processed again with Leech. Configure it by specifying a {@link CrawlerContext} and a {@link HtmlCrawlerContext} object
  * inside the {@link ParseContext} object for the crawl.
- * 
+ *
  * @author Christian Reuschling, Dipl.Ing.(BA)
  */
 public class HtmlCrawlerParser extends CrawlerParser
 {
 
+    protected static final Set<MediaType> SUPPORTED_TYPES = Collections.unmodifiableSet(new HashSet<MediaType>(
+            Arrays.asList(MediaType.text("html"), MediaType.application("xhtml+xml"), MediaType.application("vnd.wap.xhtml+xml"), MediaType.application("x-asp"))));
+
     private static final long serialVersionUID = -8214006342702249257L;
-
-    protected static final Set<MediaType> SUPPORTED_TYPES = Collections.unmodifiableSet(new HashSet<MediaType>(Arrays.asList(MediaType.text("html"),
-            MediaType.application("xhtml+xml"), MediaType.application("vnd.wap.xhtml+xml"), MediaType.application("x-asp"))));
-
-
 
     protected Leech m_leech;
 
@@ -79,12 +77,12 @@ public class HtmlCrawlerParser extends CrawlerParser
 
     /**
      * Checks whether this URL is inside the configured constraints (domainname, some other strings, regex contstraints) or not
-     * 
-     * @param strContainerURL the url from the current container to check whether it is a remote or a local one
-     * @param strURL2Check the URL to check whether it is in the configured constraints
-     * @param crawlerContext the context object with the general constraints
+     *
+     * @param strContainerURL    the url from the current container to check whether it is a remote or a local one
+     * @param strURL2Check       the URL to check whether it is in the configured constraints
+     * @param crawlerContext     the context object with the general constraints
      * @param htmlCrawlerContext the context object specific for the html parser
-     * 
+     *
      * @return true in the case the URL is inside the constraints, false otherwise
      */
     protected boolean checkIfInConstraints(String strContainerURL, String strURL2Check, CrawlerContext crawlerContext, HtmlCrawlerContext htmlCrawlerContext)
@@ -94,21 +92,20 @@ public class HtmlCrawlerParser extends CrawlerParser
         // ist der container local?
         if(strContainerURL.startsWith("file:") && !strURL2Check.startsWith("file:") && !htmlCrawlerContext.getFollowRemoteLinksIfLocalFileCrawl())
         {
-            if(crawlerContext.getVerbose())
-                LoggerFactory.getLogger(CrawlerParser.class.getName()).info(
-                        "URL " + strURL2Check + " is a remote link and thus will not followed while crawling a local html file (as configured). Skipping.");
+            if(crawlerContext.getVerbose()) LoggerFactory.getLogger(CrawlerParser.class.getName())
+                    .info("URL " + strURL2Check + " is a remote link and thus will not followed while crawling a local html file (as configured). Skipping.");
 
             return false;
         }
 
-
-        if(!crawlerContext.getURLFilter().accept(strURL2Check))
-        {
-            if(crawlerContext.getVerbose())
-                LoggerFactory.getLogger(CrawlerParser.class.getName()).info("URL " + strURL2Check + " is outside the URL constraints for this data source. Skipping.");
-
-            return false;
-        }
+        // All links shoud go through the URLFilteringParser to consider positive redirects that are not known yet
+        // if(!crawlerContext.getURLFilter().accept(strURL2Check))
+        // {
+        //     if(crawlerContext.getVerbose())
+        //         LoggerFactory.getLogger(HtmlCrawlerParser.class.getName()).info("URL " + strURL2Check + " is outside the URL constraints for this data source. Skipping.");
+        //
+        //     return false;
+        // }
 
 
         return true;
@@ -121,8 +118,8 @@ public class HtmlCrawlerParser extends CrawlerParser
 
 
     @Override
-    protected Iterator<MultiValueHashMap<String, Object>> getSubDataEntitiesInformation(InputStream stream, ContentHandler handler, Metadata metadata,
-            ParseContext context) throws Exception
+    protected Iterator<MultiValueHashMap<String, Object>> getSubDataEntitiesInformation(InputStream stream, ContentHandler handler, Metadata metadata, ParseContext context)
+            throws Exception
     {
 
         HashSet<URLName> hsLinkzAndI = new HashSet<URLName>();
@@ -243,10 +240,10 @@ public class HtmlCrawlerParser extends CrawlerParser
                 if(exist.equals(Exist.YES_PROCESSED))
                 {
                     metadata.set(IncrementalCrawlingParser.DATA_ENTITY_MODIFICATION_STATE, IncrementalCrawlingParser.PROCESSED);
-                    
+
                     InputStream dummyStream = new ByteArrayInputStream("leech sucks - hopefully :)".getBytes(StandardCharsets.UTF_8));
                     EmptyParser.INSTANCE.parse(dummyStream, handler2use4recursiveCall, metadata, context);
-                    
+
                     return;
                 }
             }
