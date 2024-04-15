@@ -29,6 +29,7 @@ import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
@@ -170,6 +171,8 @@ public abstract class CrawlerParser implements Parser
 
 
                 MultiValueHashMap<String, Object> subDataEntityInfo = subDataEntitiesInformation.next();
+
+                LoggerFactory.getLogger(CrawlerParser.class.getName()).debug("Processing sub entity " + iEntityIndex + " with sourceId " + subDataEntityInfo.getFirst(SOURCEID));
 
                 // bei jeder Entität schauen wir, ob wir einen neuen Handler erzeugen müssen
                 ContentHandler handler2use4recursiveCall = TikaUtils.createContentHandler4SubCrawl(crawlerContext);

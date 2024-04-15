@@ -226,6 +226,7 @@ public class HttpURLStreamProvider extends URLStreamProvider
             }
             else if(responseCode == HttpURLConnection.HTTP_NOT_FOUND)
             {
+                // TODO hier wollen wir noch verschiedene Möglichkeiten durchprobieren: z.B. mit und ohne www, mit und ohne https
                 throw new LeechException(strCurrentUrl + " not found");
             }
             else if(responseCode == HttpURLConnection.HTTP_NOT_MODIFIED)

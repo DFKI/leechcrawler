@@ -39,8 +39,7 @@ public class UrlUtil
         String strFolder = url.getFile();
         int iIndex = strFolder.indexOf(";");
         if(iIndex > 0) strFolder = strFolder.substring(0, iIndex);
-        while (strFolder.endsWith("/"))
-            strFolder = strFolder.substring(0, strFolder.length() - 1);
+        while (strFolder.endsWith("/")) strFolder = strFolder.substring(0, strFolder.length() - 1);
 
         return strFolder;
     }
@@ -63,48 +62,11 @@ public class UrlUtil
 
 
 
-    public static URLName urlNameWithoutPassword(URLName urlNameWithPassword)
-    {
-        String strOldPwd = urlNameWithPassword.getPassword() == null ? "" : urlNameWithPassword.getPassword();
-        URLName urlNameWithoutPassword = new URLName(urlNameWithPassword.getProtocol(), urlNameWithPassword.getHost(), urlNameWithPassword.getPort(), urlNameWithPassword.getFile(),
-                urlNameWithPassword.getUsername(), strOldPwd.trim().length() == 0 ? "" : "possiblePwdRemoved");
-
-
-        return urlNameWithoutPassword;
-    }
-
-
-
-    /**
-     * If the given String can be parsed as an URL, the method will return another URL String without a possible password. In the case the String can
-     * not be parsed as URL, the method will return the given original String.
-     *
-     * @param strPossibleUrlNameWithPassword a String that possibly is an URL String with password
-     *
-     * @return the original String in the case it could not be parsed as an Url, an Url String with removed password otherwise.
-     */
-    public static String urlNameWithoutPassword(String strPossibleUrlNameWithPassword)
-    {
-        try
-        {
-
-            URLName urlNameWithPassword = new URLName(strPossibleUrlNameWithPassword);
-
-            return urlNameWithoutPassword(urlNameWithPassword).toString();
-
-        }
-        catch (Exception e)
-        {
-            return strPossibleUrlNameWithPassword;
-        }
-    }
-
-
-
     /**
      * Remove relative references and "mistakes" like double slashes from the path.
      *
      * @param path The path to normalize.
+     *
      * @return The normalized path.
      */
     public static String normalizePath(String path)
@@ -129,6 +91,7 @@ public class UrlUtil
      * Normalizes a query string by sorting the query parameters alpabetically.
      *
      * @param query The query string to normalize.
+     *
      * @return The normalized query string.
      */
     public static String normalizeQuery(String query)
@@ -223,6 +186,7 @@ public class UrlUtil
      * @param olds The String to be substituted.
      * @param news The String containing the new content.
      * @param text The String in which the substitution is done.
+     *
      * @return The result String containing the substitutions; if no substitutions were made, the specified 'text' instance is returned.
      */
     protected static String replace(String olds, String news, String text)
@@ -272,8 +236,6 @@ public class UrlUtil
 
 
 
-
-
     static public URLName sourceString2URL(String strSourceString) throws MalformedURLException
     {
         URLName url;
@@ -285,8 +247,7 @@ public class UrlUtil
             // wenn kein Protokoll angegeben ist, kucken wir mal, ob es ein File ist
             boolean bNoProtocol = false;
             String strProtocol = url.getProtocol();
-            if(strProtocol == null)
-                bNoProtocol = true;
+            if(strProtocol == null) bNoProtocol = true;
             else
             {
                 String strOs = System.getProperty("os.name").toLowerCase();
@@ -303,5 +264,45 @@ public class UrlUtil
         }
 
         return url;
+    }
+
+
+
+    /**
+     * If the given String can be parsed as an URL, the method will return another URL String without a possible password. In the case the String can
+     * not be parsed as URL, the method will return the given original String.
+     *
+     * @param strPossibleUrlNameWithPassword a String that possibly is an URL String with password
+     *
+     * @return the original String in the case it could not be parsed as an Url, an Url String with removed password otherwise.
+     */
+    public static String urlNameWithoutPassword(String strPossibleUrlNameWithPassword)
+    {
+        try
+        {
+
+            URLName urlNameWithPassword = new URLName(strPossibleUrlNameWithPassword);
+
+            return urlNameWithoutPassword(urlNameWithPassword).toString();
+
+        }
+        catch (Exception e)
+        {
+            return strPossibleUrlNameWithPassword;
+        }
+    }
+
+
+
+    public static URLName urlNameWithoutPassword(URLName urlNameWithPassword)
+    {
+        String strOldPwd = urlNameWithPassword.getPassword() == null ? "" : urlNameWithPassword.getPassword();
+        String strFile = urlNameWithPassword.getFile() + (urlNameWithPassword.getRef() == null ? "" : "#" + urlNameWithPassword.getRef());
+        URLName urlNameWithoutPassword =
+                new URLName(urlNameWithPassword.getProtocol(), urlNameWithPassword.getHost(), urlNameWithPassword.getPort(), strFile, urlNameWithPassword.getUsername(),
+                        strOldPwd.trim().isEmpty() ? "" : "possiblePwdRemoved");
+
+
+        return urlNameWithoutPassword;
     }
 }

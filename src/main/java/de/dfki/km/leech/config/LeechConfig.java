@@ -164,6 +164,9 @@ public class LeechConfig extends TikaConfig
         // for(Logger logger : m_llPdfBoxLogger)
         //     logger.setLevel(Level.OFF);
 
+        // dieses schaltet das %$§ logging von pdfbox aus - das mit den 1000en von font warnings
+        System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
+
     }
 
 

@@ -280,6 +280,9 @@ public class DirectoryCrawlerParser extends CrawlerParser
 
                         if(fCheckedFile == null) return false;
 
+                        //ich hatte einen Fall mit einem 'fifo named pipe' 'File' mit Länge 0, das war weder File noch Directory und hing in der Endlosschleife
+                        if(!fCheckedFile.isFile() && !fCheckedFile.isDirectory()) return false;
+
                         MultiValueHashMap<String, Object> hsEntityInformation = new MultiValueHashMap<String, Object>();
 
                         hsEntityInformation.add("fileObject", fCheckedFile);
