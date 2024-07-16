@@ -22,5 +22,5 @@ DFKI was founded in 1988 as a nonprofit organization by several renowned German 
 
 Because of the increasingly short cycles of innovation in the field of information technology, the lines between research, application related development, and conversion to products are becoming blurred. This is why DFKI projects typically include the entire spectrum from basic application-based research to market and customer oriented development of product functions. 
 
-<http://www.dfki.uni-kl.de/KM/>
+[DFKI - Smart Data & Knowledge Services department](https://www.dfki.de/en/web/research/research-departments-and-groups/smart-data-knowledge-services/)
 
