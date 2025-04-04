@@ -5,10 +5,10 @@ package de.dfki.km.leech;
 import de.dfki.km.leech.config.CrawlerContext;
 import de.dfki.km.leech.parser.incremental.IncrementalCrawlingHistory;
 import de.dfki.km.leech.parser.incremental.IncrementalCrawlingParser;
+import de.dfki.km.leech.util.TikaUtils;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.sax.XHTMLContentHandler;
-import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
 
@@ -22,9 +22,9 @@ public class SubDataEntityContentHandler extends XHTMLContentHandler
     /**
      * Convenience method to trigger an (subdata )entity handling. This is also usefull if you want to delegate parsing tasks to another parser in your own parser
      */
-    public static void triggerEntityHandling(ContentHandler handler, Metadata metadata, String strBodyText, ParseContext context4history) throws SAXException
+    public static void triggerEntityHandling(CrawlerContext crawlerContext, Metadata metadata, String strBodyText, ParseContext context4history) throws SAXException
     {
-        new SubDataEntityContentHandler(handler, metadata, strBodyText).triggerSubDataEntityHandling(context4history);
+        new SubDataEntityContentHandler(crawlerContext, metadata, strBodyText).triggerSubDataEntityHandling(context4history);
     }
 
 
@@ -33,9 +33,9 @@ public class SubDataEntityContentHandler extends XHTMLContentHandler
      * Convenience method to trigger an (subdata )entity handling. This is also usefull if you want to delegate parsing tasks to another parser in your own parser. This method
      * can not deal wlth possible history tasks, which is not necessary e.g. when delegating a parsing task.
      */
-    public static void triggerEntityHandling(ContentHandler handler, Metadata metadata, String strBodyText) throws SAXException
+    public static void triggerEntityHandling(CrawlerContext crawlerContext, Metadata metadata, String strBodyText) throws SAXException
     {
-        new SubDataEntityContentHandler(handler, metadata, strBodyText).triggerSubDataEntityHandling();
+        new SubDataEntityContentHandler(crawlerContext, metadata, strBodyText).triggerSubDataEntityHandling();
     }
 
     protected Metadata m_metadata;
@@ -44,9 +44,9 @@ public class SubDataEntityContentHandler extends XHTMLContentHandler
 
 
 
-    public SubDataEntityContentHandler(ContentHandler handler, Metadata metadata, String strBodyText)
+    public SubDataEntityContentHandler(CrawlerContext crawlerContext, Metadata metadata, String strBodyText)
     {
-        super(handler, metadata);
+        super(TikaUtils.createContentHandler4SubCrawl(crawlerContext), metadata);
         m_metadata = metadata;
         m_strBodyText = strBodyText;
 

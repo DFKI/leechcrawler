@@ -102,6 +102,21 @@ public class TikaUtils
     }
 
 
+    /**
+     * Returns the content handler object given inside crawlerContext given in parseContext or creates a new handler according to the configured class (also configured
+     * inside crawlerContext defined in parseContext)
+     *
+     * @param parseContext the parseContext that must include a crawlerContext configuration. The method will throw an exception in the case it is null
+     *
+     * @return the content handler object given inside crawlerContext or creates a new handler according to the configured class (also configured
+     * inside crawlerContext)
+     */
+    static public ContentHandler createContentHandler4SubCrawl(ParseContext parseContext)
+    {
+        CrawlerContext crawlerContext = parseContext.get(CrawlerContext.class);
+
+        return createContentHandler4SubCrawl(crawlerContext);
+    }
 
     /**
      * Returns the content handler object given inside crawlerContext or creates a new handler according to the configured class (also configured
@@ -204,9 +219,9 @@ public class TikaUtils
      * Convenience method to trigger an (subdata )entity handling. This is also usefull if you want to delegate parsing tasks to another parser in your own parser. This method
      * can not deal wlth possible history tasks, which is not necessary e.g. when delegating a parsing task.
      */
-    public static void writeData2TikaHandler(ContentHandler handler, Metadata metadata, String strBodyText) throws SAXException
+    public static void writeData2TikaHandler(CrawlerContext crawlerContext, Metadata metadata, String strBodyText) throws SAXException
     {
-        SubDataEntityContentHandler.triggerEntityHandling(handler, metadata, strBodyText);
+        SubDataEntityContentHandler.triggerEntityHandling(crawlerContext, metadata, strBodyText);
     }
 
 

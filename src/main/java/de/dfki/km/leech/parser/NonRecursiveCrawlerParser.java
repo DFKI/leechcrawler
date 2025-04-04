@@ -4,6 +4,7 @@ package de.dfki.km.leech.parser;
 
 import de.dfki.inquisitor.collections.MultiValueHashMap;
 import de.dfki.km.leech.SubDataEntityContentHandler;
+import de.dfki.km.leech.config.CrawlerContext;
 import de.dfki.km.leech.metadata.LeechMetadata;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
@@ -70,7 +71,7 @@ abstract public class NonRecursiveCrawlerParser extends CrawlerParser
 
 
         SubDataEntityContentHandler subHandler =
-                new SubDataEntityContentHandler(handler2use4recursiveCall, metadata2use4recursiveCall, bBody ? strbBody.toString() : null);
+                new SubDataEntityContentHandler(context.get(CrawlerContext.class), metadata2use4recursiveCall, bBody ? strbBody.toString() : null);
 
         if(ignoreHistory)
             subHandler.triggerSubDataEntityHandling();

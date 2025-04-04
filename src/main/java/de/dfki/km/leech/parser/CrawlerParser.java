@@ -93,8 +93,7 @@ public abstract class CrawlerParser implements Parser
      * @param context the context-parameter from the Parser.parse(InputStream stream, ContentHandler handler, Metadata metadata, ParseContext context) invocation
      * 
      * @return an iterator with all information about a data entity that should be crawled, that is enough to deal with it inside the other method implementations
-     * 
-     * @throws Exception
+     *
      */
     abstract protected Iterator<MultiValueHashMap<String, Object>> getSubDataEntitiesInformation(InputStream stream, ContentHandler handler, Metadata metadata,
             ParseContext context) throws Exception;
@@ -262,8 +261,7 @@ public abstract class CrawlerParser implements Parser
      * @param metadata the metadata given from the parse method
      * @param handler the origin content handler instance from the parse method, OR an instance created newly at every data entity as configured inside CrawlerContext
      * @param context the ParseContext Object given from the parse method
-     * 
-     * @throws Exception
+     *
      */
     abstract protected void processCurrentDataEntity(InputStream stream, Metadata metadata, ContentHandler handler, ParseContext context) throws Exception;
 
@@ -295,8 +293,7 @@ public abstract class CrawlerParser implements Parser
      * @param handler2use4recursiveCall the origin content handler instance from the root crawl invocation, OR an instance created newly at every data entity as
      *            configured inside CrawlerContext
      * @param context the origin ParseContext instance given from the parse method
-     * 
-     * @throws Exception
+     *
      */
     abstract protected void processSubDataEntity(MultiValueHashMap<String, Object> subDataEntityInformation, Metadata metadata2use4recursiveCall,
             ContentHandler handler2use4recursiveCall, ParseContext context) throws Exception;

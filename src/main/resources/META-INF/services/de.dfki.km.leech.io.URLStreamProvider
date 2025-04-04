@@ -3,3 +3,4 @@
 de.dfki.km.leech.io.FileURLStreamProvider
 de.dfki.km.leech.io.HttpURLStreamProvider
 de.dfki.km.leech.io.ImapURLStreamProvider
+de.dfki.km.leech.io.LeechURLStreamProvider
