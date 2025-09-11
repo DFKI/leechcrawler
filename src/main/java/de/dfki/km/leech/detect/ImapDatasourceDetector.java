@@ -61,7 +61,6 @@ public class ImapDatasourceDetector implements Detector
             URLName url = new URLName(strName);
             if(url.getProtocol().equalsIgnoreCase("imap") || url.getProtocol().equalsIgnoreCase("imaps"))
             {
-                //TODO für den Sven muß hier noch die MessageId gültig sein
                 if(UrlUtil.extractUID(url) == null)
                     return DatasourceMediaTypes.IMAPFOLDER;
                 else

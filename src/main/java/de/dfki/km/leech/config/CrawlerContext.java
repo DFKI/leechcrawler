@@ -51,8 +51,7 @@ import java.util.Map;
  * <code>
  * ParseContext parseContext = crawlerContext.createParseContext()<br>
  * </code>
- * 
- * 
+ *
  * @author Christian Reuschling, Dipl.Ing.(BA)
  */
 public class CrawlerContext
@@ -69,26 +68,22 @@ public class CrawlerContext
     protected Boolean m_bVerbose = false;
 
     protected ContentHandler m_contentHandler;
-
-    protected int m_crawlingDepth = Integer.MAX_VALUE;
-
-    protected IncrementalCrawlingHistory m_incrementalCrawlingHistory;
-
-    protected String m_strContentHandlerClassName;;
-
-    protected String m_strIncrementalCrawlingHistoryPath;
-
-    protected URLFilter m_urlFilter = new URLFilter();
-
     protected CookieManager m_cookieManager = new CookieManager();
-
+    protected int m_crawlingDepth = Integer.MAX_VALUE;
+    protected IncrementalCrawlingHistory m_incrementalCrawlingHistory;
+    protected String m_strContentHandlerClassName;
+    protected String m_strIncrementalCrawlingHistoryPath;
+    protected boolean m_bRefuseRemovals = false;
+    protected URLFilter m_urlFilter = new URLFilter();
     protected String m_userAgent = null;
 
     protected Map<String, String> m_userHeaders = null;
 
+
+
     /**
      * Creates a new ParseContext Object with an entry with this {@link CrawlerContext} configuration. This method is only for convenience.
-     * 
+     *
      * @return the created ParseContext Object.
      */
     public ParseContext createParseContext()
@@ -99,6 +94,8 @@ public class CrawlerContext
         return parseContext;
     }
 
+
+
     /**
      * Gets whether or not the crawler should check for removed entities after the crawl. All entities that are not 'touched' during a crawl but has
      * an entry inside the history will be considered as removed. This works good in the case you watch e.g. a directory periodically, and all new
@@ -106,18 +103,20 @@ public class CrawlerContext
      * to add a single entity (e.g. file) with a Leech call, to add and process it only in the case it was modified or new with respect to its
      * potential history entry. In this case you don't want to flag all other existing entries beside this one file as removed. In this situation, you
      * can disable the 'removed entity check' with this method.
-     * 
+     *
      * @return true: all files that were processed during a former crawl and has an history entry, but didn't processed/touched during this crawl will
-     *         be arked as removed. False otherwise.
+     * be arked as removed. False otherwise.
      */
     public Boolean getCheckForRemovedEntities()
     {
         return m_bCheckForRemovedEntities;
     }
 
+
+
     /**
      * Gets the contentHandler that will be used during the crawl - and thus for every recursive call.
-     * 
+     *
      * @return the contentHandler that will be used during the crawl - and thus for every recursive call.
      */
     public ContentHandler getContentHandler()
@@ -125,12 +124,14 @@ public class CrawlerContext
         return m_contentHandler;
     }
 
+
+
     /**
      * Gets the class name for the content handler that should be instantiated on every recursive call during the crawl. In the case it is null or no
      * CrawlerConfig is used at all, Leech will reuse the given contenthandler, which is only possible if this instance is in a reusable state after a
      * parse operation (e.g. non re-initialised writers, etc.). Make sure that this is the case by e.g. clearing the internal states inside the
      * endDocument() method.
-     * 
+     *
      * @return the class name for the content handler that should be instantiated on every recursive call during the crawl
      */
     public String getContentHandlerClassName()
@@ -140,9 +141,13 @@ public class CrawlerContext
 
 
 
+    public CookieManager getCookieManager() {return m_cookieManager;}
+
+
+
     /**
      * Gets the maximum depth of recursive calls the crawling process will follow. Default is Integer.MAX_VALUE
-     * 
+     *
      * @return the maximum depth of recursive calls the crawling process will follow. Default is Integer.MAX_VALUE
      */
     public int getCrawlingDepth()
@@ -160,9 +165,9 @@ public class CrawlerContext
      * specifying an incremental crawling history, cycle detection is given anyway - no further history will be created by enabling cycle detection
      * with this CrawlerContext object. The default is the enabled cycle detection - which is more or less a no-brainer, unless you have really hard
      * performance constraints.
-     * 
+     *
      * @return true in the case cycle detection is enabled, false otherwise. Note that if you specify an incrementyl crawling history, cycle detection
-     *         is given anyway.
+     * is given anyway.
      */
     public Boolean getDetectCycles()
     {
@@ -174,14 +179,16 @@ public class CrawlerContext
     /**
      * Gets an IncrementalCrawlingHistory Object for the configured IncrementalCrawlingHistoryPath. At first invocation, the history Object will be
      * created.
-     * 
+     *
      * @return the IncrementalCrawlingHistory Object for the configured IncrementalCrawlingHistoryPath, null in the case no path is configured.
      */
     public IncrementalCrawlingHistory getIncrementalCrawlingHistory()
     {
-        if(m_strIncrementalCrawlingHistoryPath == null) return null;
+        if (m_strIncrementalCrawlingHistoryPath == null)
+            return null;
 
-        if(m_incrementalCrawlingHistory == null) m_incrementalCrawlingHistory = new IncrementalCrawlingHistory(m_strIncrementalCrawlingHistoryPath);
+        if (m_incrementalCrawlingHistory == null)
+            m_incrementalCrawlingHistory = new IncrementalCrawlingHistory(m_strIncrementalCrawlingHistoryPath).refuseRemovals(m_bRefuseRemovals);
 
 
         return m_incrementalCrawlingHistory;
@@ -195,7 +202,7 @@ public class CrawlerContext
      * DataSinkContentHandler will take care that deleted entities will also deleted from the data sink. In the case an entity has not changed at all,
      * no extraction of the data will be performed. In the case the path is specified as null or empty, no crawling history will be used - everthing
      * will be simply extracted.
-     * 
+     *
      * @return the path to the crawling history that is used - null or empty in the case no crawling history will be used (which is the default)
      */
     public String getIncrementalCrawlingHistoryPath()
@@ -207,7 +214,7 @@ public class CrawlerContext
 
     /**
      * Gets whether the whole crawling process will be interrupted in the case of an Exception while processing one data entityor not
-     * 
+     *
      * @return true: the whole crawling process will be interrupted in the case of an exception, false otherwise. The default is to not interrupt.
      */
     public Boolean getInterruptIfException()
@@ -219,9 +226,9 @@ public class CrawlerContext
 
     /**
      * Gets the domain boundaries to constrain the data entities that should be considered during this crawl
-     * 
+     *
      * @return the domain boundaries to constrain the data entities that should be considered during this crawl. The default is a domainboundary that
-     *         skips nothing.
+     * skips nothing.
      */
     public URLFilter getURLFilter()
     {
@@ -230,9 +237,17 @@ public class CrawlerContext
 
 
 
+    public String getUserAgent() {return m_userAgent;}
+
+
+
+    public Map<String, String> getUserHeaders() {return m_userHeaders;}
+
+
+
     /**
      * Gets whether the crawling process is verbose or not
-     * 
+     *
      * @return true: verbosity on, false otherwise
      */
     public Boolean getVerbose()
@@ -248,7 +263,8 @@ public class CrawlerContext
      */
     public void requestStop()
     {
-        if(m_bStopRequested == true) return;
+        if (m_bStopRequested == true)
+            return;
 
         m_bStopRequested = true;
 
@@ -259,14 +275,12 @@ public class CrawlerContext
                 m_bStopRequested.wait();
 
                 m_bStopRequested = false;
-            }
-            catch (InterruptedException e)
+            } catch (InterruptedException e)
             {
                 LoggerFactory.getLogger(CrawlerContext.class.getName()).error("Error", e);
             }
         }
     }
-
 
 
 
@@ -277,10 +291,10 @@ public class CrawlerContext
      * to add a single entity (e.g. file) with a Leech call, to add and process it only in the case it was modified or new with respect to its
      * potential history entry. In this case you don't want to flag all other existing entries beside this one file as removed. In this situation, you
      * can disable the 'removed entity check' with this method.
-     * 
+     *
      * @param checkForRemovedEntities true: all files that were processed during a former crawl and has an history entry, but didn't processed/touched
-     *            during this crawl will be arked as removed. False otherwise.
-     * 
+     *                                during this crawl will be arked as removed. False otherwise.
+     *
      * @return this
      */
     public CrawlerContext setCheckForRemovedEntities(Boolean checkForRemovedEntities)
@@ -296,9 +310,9 @@ public class CrawlerContext
      * Sets the contentHandler that will be used during the crawl - and thus for every recursive call. You can specify the contentHandler either here,
      * inside the CrawlerContext, or simply use one of the Leech methods with an contentHandler parameter. These methods simply invoke this
      * setContentHandler method. In the case the ContentHandlerClassName was set, this contentHandler object will be ignored.
-     * 
+     *
      * @param contentHandler the ContentHandler that should be used during the crawl
-     * 
+     *
      * @return this for convenience
      */
     public CrawlerContext setContentHandler(ContentHandler contentHandler)
@@ -315,9 +329,9 @@ public class CrawlerContext
      * or no CrawlerConfig is used at all, Leech will reuse the given contenthandler object also specified inside setContentHandler, which is only
      * possible if this object is in a reusable state after a parse operation (e.g. non re-initialised writers, etc.). Make sure that this is the case
      * by e.g. clearing the internal states inside the endDocument() method.
-     * 
+     *
      * @param strContentHandlerClassName the class name for the content handler that should be instantiated on every recursive call during the crawl
-     * 
+     *
      * @return this with the new entry. For convenience.
      */
     public CrawlerContext setContentHandlerClassName(String strContentHandlerClassName)
@@ -331,9 +345,9 @@ public class CrawlerContext
 
     /**
      * Sets the maximum depth of recursive calls the crawling process will follow. Default is Integer.MAX_VALUE
-     * 
+     *
      * @param crawlingDepth the maximum depth of recursive calls the crawling process will follow. Default is Integer.MAX_VALUE
-     * 
+     *
      * @return this with the new entry. For convenience.
      */
     public CrawlerContext setCrawlingDepth(int crawlingDepth)
@@ -352,9 +366,9 @@ public class CrawlerContext
      * incremental crawling history for this crawl, that will be removed after the crawl. This also means that when you index incrementally by
      * specifying an incremental crawling history, cycle detection is given anyway - no further history will be created by enabling cycle detection
      * with this method. The default is the enabled cycle detection.
-     * 
+     *
      * @param detectCycles true in the case you want to enable cycle detection (default), false otherwise. In the case you specified incremental
-     *            indexing, cycle detection is given anyway. (but you don't have to disable it with this method for performance reasons).
+     *                     indexing, cycle detection is given anyway. (but you don't have to disable it with this method for performance reasons).
      */
     public void setDetectCycles(Boolean detectCycles)
     {
@@ -369,10 +383,33 @@ public class CrawlerContext
      * DataSinkContentHandler will take care that deleted entities will also deleted from the data sink. In the case an entity has not changed at all,
      * no extraction of the data will be performed. In the case the path is specified as null or empty, no crawling history will be used - everthing
      * will be simply extracted.
-     * 
+     *
      * @param strIncrementalCrawlingHistoryPath the path to the crawling history that should be used - null or empty in the case no crawling history
-     *            should be used (which is the default)
-     * 
+     *                                          should be used (which is the default)
+     * @param bRefuseRemovals                   if true, no entities will be marked as removed, even if they are not 'touched' during this crawl. This is useful in the case you
+     *                                          have unstable sources and don't want to remove entities that are not reachable during this crawl.
+     *
+     * @return this with the new entry. For convenience.
+     */
+    public CrawlerContext setIncrementalCrawlingHistoryPath(String strIncrementalCrawlingHistoryPath, boolean bRefuseRemovals)
+    {
+        m_strIncrementalCrawlingHistoryPath = strIncrementalCrawlingHistoryPath;
+        m_bRefuseRemovals = bRefuseRemovals;
+
+        return this;
+    }
+
+
+    /**
+     * Sets a path to the incremental crawling history. In the case a path is specified, the crawlers will use incremental parsing, which means that
+     * they check whether a data entity is new, modified or deleted. Time consuming extraction will only performed in the new- and modified case. A
+     * DataSinkContentHandler will take care that deleted entities will also deleted from the data sink. In the case an entity has not changed at all,
+     * no extraction of the data will be performed. In the case the path is specified as null or empty, no crawling history will be used - everthing
+     * will be simply extracted.
+     *
+     * @param strIncrementalCrawlingHistoryPath the path to the crawling history that should be used - null or empty in the case no crawling history
+     *                                          should be used (which is the default)
+     *
      * @return this with the new entry. For convenience.
      */
     public CrawlerContext setIncrementalCrawlingHistoryPath(String strIncrementalCrawlingHistoryPath)
@@ -387,9 +424,9 @@ public class CrawlerContext
     /**
      * In the case there is an Exception when one data entity is processed, the whole crawling process will be interrupted or not. The default is to
      * not interrupt.
-     * 
+     *
      * @param bInterruptIfException true: the whole crawling process will be interrupted in the case of an exception, false otherwise.
-     * 
+     *
      * @return this with the new entry. For convenience.
      */
     public CrawlerContext setInterruptIfException(Boolean bInterruptIfException)
@@ -413,10 +450,9 @@ public class CrawlerContext
      * <code>
      * URLFilter boundaries = new URLFilter().addExcludePattern(new SubstringPattern("liquorice", SubstringPattern.CONTAINS));
      * </code>
-     * 
-     * 
+     *
      * @param urlFilter the domain boundaries to constrain the data entities that should be considered during this crawl
-     * 
+     *
      * @return this with the new entry. For convenience.
      */
     public CrawlerContext setURLFilter(URLFilter urlFilter)
@@ -428,17 +464,35 @@ public class CrawlerContext
 
 
 
+    public CrawlerContext setUserAgent(String userAgent)
+    {
+        m_userAgent = userAgent;
+
+        return this;
+    }
+
+
+
+    public CrawlerContext setUserHeaders(Map<String, String> userHeaders)
+    {
+        m_userHeaders = userHeaders;
+
+        return this;
+    }
+
+
+
     /**
      * Sets the crawling process to verbose. Some messages as skipped entities will be shown additionally
-     * 
+     *
      * @param bVerbose true: verbosity on, false otherwise
-     * 
+     *
      * @return this with the new entry. For convenience.
      */
     public CrawlerContext setVerbose(Boolean bVerbose)
     {
         m_bVerbose = bVerbose;
-        
+
         return this;
     }
 
@@ -448,32 +502,12 @@ public class CrawlerContext
      * Used to check by a crawler or other parser implementation whether a stop was requested or not. In the case a stop was requested, the parser
      * implementation has to call a notify() or notifyAll() to the returned Boolean Object when finished, to 'wake up' the waiting
      * {@link #requestStop()} method.
-     * 
+     *
      * @return true in the case a stop was requested. Don't forget to call a notify() on the returned Object in order to 'wake up' the waiting
-     *         {@link #requestStop()} method.
+     * {@link #requestStop()} method.
      */
     public Boolean stopRequested()
     {
         return m_bStopRequested;
     }
-
-    public CookieManager getCookieManager() { return m_cookieManager; }
-
-    public CrawlerContext setUserAgent(String userAgent)
-    {
-        m_userAgent = userAgent;
-
-        return this;
-    }
-
-    public String getUserAgent() { return m_userAgent; }
-
-    public CrawlerContext setUserHeaders(Map<String, String> userHeaders)
-    {
-        m_userHeaders = userHeaders;
-
-        return this;
-    }
-
-    public Map<String, String> getUserHeaders() { return m_userHeaders; }
 }

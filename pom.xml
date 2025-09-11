@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.dfki.sds</groupId>
     <artifactId>leechcrawler</artifactId>
-    <version>2.5.1</version>
+    <version>2.5.2</version>
     <packaging>jar</packaging>
     <name>leechcrawler</name>
     <url>http://github.com/dfki/leechcrawler</url>
@@ -20,6 +20,8 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
+        <!-- ab java 9, äquivalent zu: -source N -target N –bootclasspath rtN.jar-->
+        <maven.compiler.release>17</maven.compiler.release>
 
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -170,7 +172,8 @@
         <dependency>
             <groupId>org.mapdb</groupId>
             <artifactId>mapdb</artifactId>
-            <version>3.0.8</version>
+            <!--            <version>3.0.8</version>-->
+            <version>3.1.0</version>
         </dependency>
 
         <dependency>
@@ -188,7 +191,7 @@
         <dependency>
             <groupId>de.dfki.sds</groupId>
             <artifactId>inquisitor</artifactId>
-            <version>23_6-SNAPSHOT</version>
+            <version>23_7-SNAPSHOT</version>
         </dependency>
 
 
@@ -230,7 +233,6 @@
         </dependency>
 
 
-
         <!-- logback -->
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -245,6 +247,14 @@
             <version>2.4.13</version>
         </dependency>
         <!-- logback -->
+
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.36</version>
+            <scope>provided</scope>
+        </dependency>
 
     </dependencies>
 
@@ -312,15 +322,24 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.8.1</version>
+                    <version>3.14.0</version>
                     <configuration>
                         <source>${maven.compiler.source}</source>
                         <target>${maven.compiler.target}</target>
+                        <release>${maven.compiler.release}</release>
                         <encoding>${maven.compiler.encoding}</encoding>
 
                         <compilerArgs>
                             <arg>-parameters</arg>
                         </compilerArgs>
+
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                                <version>1.18.36</version>
+                            </path>
+                        </annotationProcessorPaths>
                     </configuration>
                 </plugin>
 

@@ -115,7 +115,8 @@ public class IncrementalCrawlingParser extends ParserDecorator
             // die momentane crawlingdepth brauchen wir um festzustellen, wann ein kompletter crawlingVorgang abgeschlossen ist. Ein CrawlerParser
             // aktualisiert diese Info in der metadata
             String strDepth = metadata.get(CrawlerParser.CURRENT_CRAWLING_DEPTH);
-            if(strDepth != null) iCurrentCrawlingDepth = Integer.valueOf(strDepth);
+            if(strDepth != null)
+                iCurrentCrawlingDepth = Integer.valueOf(strDepth);
 
 
 
@@ -132,14 +133,15 @@ public class IncrementalCrawlingParser extends ParserDecorator
                 fosTmpLock = new FileOutputStream(fTmpHistory.getAbsolutePath() + "/lock");
                 tmpLock = fosTmpLock.getChannel().tryLock();
 
-                crawlerContext.setIncrementalCrawlingHistoryPath(fTmpHistory.getAbsolutePath());
+                crawlerContext.setIncrementalCrawlingHistoryPath(fTmpHistory.getAbsolutePath(), false);
                 crawlingHistory = crawlerContext.getIncrementalCrawlingHistory();
 
                 bIsTmpHistory = true;
             }
 
 
-            if(iCurrentCrawlingDepth == 0 && crawlingHistory != null) crawlingHistory.crawlStarted();
+            if(iCurrentCrawlingDepth == 0 && crawlingHistory != null)
+                crawlingHistory.crawlStarted();
 
 
 
@@ -186,7 +188,8 @@ public class IncrementalCrawlingParser extends ParserDecorator
 
 
 
-            if(iCurrentCrawlingDepth != 0 || crawlingHistory == null) return;
+            if(iCurrentCrawlingDepth != 0 || crawlingHistory == null)
+                return;
 
 
 
@@ -221,20 +224,27 @@ public class IncrementalCrawlingParser extends ParserDecorator
         catch (Exception e)
         {
             String strUrlOrSource = metadata.get(Metadata.SOURCE);
-            if(strUrlOrSource == null) strUrlOrSource = metadata.get(LeechMetadata.RESOURCE_NAME_KEY);
-            if(strUrlOrSource == null) strUrlOrSource = metadata.get(IncrementalCrawlingHistory.dataEntityId);
-            if(strUrlOrSource == null) strUrlOrSource = "no entity id known in metadata";
+            if(strUrlOrSource == null)
+                strUrlOrSource = metadata.get(LeechMetadata.RESOURCE_NAME_KEY);
+            if(strUrlOrSource == null)
+                strUrlOrSource = metadata.get(IncrementalCrawlingHistory.dataEntityId);
+            if(strUrlOrSource == null)
+                strUrlOrSource = "no entity id known in metadata";
 
-            if(e instanceof TikaException) throw (TikaException) e;
+            if(e instanceof TikaException)
+                throw (TikaException) e;
             throw new TikaException("Error while crawling " + strUrlOrSource, e);
         }
         finally
         {
 
-            if(crawlingHistory != null && iCurrentCrawlingDepth == 0) crawlingHistory.closeDBStuff();
+            if(crawlingHistory != null && iCurrentCrawlingDepth == 0)
+                crawlingHistory.closeDBStuff();
 
-            if(tmpLock != null) tmpLock.release();
-            if(fosTmpLock != null) fosTmpLock.close();
+            if(tmpLock != null)
+                tmpLock.release();
+            if(fosTmpLock != null)
+                fosTmpLock.close();
             if(crawlingHistory != null && iCurrentCrawlingDepth == 0 && bIsTmpHistory)
             {
 
@@ -244,7 +254,8 @@ public class IncrementalCrawlingParser extends ParserDecorator
 
                 for (File historyDir : leechTmpDir.listFiles())
                 {
-                    if(!historyDir.isDirectory()) continue;
+                    if(!historyDir.isDirectory())
+                        continue;
 
                     FileOutputStream fosLock = new FileOutputStream(historyDir.getAbsolutePath() + "/lock");
                     FileLock lock = fosLock.getChannel().tryLock();
@@ -259,7 +270,8 @@ public class IncrementalCrawlingParser extends ParserDecorator
                         lock.release();
                     }
 
-                    if(fosLock != null) fosLock.close();
+                    if(fosLock != null)
+                        fosLock.close();
                 }
             }
         }
@@ -278,7 +290,7 @@ public class IncrementalCrawlingParser extends ParserDecorator
      * processed during this crawl yet (when we have a cycle or double entry), the method will return false which means that it don't have to be processed again.
      * 
      * @param crawlingHistory the crawling history. Can be null, in this case the data entity will be flagged as NEW in any case
-     * @param metadata the metadata of the data entity. The method will put the data entity modification state into
+     * @param metadata        the metadata of the data entity. The method will put the data entity modification state into
      * 
      * @return true: process the data entity (it was not processed formerly in this crawl), false otherwise (it was processed during this call, we have a circle)
      * 
@@ -303,6 +315,7 @@ public class IncrementalCrawlingParser extends ParserDecorator
 
             Exist exist = crawlingHistory.exists(strDataEntityId);
 
+
             // wenn wir es in diesem Crawl schon mal prozessiert haben, dann machen wir gar nix - und verfolgen auch keine Links mehr
             // weiter. Dann haben wir einen Zykel.
             if(exist.equals(Exist.YES_PROCESSED))
@@ -314,7 +327,11 @@ public class IncrementalCrawlingParser extends ParserDecorator
 
 
             String strDataEntityContentFingerprint = metadata.get(IncrementalCrawlingHistory.dataEntityContentFingerprint);
+            if(strDataEntityContentFingerprint == null)
+                throw new IllegalStateException(
+                        "IncrementalCrawlingHistory.dataEntityContentFingerprint is null. This should not happen, please check the metadata and the stream creation.");
 
+                        
             if(exist.equals(Exist.NOT))
             {
                 metadata.set(DATA_ENTITY_MODIFICATION_STATE, NEW);

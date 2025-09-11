@@ -105,8 +105,8 @@ public class ToElasticSearchContentHandler extends DataSinkContentHandler
     public ToElasticSearchContentHandler leechAttRenames()
     {
         m_hsRenameAtts =
-                CollectionUtilz.createHashMap("dc:title", "tns_title", "dc:creator", "tns_creator", "dcterms:modified", "date_modified", "source", "tk_source", "dcterms:created",
-                        "date_created", "xmpTPg:NPages", "i_pageCount", "dc:language", "k_language", "body", "tns_body", "location", "g_location");
+                CollectionUtilz.createHashMap("dc:title", "tn_title", "dc:creator", "tn_creator", "dcterms:modified", "date_modified", "source", "tk_source", "dcterms:created",
+                        "date_created", "xmpTPg:NPages", "i_pageCount", "dc:language", "k_language", "body", "tn_body", "location", "g_location");
 
         return this;
     }
@@ -339,7 +339,7 @@ public class ToElasticSearchContentHandler extends DataSinkContentHandler
             if(strId == null)
                 strId = metadata.get(LeechMetadata.RESOURCE_NAME_KEY);
 
-            //TODO sadly, in the bulk api we have no possibility to delete by query - only
+            // sadly, in the bulk api we have no possibility to delete by query - only
 
             m_strbCurrentNdJsonBulk.append(String.format("{\"delete\":{\"_id\":\"%s\"}}\n", JSONValue.escape(strId)));
 

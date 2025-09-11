@@ -34,7 +34,7 @@ import java.util.Set;
 
 
 /**
- * This class is for specifying arbitrary urls that should be processed by new, arbitrary Parsers. You can specify any (conecction) information into the URL, as far as it is
+//  * This class is for specifying arbitrary urls that should be processed by new, arbitrary Parsers. You can specify any (conecction) information into the URL, as far as it is
  * prefixed with "leech://". The rest of the URL is then passed to the Parser as a String. The Parser can then do whatever it wants with this information.
  * <br>
  * 1. This URLStreamProvider gives just dummy content for the stream. The parser should collect all relevant content outgoing from the URL.

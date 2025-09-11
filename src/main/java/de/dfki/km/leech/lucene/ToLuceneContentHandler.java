@@ -651,7 +651,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
 
 
 
-            // TODO: was passiert hier mit block-indexierten Dokumenten?
+            // was passiert hier mit block-indexierten Dokumenten?
             m_initialLuceneWriter.updateDocument(new Term(IncrementalCrawlingHistory.dataEntityId, metadata.get(IncrementalCrawlingHistory.dataEntityId)), luceneDocument);
         } catch (Exception e)
         {
@@ -804,7 +804,7 @@ public class ToLuceneContentHandler extends DataSinkContentHandler
         try
         {
 
-            // TODO: was passiert hier mit block-indexierten Dokumenten?
+            // was passiert hier mit block-indexierten Dokumenten?
             m_initialLuceneWriter.deleteDocuments(new Term(IncrementalCrawlingHistory.dataEntityId, metadata.get(IncrementalCrawlingHistory.dataEntityId)));
         } catch (Exception e)
         {

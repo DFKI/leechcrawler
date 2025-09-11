@@ -104,7 +104,6 @@ public class SubDataEntityContentHandler extends XHTMLContentHandler
                 {
 
                     String strDataEntityModState = m_metadata.get(IncrementalCrawlingParser.DATA_ENTITY_MODIFICATION_STATE);
-
                     //                    if(!IncrementalCrawlingParser.UNMODIFIED.equals(strDataEntityModState))
                     {
                         bDoIt = true;

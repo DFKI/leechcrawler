@@ -17,12 +17,15 @@
 package de.dfki.km.leech.parser.incremental;
 
 
+
 import de.dfki.inquisitor.collections.MultiValueBalancedTreeMap;
 import de.dfki.inquisitor.text.StringUtils;
 import de.dfki.km.leech.config.CrawlerContext;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.*;
+
 
 
 /**
@@ -61,18 +64,87 @@ public class IncrementalCrawlingHistory
 {
 
 
+    protected class CrawlFinishedIterator implements Iterator<String>
+    {
+
+        Iterator<String> m_itDataEntityIdsNotProcessed;
+
+
+
+        protected CrawlFinishedIterator()
+        {
+
+            if (m_sDataEntityIdsNotProcessed == null)
+                m_itDataEntityIdsNotProcessed = Collections.emptyIterator();
+            else
+                m_itDataEntityIdsNotProcessed = m_sDataEntityIdsNotProcessed.iterator();
+        }
+
+
+
+        @Override
+        public boolean hasNext()
+        {
+
+
+            boolean bHasNext = m_itDataEntityIdsNotProcessed.hasNext();
+
+            // wenn wir nichts mehr haben, machen wir die unterliegene DB zu - der crawl ist final beendet
+            if (!bHasNext)
+                closeDBStuff();
+
+            return bHasNext;
+        }
+
+
+
+        @Override
+        public String next()
+        {
+            return m_itDataEntityIdsNotProcessed.next();
+        }
+
+
+
+        @Override
+        public void remove()
+        {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+
+
+    /**
+     * Defines the states whether a data entity is in the history or not. There are three states: Exist.NOT says that the data entity has no entry inside the history at
+     * all. Exist.YES_UNPROCESSED means that the entity has an entry inside the history, and that it still wasn't processed during the current crawl. Exist.YES_PROCESSED
+     * means that there is an entry but the data entity was processed in this run yet, so normally another processing is unnecessary. This is to detect cycles.
+     *
+     * @author Christian Reuschling, Dipl.Ing.(BA)
+     */
+    public enum Exist
+    {
+        NOT, YES_PROCESSED, YES_UNPROCESSED
+    }
+
+
+
     static public final String dataEntityContentFingerprint = "dataEntityContentFingerprint";
     static public final String dataEntityId = "dataEntityId";
     static public final String masterDataEntityId = "masterDataEntityId";
     protected final String m_strHistoryPath;
+    protected boolean m_bRefuseRemovals = false;
     protected Long m_lCrawlStartingTime = null;
     Map<String, DataEntityHistoryEntry> m_hsDataEntityId2HistoryEntry;
     MultiValueBalancedTreeMap<String, String> m_hsMasterDataEntityId2DataEntityIds;
     Set<String> m_sDataEntityIdsNotProcessed;
 
+
+
     public IncrementalCrawlingHistory(String strHistoryPath)
     {
-        m_strHistoryPath = strHistoryPath + "/mapDB";
+        m_strHistoryPath = strHistoryPath + "/mapDBHistory";
+
 
 
         Runtime.getRuntime().addShutdownHook(new Thread("IncrementalCrawlingHistory shutdown hook for " + strHistoryPath)
@@ -84,6 +156,8 @@ public class IncrementalCrawlingHistory
             }
         });
     }
+
+
 
     /**
      * Remarks a new data entity, together with the current time as 'last crawled/checked time'.
@@ -98,6 +172,8 @@ public class IncrementalCrawlingHistory
         addDataEntity(strDataEntityId, strDataEntityContentFingerprint, null);
     }
 
+
+
     /**
      * Remarks a new data entity, together with the current time as 'last crawled/checked time'.
      *
@@ -107,22 +183,29 @@ public class IncrementalCrawlingHistory
      *                                        a file
      * @param strMasterDataEntityId           optional: an EntityId of another data entity that is our 'master' which means that when the master is updated with
      *                                        {@link #updateDataEntityLastCrawledTime(String)}, all associated slaves will be also updated. This is e.g. for the case when you
-     *                                        are in a second run for RSS-File indexing, and leech recognizes that this file didn't changed. Now we don't want to go unnecessarily into the file and mark
-     *                                        each entry on it's own. We know no subentry has changed, and can immediately mark them as processed with {@link #updateDataEntityLastCrawledTime(String)} on the master
+     *                                        are in a second run for RSS-File indexing, and leech recognizes that this file didn't changed. Now we don't want to go
+     *                                        unnecessarily into the file and mark
+     *                                        each entry on it's own. We know no subentry has changed, and can immediately mark them as processed with
+     *                                        {@link #updateDataEntityLastCrawledTime(String)} on the master
      *                                        dataEntityId, which is the one from the RSS file. Leave it null or empty in the case you don't need to use it.
      */
     public void addDataEntity(String strDataEntityId, String strDataEntityContentFingerprint, String strMasterDataEntityId)
     {
 
-        DataEntityHistoryEntry historyEntry = new DataEntityHistoryEntry(strDataEntityId, strDataEntityContentFingerprint, strMasterDataEntityId, System.currentTimeMillis());
+        // in fact, because 'put' removes former entries anyway, these methods are identical with this implementation:
+        // DataEntityHistoryEntry historyEntry = new DataEntityHistoryEntry(strDataEntityId, strDataEntityContentFingerprint, strMasterDataEntityId, System.currentTimeMillis());
 
-        m_hsDataEntityId2HistoryEntry.put(strDataEntityId, historyEntry);
+        // m_hsDataEntityId2HistoryEntry.put(strDataEntityId, historyEntry);
 
-        if (StringUtils.notNullOrWhitespace(strMasterDataEntityId))
-            m_hsMasterDataEntityId2DataEntityIds.add(strMasterDataEntityId, strDataEntityId);
+        // if (StringUtils.notNullOrWhitespace(strMasterDataEntityId))
+        //     m_hsMasterDataEntityId2DataEntityIds.add(strMasterDataEntityId, strDataEntityId);
 
-        m_sDataEntityIdsNotProcessed.remove(strDataEntityId);
+        // m_sDataEntityIdsNotProcessed.remove(strDataEntityId);
+
+        this.updateDataEntity(strDataEntityId, strDataEntityContentFingerprint, strMasterDataEntityId);
     }
+
+
 
     public void closeDBStuff()
     {
@@ -132,13 +215,15 @@ public class IncrementalCrawlingHistory
 
         if (m_hsMasterDataEntityId2DataEntityIds != null)
         {
-            m_hsMasterDataEntityId2DataEntityIds.getInternalMapDB().close();
+            m_hsMasterDataEntityId2DataEntityIds.close();
 
             m_hsMasterDataEntityId2DataEntityIds = null;
             m_hsDataEntityId2HistoryEntry = null;
             m_sDataEntityIdsNotProcessed = null;
         }
     }
+
+
 
     /**
      * Returns all DataEntityIds with a 'last crawled/checked time' before the 'crawl starting time' as outdated data entities. These are all entities that didn't
@@ -152,12 +237,25 @@ public class IncrementalCrawlingHistory
      */
     public Iterator<String> crawlFinished()
     {
-        //ich lösche schon mal die nicht mehr benötigten aus der History, damit wir ein sauberes System haben
-        for (String strRemovedId : m_sDataEntityIdsNotProcessed)
-            m_hsDataEntityId2HistoryEntry.remove(strRemovedId);
 
-        return new CrawlFinishedIterator();
+        if (!m_bRefuseRemovals)
+        {
+            //ich lösche schon mal die nicht mehr benötigten aus der History, damit wir ein sauberes System haben
+            for (String strRemovedId : m_sDataEntityIdsNotProcessed)
+                m_hsDataEntityId2HistoryEntry.remove(strRemovedId);
+
+            return new CrawlFinishedIterator();
+        }
+        else
+        {
+            LoggerFactory.getLogger(IncrementalCrawlingHistory.class)
+                    .warn("Refusing removals - not deleting " + m_sDataEntityIdsNotProcessed.size() + " entries from history because refuseRemovals was set to true.");
+
+            return Collections.emptyIterator();
+        }
     }
+
+
 
     /**
      * Informs the history that a new crawl has started. The history will save the current time as 'crawl starting time'. <br>
@@ -176,15 +274,19 @@ public class IncrementalCrawlingHistory
         m_sDataEntityIdsNotProcessed.addAll(m_hsDataEntityId2HistoryEntry.keySet());
     }
 
+
+
     /**
      * Checks whether an ID exists inside the incremental crawling history or not. During the crawl, this is to identify quickly whether a data entity is completely new
      * or not.
      *
      * @param strDataEntityId an identifier for a data entity that is independent from the content of this entity. It is only for identifying the occurence, not to
      *                        check whether it has changed (e.g. a filename)
+     *
      * @return There are three states: Exist.NOT says that the data entity has no entry inside the history at all. Exist.YES_UNPROCESSED means that the entity has an
      * entry inside the history, and that it still wasn't processed during the current crawl. Exist.YES_PROCESSED means that there is an entry but the data entity
      * was processed in this run yet, so normally another processing is unnecessary. This is to detect cycles.
+     *
      * @throws IOException
      */
     public Exist exists(String strDataEntityId) throws IOException
@@ -202,6 +304,8 @@ public class IncrementalCrawlingHistory
         return Exist.YES_UNPROCESSED;
     }
 
+
+
     /**
      * Checks whether an ID with a specific content fingerprint exists in the crawling history or not. During the crawl, this is to identify quickly whether a data entity
      * has changed its content or not. Of course, this makes only sense in the case the content fingerprint that gives the hint whether the entity has changed can be
@@ -211,6 +315,7 @@ public class IncrementalCrawlingHistory
      *                                        check whether it has changed (e.g. a filename)
      * @param strDataEntityContentFingerprint some fingerprint/identifier that gives the hint whether the content of the data entity has changed, e.g. the modifed date of
      *                                        a file
+     *
      * @return true in the case this identifier exists with exact this content fingerprint inside the crawling history
      */
     @SuppressWarnings("RedundantIfStatement")
@@ -230,11 +335,14 @@ public class IncrementalCrawlingHistory
         return false;
     }
 
+
+
     /**
      * Gets the stored content fingerprint for a given data entity entry.
      *
      * @param strDataEntityId an identifier for a data entity that is independent from the content of this entity. It is only for identifying the occurence, not to
      *                        check whether it has changed (e.g. a filename)
+     *
      * @return the according content fingerprint stored for this data entity, null in the case this data entity was not found
      */
     public String getDataEntityContentFingerprint(String strDataEntityId)
@@ -249,12 +357,15 @@ public class IncrementalCrawlingHistory
         return historyEntry.dataEntityContentFingerprint;
     }
 
+
+
     /**
      * Gets the stored last crawled time for a given data entity entry. This can be used to e.g. determine whether a data entity was already processed during the current
      * crawl or not. If it was processed already, this is a hint for a cycle.
      *
      * @param strDataEntityId an identifier for a data entity that is independent from the content of this entity. It is only for identifying the occurence, not to
      *                        check whether it has changed (e.g. a filename)
+     *
      * @return the according last crawled time stored for this data entity, null in the case this data entity was not found
      */
     public Long getDataEntityLastCrawledTime(String strDataEntityId)
@@ -270,6 +381,8 @@ public class IncrementalCrawlingHistory
         return historyEntry.lastCrawledTime;
     }
 
+
+
     /**
      * Gets the path to this history
      *
@@ -279,6 +392,8 @@ public class IncrementalCrawlingHistory
     {
         return m_strHistoryPath;
     }
+
+
 
     /**
      * Creates all writer, reader, and searcher objects if necessary
@@ -290,14 +405,27 @@ public class IncrementalCrawlingHistory
         if (m_hsMasterDataEntityId2DataEntityIds == null)
         {
             m_hsMasterDataEntityId2DataEntityIds = new MultiValueBalancedTreeMap<>(m_strHistoryPath, HashSet.class);
+            // m_hsMasterDataEntityId2DataEntityIds = new MultiValueBalancedTreeMap<>(m_strHistoryPath + "_masterDataEntityId2DataEntityIds", HashSet.class);
 
             m_hsDataEntityId2HistoryEntry =
                     (Map<String, DataEntityHistoryEntry>) m_hsMasterDataEntityId2DataEntityIds.getInternalMapDB().hashMap("dataEntityId2HistoryEntry").createOrOpen();
-
-            m_sDataEntityIdsNotProcessed = (Set<String>) m_hsMasterDataEntityId2DataEntityIds.getInternalMapDB().hashSet("dataEntityIdsNotProcessed").createOrOpen();
+            // Das HashSet ist sehr empfindlich gegenüber VM-Crashes (DB Datei kaputt). beim treeSet habe ich es noch nicht geschafft, die DB kaputt zu kriegen
+            // m_sDataEntityIdsNotProcessed = (Set<String>) m_hsMasterDataEntityId2DataEntityIds.getInternalMapDB().hashSet("dataEntityIdsNotProcessed").createOrOpen();
+            m_sDataEntityIdsNotProcessed = (Set<String>) m_hsMasterDataEntityId2DataEntityIds.getInternalMapDB().treeSet("dataEntityIdsNotProcessed").createOrOpen();
             m_sDataEntityIdsNotProcessed.clear();
         }
     }
+
+
+
+    public IncrementalCrawlingHistory refuseRemovals(boolean bRefuseRemovals)
+    {
+        m_bRefuseRemovals = bRefuseRemovals;
+
+        return this;
+    }
+
+
 
     /**
      * Updates a whole data entity - same as addDataEntity, but removes a former entry before storing the new one
@@ -311,6 +439,8 @@ public class IncrementalCrawlingHistory
     {
         updateDataEntity(strDataEntityId, strDataEntityContentFingerprint, null);
     }
+
+
 
     /**
      * Updates a whole data entity - same as addDataEntity, but removes a former entry before storing the new one
@@ -340,6 +470,8 @@ public class IncrementalCrawlingHistory
 
         m_sDataEntityIdsNotProcessed.remove(strDataEntityId);
     }
+
+
 
     /**
      * Sets a data entities 'last crawled/checked time' entry to the current time. In the case this data entity is a master entity, all slave documents will be updated
@@ -382,64 +514,6 @@ public class IncrementalCrawlingHistory
             m_hsDataEntityId2HistoryEntry.put(strSlaveId, historyEntryNewSlave);
 
             m_sDataEntityIdsNotProcessed.remove(strSlaveId);
-        }
-    }
-
-
-    /**
-     * Defines the states whether a data entity is in the history or not. There are three states: Exist.NOT says that the data entity has no entry inside the history at
-     * all. Exist.YES_UNPROCESSED means that the entity has an entry inside the history, and that it still wasn't processed during the current crawl. Exist.YES_PROCESSED
-     * means that there is an entry but the data entity was processed in this run yet, so normally another processing is unnecessary. This is to detect cycles.
-     *
-     * @author Christian Reuschling, Dipl.Ing.(BA)
-     */
-    public enum Exist
-    {
-        NOT, YES_PROCESSED, YES_UNPROCESSED
-    }
-
-    protected class CrawlFinishedIterator implements Iterator<String>
-    {
-
-        Iterator<String> m_itDataEntityIdsNotProcessed;
-
-
-        protected CrawlFinishedIterator()
-        {
-
-            if (m_sDataEntityIdsNotProcessed == null)
-                m_itDataEntityIdsNotProcessed = Collections.emptyIterator();
-            else
-                m_itDataEntityIdsNotProcessed = m_sDataEntityIdsNotProcessed.iterator();
-        }
-
-
-        @Override
-        public boolean hasNext()
-        {
-
-
-            boolean bHasNext = m_itDataEntityIdsNotProcessed.hasNext();
-
-            // wenn wir nichts mehr haben, machen wir die unterliegene DB zu - der crawl ist final beendet
-            if (!bHasNext)
-                closeDBStuff();
-
-            return bHasNext;
-        }
-
-
-        @Override
-        public String next()
-        {
-            return m_itDataEntityIdsNotProcessed.next();
-        }
-
-
-        @Override
-        public void remove()
-        {
-            throw new UnsupportedOperationException();
         }
     }
 }
