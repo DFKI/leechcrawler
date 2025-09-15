@@ -62,9 +62,9 @@ public abstract class DataSinkContentHandler extends ContentHandlerDecorator
      * {@link #setMetaData(Metadata)} or one of the Leech methods with the DataSinkContentHandlers. In the second case Leech will make sure that the metadata objects will
      * be set correctly.
      */
-    public DataSinkContentHandler()
-    {
-    }
+    // public DataSinkContentHandler()
+    // {
+    // }
 
 
 
